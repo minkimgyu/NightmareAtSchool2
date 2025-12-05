@@ -70,6 +70,9 @@ struct FItemData : public FTableRowBase
     EItemType ItemType;
 
     UPROPERTY(EditAnywhere, Category = "Item Data")
+    int32 Quantity;
+
+    UPROPERTY(EditAnywhere, Category = "Item Data")
     FItemNumericData NumericData;
 
     UPROPERTY(EditAnywhere, Category = "Item Data")
