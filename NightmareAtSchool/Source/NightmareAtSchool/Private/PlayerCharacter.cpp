@@ -7,11 +7,8 @@
 #include "MainPlayerController.h"
 #include "InputActionValue.h"
 
-<<<<<<< HEAD
-=======
 #include "DrawDebugHelpers.h"
 
->>>>>>> feat-PlayerInteraction
 // Sets default values
 APlayerCharacter::APlayerCharacter()
 {
@@ -21,17 +18,14 @@ APlayerCharacter::APlayerCharacter()
 	NormalSpeed = 600.0f;
 	SprintSpeedMultiplier = 1.7f;
 	SprintSpeed = NormalSpeed * SprintSpeedMultiplier;
-<<<<<<< HEAD
-=======
 
 	InteractionCheckFrequency = 0.1f;
 	InteractionCheckDistance = 225.0f;
->>>>>>> feat-PlayerInteraction
 }
 
 void APlayerCharacter::Move(const FInputActionValue& value)
 {
-	if (!Controller) return; // ÄÁÆ®·Ñ·¯°¡ ¾ø´Â °æ¿ì ÁøÇàÇÏÁö ¾ÊÀ½
+	if (!Controller) return; // ï¿½ï¿½Æ®ï¿½Ñ·ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½
 
 	const FVector2D MoveInput = value.Get<FVector2D>();
 
@@ -67,11 +61,7 @@ void APlayerCharacter::StopSprint(const FInputActionValue& value)
 void APlayerCharacter::BeginPlay()
 {
 	Super::BeginPlay();
-<<<<<<< HEAD
-	
-=======
 
->>>>>>> feat-PlayerInteraction
 }
 
 // Called every frame
@@ -79,10 +69,6 @@ void APlayerCharacter::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
 
-<<<<<<< HEAD
-}
-
-=======
 	if (GetWorld()->TimeSince(InteractionData.LastInteractionCheckTime) > InteractionCheckFrequency)
 	{
 		PerformInteractionCheck();
@@ -90,58 +76,58 @@ void APlayerCharacter::Tick(float DeltaTime)
 }
 
 //=====================================================================
-// »óÈ£ ÀÛ¿ë ÇÔ¼ö
+// ï¿½ï¿½È£ ï¿½Û¿ï¿½ ï¿½Ô¼ï¿½
 //=====================================================================
 
 void APlayerCharacter::PerformInteractionCheck()
 {
 	InteractionData.LastInteractionCheckTime = GetWorld()->GetTimeSeconds();
 
-	// 1. Æ®·¹ÀÌ½º ½ÃÀÛÁ¡ ¼³Á¤
+	// 1. Æ®ï¿½ï¿½ï¿½Ì½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½
 	FVector TraceStart = GetPawnViewLocation();
 
-	// 2. Æ®·¹ÀÌ½º ³¡Á¡ ¼³Á¤
-	// ÇöÀç ½Ã¾ß È¸Àü(GetViewRotation())ÀÇ Á¤¸é º¤ÅÍ¿¡ »óÈ£ÀÛ¿ë °Å¸®(InteractionCheckDistance)¸¦ °öÇÏ¿© ³¡Á¡À» °è»êÇÕ´Ï´Ù.
+	// 2. Æ®ï¿½ï¿½ï¿½Ì½ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½
+	// ï¿½ï¿½ï¿½ï¿½ ï¿½Ã¾ï¿½ È¸ï¿½ï¿½(GetViewRotation())ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½Í¿ï¿½ ï¿½ï¿½È£ï¿½Û¿ï¿½ ï¿½Å¸ï¿½(InteractionCheckDistance)ï¿½ï¿½ ï¿½ï¿½ï¿½Ï¿ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½Õ´Ï´ï¿½.
 	FVector TraceEnd = TraceStart + (GetViewRotation().Vector() * InteractionCheckDistance);
 
-	// Á¤¸éÀ» ¹Ù¶óº¸´ÂÁö ¿©ºÎ ÆÄ¾Ç
+	// ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½Ù¶óº¸´ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½Ä¾ï¿½
 	//double LookDirection = FVector::DotProduct(GetActorForwardVector(), GetViewRotation().Vector());
 	//if (LookDirection > 0)
 	//{
-		// Áö¼Ó, À¯Áö ½Ã°£, ±íÀÌ ¿ì¼±¼øÀ§, ±½±â
+		// ï¿½ï¿½ï¿½ï¿½, ï¿½ï¿½ï¿½ï¿½ ï¿½Ã°ï¿½, ï¿½ï¿½ï¿½ï¿½ ï¿½ì¼±ï¿½ï¿½ï¿½ï¿½, ï¿½ï¿½ï¿½ï¿½
 		//DrawDebugLine(GetWorld(), TraceStart, TraceEnd, FColor::Red, false, 1.0f, 0, 2.0f);
 
-		// 3. Äõ¸® ÆÄ¶ó¹ÌÅÍ ¼³Á¤
+		// 3. ï¿½ï¿½ï¿½ï¿½ ï¿½Ä¶ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½
 		FCollisionQueryParams QueryParams;
-		// Æ®·¹ÀÌ½º¸¦ ¼öÇàÇÏ´Â ¾×ÅÍ(ÁÖ·Î ÇÃ·¹ÀÌ¾î Ä³¸¯ÅÍ)´Â ¹«½ÃÇÏ¿© ÀÚ±â ÀÚ½Å°ú Ãæµ¹ÇÏÁö ¾Êµµ·Ï ÇÕ´Ï´Ù.
+		// Æ®ï¿½ï¿½ï¿½Ì½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½Ï´ï¿½ ï¿½ï¿½ï¿½ï¿½(ï¿½Ö·ï¿½ ï¿½Ã·ï¿½ï¿½Ì¾ï¿½ Ä³ï¿½ï¿½ï¿½ï¿½)ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½Ï¿ï¿½ ï¿½Ú±ï¿½ ï¿½Ú½Å°ï¿½ ï¿½æµ¹ï¿½ï¿½ï¿½ï¿½ ï¿½Êµï¿½ï¿½ï¿½ ï¿½Õ´Ï´ï¿½.
 		QueryParams.AddIgnoredActor(this);
 
-		// 4. Æ®·¹ÀÌ½º °á°ú ±¸Á¶Ã¼
+		// 4. Æ®ï¿½ï¿½ï¿½Ì½ï¿½ ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½Ã¼
 		FHitResult TraceHit;
 
-		// 5. ¶óÀÎ Æ®·¹ÀÌ½º ¼öÇà
-		// GetWorld()->LineTraceSingleByChannel(°á°ú, ½ÃÀÛÁ¡, ³¡Á¡, Ãæµ¹ Ã¤³Î, Äõ¸® ÆÄ¶ó¹ÌÅÍ)
+		// 5. ï¿½ï¿½ï¿½ï¿½ Æ®ï¿½ï¿½ï¿½Ì½ï¿½ ï¿½ï¿½ï¿½ï¿½
+		// GetWorld()->LineTraceSingleByChannel(ï¿½ï¿½ï¿½, ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½, ï¿½ï¿½ï¿½ï¿½, ï¿½æµ¹ Ã¤ï¿½ï¿½, ï¿½ï¿½ï¿½ï¿½ ï¿½Ä¶ï¿½ï¿½ï¿½ï¿½)
 		if (GetWorld()->LineTraceSingleByChannel(TraceHit, TraceStart, TraceEnd, ECC_Visibility, QueryParams))
 		{
-			// 6. Æ®·¹ÀÌ½º¿¡ °É¸° ¾×ÅÍ°¡ »óÈ£ÀÛ¿ë ÀÎÅÍÆäÀÌ½º¸¦ ±¸ÇöÇß´ÂÁö È®ÀÎ
+			// 6. Æ®ï¿½ï¿½ï¿½Ì½ï¿½ï¿½ï¿½ ï¿½É¸ï¿½ ï¿½ï¿½ï¿½Í°ï¿½ ï¿½ï¿½È£ï¿½Û¿ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ì½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ß´ï¿½ï¿½ï¿½ È®ï¿½ï¿½
 			if (TraceHit.GetActor()->GetClass()->ImplementsInterface(UInteractionInterface::StaticClass()))
 			{
-				// 7. Æ®·¹ÀÌ½º¿¡ °É¸° °´Ã¼°¡ ±âÁ¸ °´Ã¼°¡ ¾Æ´Ï°Å³ª (»õ·Î¿î »óÈ£ÀÛ¿ë ´ë»ó)
-				//    ÇöÀç °Å¸®°¡ »óÈ£ÀÛ¿ë °Å¸®(InteractionCheckDistance) ÀÌ³»ÀÎÁö È®ÀÎ
-				//const float Distance = (TraceStart - TraceHit.ImpactPoint).Size(); // Ãæµ¹ ÁöÁ¡±îÁöÀÇ °Å¸® °è»ê
+				// 7. Æ®ï¿½ï¿½ï¿½Ì½ï¿½ï¿½ï¿½ ï¿½É¸ï¿½ ï¿½ï¿½Ã¼ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½Ã¼ï¿½ï¿½ ï¿½Æ´Ï°Å³ï¿½ (ï¿½ï¿½ï¿½Î¿ï¿½ ï¿½ï¿½È£ï¿½Û¿ï¿½ ï¿½ï¿½ï¿½)
+				//    ï¿½ï¿½ï¿½ï¿½ ï¿½Å¸ï¿½ï¿½ï¿½ ï¿½ï¿½È£ï¿½Û¿ï¿½ ï¿½Å¸ï¿½(InteractionCheckDistance) ï¿½Ì³ï¿½ï¿½ï¿½ï¿½ï¿½ È®ï¿½ï¿½
+				//const float Distance = (TraceStart - TraceHit.ImpactPoint).Size(); // ï¿½æµ¹ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½Å¸ï¿½ ï¿½ï¿½ï¿½
 				// && Distance <= InteractionCheckDistance
 
 				if (TraceHit.GetActor() != InteractionData.CurrentInteractable)
 				{
-					// »õ·Î¿î »óÈ£ÀÛ¿ë °¡´É °´Ã¼¸¦ ¹ß°ßÇßÀ» ¶§ÀÇ Ã³¸® ÇÔ¼ö È£Ãâ
+					// ï¿½ï¿½ï¿½Î¿ï¿½ ï¿½ï¿½È£ï¿½Û¿ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½Ã¼ï¿½ï¿½ ï¿½ß°ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ Ã³ï¿½ï¿½ ï¿½Ô¼ï¿½ È£ï¿½ï¿½
 					FoundInteractable(TraceHit.GetActor());
 					return;
 				}
 
-				// 8. Æ®·¹ÀÌ½º¿¡ °É¸° °´Ã¼°¡ ÇöÀç »óÈ£ÀÛ¿ë ÁßÀÎ °´Ã¼¿Í µ¿ÀÏÇÏ´Ù¸é
+				// 8. Æ®ï¿½ï¿½ï¿½Ì½ï¿½ï¿½ï¿½ ï¿½É¸ï¿½ ï¿½ï¿½Ã¼ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½È£ï¿½Û¿ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½Ã¼ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½Ï´Ù¸ï¿½
 				if (TraceHit.GetActor() == InteractionData.CurrentInteractable)
 				{
-					// Æ¯º°ÇÑ »óÅÂ º¯È­ ¾øÀÌ ÇÔ¼ö Á¾·á (»óÈ£ÀÛ¿ë °¡´É »óÅÂ À¯Áö)
+					// Æ¯ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½È­ ï¿½ï¿½ï¿½ï¿½ ï¿½Ô¼ï¿½ ï¿½ï¿½ï¿½ï¿½ (ï¿½ï¿½È£ï¿½Û¿ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½)
 					return;
 				}
 			}
@@ -172,69 +158,69 @@ void APlayerCharacter::FoundInteractable(AActor* NewInteractable)
 
 void APlayerCharacter::NoInteractableFound()
 {
-	// 1. »óÈ£ÀÛ¿ë ÁßÀÌ¾ú´Ù¸é Å¸ÀÌ¸Ó¸¦ Á¤¸®ÇÕ´Ï´Ù.
+	// 1. ï¿½ï¿½È£ï¿½Û¿ï¿½ ï¿½ï¿½ï¿½Ì¾ï¿½ï¿½Ù¸ï¿½ Å¸ï¿½Ì¸Ó¸ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½Õ´Ï´ï¿½.
 	if (IsInteracting())
 	{
-		// Å¸ÀÌ¸Ó°¡ È°¼ºÈ­µÇ¾î ÀÖÀ¸¸é ÇØ´ç Å¸ÀÌ¸Ó¸¦ ÁßÁöÇÏ°í ÇÚµéÀ» Á¤¸®ÇÕ´Ï´Ù.
+		// Å¸ï¿½Ì¸Ó°ï¿½ È°ï¿½ï¿½È­ï¿½Ç¾ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½Ø´ï¿½ Å¸ï¿½Ì¸Ó¸ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½Ï°ï¿½ ï¿½Úµï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½Õ´Ï´ï¿½.
 		GetWorldTimerManager().ClearTimer(TimerHandle_Interaction);
-		// Âü°í: ½ºÅ©¸°¼¦¿¡´Â ¶÷´Ù Ä¸Ã³(&)°¡ ÀÖÁö¸¸, FTimerHandle º¯¼ö¸¦ Á÷Á¢ Àü´ÞÇÏ´Â °ÍÀÌ ÀÏ¹ÝÀûÀÔ´Ï´Ù.
+		// ï¿½ï¿½ï¿½ï¿½: ï¿½ï¿½Å©ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ Ä¸Ã³(&)ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½, FTimerHandle ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½Ï´ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½Ï¹ï¿½ï¿½ï¿½ï¿½Ô´Ï´ï¿½.
 	}
 
-	// 2. ÇöÀç »óÈ£ÀÛ¿ë ´ë»óÀÌ ÀÖ¾ú´Ù¸é Æ÷Ä¿½º¸¦ ÇØÁ¦ÇÕ´Ï´Ù.
+	// 2. ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½È£ï¿½Û¿ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½Ö¾ï¿½ï¿½Ù¸ï¿½ ï¿½ï¿½Ä¿ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½Õ´Ï´ï¿½.
 	if (InteractionData.CurrentInteractable)
 	{
-		// TargetInteractableÀº IInteractionInterface¸¦ ±¸ÇöÇÑ TScriptInterfaceÀÔ´Ï´Ù.
-		// GetObject()·Î ½ÇÁ¦ UObject Æ÷ÀÎÅÍ¸¦ °¡Á®¿Â ÈÄ IsValid()·Î À¯È¿¼ºÀ» °Ë»çÇÕ´Ï´Ù.
+		// TargetInteractableï¿½ï¿½ IInteractionInterfaceï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ TScriptInterfaceï¿½Ô´Ï´ï¿½.
+		// GetObject()ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ UObject ï¿½ï¿½ï¿½ï¿½ï¿½Í¸ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ IsValid()ï¿½ï¿½ ï¿½ï¿½È¿ï¿½ï¿½ï¿½ï¿½ ï¿½Ë»ï¿½ï¿½Õ´Ï´ï¿½.
 		if (IsValid(TargetInteractable.GetObject()))
 		{
-			// ÀÎÅÍÆäÀÌ½º ÇÔ¼öÀÎ EndFocus()¸¦ È£ÃâÇÏ¿© °´Ã¼ÀÇ Æ÷Ä¿½º »óÅÂ¸¦ ÇØÁ¦ÇÕ´Ï´Ù.
+			// ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ì½ï¿½ ï¿½Ô¼ï¿½ï¿½ï¿½ EndFocus()ï¿½ï¿½ È£ï¿½ï¿½ï¿½Ï¿ï¿½ ï¿½ï¿½Ã¼ï¿½ï¿½ ï¿½ï¿½Ä¿ï¿½ï¿½ ï¿½ï¿½ï¿½Â¸ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½Õ´Ï´ï¿½.
 			TargetInteractable->EndFocus();
 		}
 
-		// // »óÈ£ÀÛ¿ë À§Á¬À» HUD¿¡¼­ ¼û±â´Â ·ÎÁ÷ (ÁÖ¼®À¸·Î ¼³¸íµÊ)
+		// // ï¿½ï¿½È£ï¿½Û¿ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ HUDï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ (ï¿½Ö¼ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½)
 		// hide interaction widget on the HUD
 
-		// 3. µ¥ÀÌÅÍ¸¦ ÃÊ±âÈ­ÇÕ´Ï´Ù.
-		// CurrentInteractable ¾×ÅÍ Æ÷ÀÎÅÍ¸¦ nullptr·Î ÃÊ±âÈ­ÇÕ´Ï´Ù.
+		// 3. ï¿½ï¿½ï¿½ï¿½ï¿½Í¸ï¿½ ï¿½Ê±ï¿½È­ï¿½Õ´Ï´ï¿½.
+		// CurrentInteractable ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½Í¸ï¿½ nullptrï¿½ï¿½ ï¿½Ê±ï¿½È­ï¿½Õ´Ï´ï¿½.
 		InteractionData.CurrentInteractable = nullptr;
 
-		// TargetInteractable ÀÎÅÍÆäÀÌ½º Æ÷ÀÎÅÍ¸¦ nullptr·Î ÃÊ±âÈ­ÇÕ´Ï´Ù.
+		// TargetInteractable ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ì½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½Í¸ï¿½ nullptrï¿½ï¿½ ï¿½Ê±ï¿½È­ï¿½Õ´Ï´ï¿½.
 		TargetInteractable = nullptr;
 	}
 }
 
 void APlayerCharacter::BeginInteract()
 {
-	// 1. »óÈ£ÀÛ¿ëÀ» ½ÃÀÛÇÑ ½ÃÁ¡ºÎÅÍ »óÅÂ°¡ º¯°æµÇÁö ¾Ê¾Ò´ÂÁö È®ÀÎÇÕ´Ï´Ù.
-	// (¿¹: Line Trace¸¦ ´Ù½Ã ½ÇÇàÇÏ¿© ÇöÀç ¹Ù¶óº¸´Â °´Ã¼°¡ ¿©ÀüÈ÷ »óÈ£ÀÛ¿ë °¡´ÉÇÑÁö È®ÀÎ)
+	// 1. ï¿½ï¿½È£ï¿½Û¿ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½Â°ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½Ê¾Ò´ï¿½ï¿½ï¿½ È®ï¿½ï¿½ï¿½Õ´Ï´ï¿½.
+	// (ï¿½ï¿½: Line Traceï¿½ï¿½ ï¿½Ù½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½Ï¿ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½Ù¶óº¸´ï¿½ ï¿½ï¿½Ã¼ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½È£ï¿½Û¿ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ È®ï¿½ï¿½)
 	PerformInteractionCheck();
 
-	// 2. InteractionData¿¡ À¯È¿ÇÑ CurrentInteractableÀÌ ÀÖ´ÂÁö È®ÀÎÇÕ´Ï´Ù.
+	// 2. InteractionDataï¿½ï¿½ ï¿½ï¿½È¿ï¿½ï¿½ CurrentInteractableï¿½ï¿½ ï¿½Ö´ï¿½ï¿½ï¿½ È®ï¿½ï¿½ï¿½Õ´Ï´ï¿½.
 	if (InteractionData.CurrentInteractable)
 	{
-		// 3. TargetInteractable ÀÎÅÍÆäÀÌ½º Æ÷ÀÎÅÍ°¡ À¯È¿ÇÑÁö È®ÀÎÇÕ´Ï´Ù.
+		// 3. TargetInteractable ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ì½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½Í°ï¿½ ï¿½ï¿½È¿ï¿½ï¿½ï¿½ï¿½ È®ï¿½ï¿½ï¿½Õ´Ï´ï¿½.
 		if (IsValid(TargetInteractable.GetObject()))
 		{
-			// ÀÎÅÍÆäÀÌ½º ÇÔ¼öÀÎ BeginInteract()¸¦ È£ÃâÇÏ¿© »óÈ£ÀÛ¿ë ´ë»ó °´Ã¼¿¡ »óÈ£ÀÛ¿ë ½ÃÀÛÀ» ¾Ë¸³´Ï´Ù.
+			// ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ì½ï¿½ ï¿½Ô¼ï¿½ï¿½ï¿½ BeginInteract()ï¿½ï¿½ È£ï¿½ï¿½ï¿½Ï¿ï¿½ ï¿½ï¿½È£ï¿½Û¿ï¿½ ï¿½ï¿½ï¿½ ï¿½ï¿½Ã¼ï¿½ï¿½ ï¿½ï¿½È£ï¿½Û¿ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½Ë¸ï¿½ï¿½Ï´ï¿½.
 			TargetInteractable->BeginInteract();
 
-			// 4. »óÈ£ÀÛ¿ë¿¡ Áö¼Ó ½Ã°£ÀÌ ÇÊ¿äÇÑÁö È®ÀÎÇÕ´Ï´Ù.
-			// FMath::IsNearlyZero´Â ºÎµ¿¼Ò¼öÁ¡(float) °ªÀÌ 0¿¡ °¡±î¿îÁö È®ÀÎÇÏ´Â ¾ÈÀüÇÑ ¹æ¹ýÀÔ´Ï´Ù.
+			// 4. ï¿½ï¿½È£ï¿½Û¿ë¿¡ ï¿½ï¿½ï¿½ï¿½ ï¿½Ã°ï¿½ï¿½ï¿½ ï¿½Ê¿ï¿½ï¿½ï¿½ï¿½ï¿½ È®ï¿½ï¿½ï¿½Õ´Ï´ï¿½.
+			// FMath::IsNearlyZeroï¿½ï¿½ ï¿½Îµï¿½ï¿½Ò¼ï¿½ï¿½ï¿½(float) ï¿½ï¿½ï¿½ï¿½ 0ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ È®ï¿½ï¿½ï¿½Ï´ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½Ô´Ï´ï¿½.
 			if (FMath::IsNearlyZero(TargetInteractable->InteractableData.InteractionDuration, 0.1f))
 			{
-				// Áö¼Ó ½Ã°£ÀÌ 0¿¡ °¡±õ´Ù¸é (Áï½Ã »óÈ£ÀÛ¿ë)
-				Interact(); // Interact() ÇÔ¼ö¸¦ Áï½Ã È£ÃâÇÕ´Ï´Ù. (µ¨Å¸Å¸ÀÓ 0.0f Àü´Þ)
+				// ï¿½ï¿½ï¿½ï¿½ ï¿½Ã°ï¿½ï¿½ï¿½ 0ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½Ù¸ï¿½ (ï¿½ï¿½ï¿½ ï¿½ï¿½È£ï¿½Û¿ï¿½)
+				Interact(); // Interact() ï¿½Ô¼ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ È£ï¿½ï¿½ï¿½Õ´Ï´ï¿½. (ï¿½ï¿½Å¸Å¸ï¿½ï¿½ 0.0f ï¿½ï¿½ï¿½ï¿½)
 			}
 			else
 			{
-				// Áö¼Ó ½Ã°£ÀÌ ÀÖ´Ù¸é (±æ°Ô ´­·¯¾ß ÇÏ´Â »óÈ£ÀÛ¿ë)
-				// Å¸ÀÌ¸Ó¸¦ ¼³Á¤ÇÏ¿© ÀÏÁ¤ ½Ã°£ ÈÄ¿¡ Interact() ÇÔ¼ö¸¦ ½ÇÇàÇÏµµ·Ï ¿¹¾àÇÕ´Ï´Ù.
+				// ï¿½ï¿½ï¿½ï¿½ ï¿½Ã°ï¿½ï¿½ï¿½ ï¿½Ö´Ù¸ï¿½ (ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½Ï´ï¿½ ï¿½ï¿½È£ï¿½Û¿ï¿½)
+				// Å¸ï¿½Ì¸Ó¸ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½Ï¿ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½Ã°ï¿½ ï¿½Ä¿ï¿½ Interact() ï¿½Ô¼ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½Ïµï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½Õ´Ï´ï¿½.
 				GetWorldTimerManager().SetTimer(
-					TimerHandle_Interaction,                                       // FTimerHandle: Å¸ÀÌ¸Ó¸¦ °ü¸®ÇÒ ÇÚµé
-					this,                                                          // InObj: ÇÔ¼ö¸¦ ½ÇÇàÇÒ °´Ã¼ (ÇöÀç Å¬·¡½º ÀÎ½ºÅÏ½º)
-					&APlayerCharacter::Interact,                                     // InRate: ½ÇÇàÇÒ ÇÔ¼ö Æ÷ÀÎÅÍ
-					TargetInteractable->InteractableData.InteractionDuration,      // Rate: Å¸ÀÌ¸Ó ÁÖ±â (¿©±â¼­´Â »óÈ£ÀÛ¿ë Áö¼Ó ½Ã°£)
-					false                                                          // InbLoop: ¹Ýº¹ ¿©ºÎ (false: ÇÑ ¹ø¸¸ ½ÇÇà)
+					TimerHandle_Interaction,                                       // FTimerHandle: Å¸ï¿½Ì¸Ó¸ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½Úµï¿½
+					this,                                                          // InObj: ï¿½Ô¼ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½Ã¼ (ï¿½ï¿½ï¿½ï¿½ Å¬ï¿½ï¿½ï¿½ï¿½ ï¿½Î½ï¿½ï¿½Ï½ï¿½)
+					&APlayerCharacter::Interact,                                     // InRate: ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½Ô¼ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
+					TargetInteractable->InteractableData.InteractionDuration,      // Rate: Å¸ï¿½Ì¸ï¿½ ï¿½Ö±ï¿½ (ï¿½ï¿½ï¿½â¼­ï¿½ï¿½ ï¿½ï¿½È£ï¿½Û¿ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½Ã°ï¿½)
+					false                                                          // InbLoop: ï¿½Ýºï¿½ ï¿½ï¿½ï¿½ï¿½ (false: ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½)
 				);
 			}
 		}
@@ -263,10 +249,9 @@ void APlayerCharacter::Interact()
 }
 
 //=====================================================================
-// ÇÔ¼ö
+// ï¿½Ô¼ï¿½
 //=====================================================================
 
->>>>>>> feat-PlayerInteraction
 // Called to bind functionality to input
 void APlayerCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInputComponent)
 {
@@ -312,8 +297,6 @@ void APlayerCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInputCom
 					&APlayerCharacter::StopSprint
 				);
 			}
-<<<<<<< HEAD
-=======
 
 			if (PlayerController->InteractAction)
 			{
@@ -331,7 +314,6 @@ void APlayerCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInputCom
 					&APlayerCharacter::EndInteract
 				);
 			}
->>>>>>> feat-PlayerInteraction
 		}
 	}
 }

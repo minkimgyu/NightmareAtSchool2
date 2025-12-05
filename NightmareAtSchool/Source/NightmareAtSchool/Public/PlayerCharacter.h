@@ -6,40 +6,34 @@
 #include "GameFramework/Character.h"
 #include "InputActionValue.h"
 #include "GameFramework/CharacterMovementComponent.h"
-<<<<<<< HEAD
-
-#include "PlayerCharacter.generated.h"
-
-=======
 #include "InteractionInterface.h"
 
 #include "PlayerCharacter.generated.h"
 
 /**
- * Ä³¸¯ÅÍÀÇ »óÈ£ÀÛ¿ë »óÅÂ ¹× µ¥ÀÌÅÍ¸¦ °ü¸®ÇÏ´Â ±¸Á¶Ã¼ÀÔ´Ï´Ù.
+ * Ä³ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½È£ï¿½Û¿ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½Í¸ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½Ï´ï¿½ ï¿½ï¿½ï¿½ï¿½Ã¼ï¿½Ô´Ï´ï¿½.
  */
 USTRUCT(BlueprintType)
 struct FInteractionData
 {
 	GENERATED_BODY()
 
-	/** ±âº» »ý¼ºÀÚ */
+	/** ï¿½âº» ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ */
 	FInteractionData()
-		: CurrentInteractable(nullptr) // ÇöÀç »óÈ£ÀÛ¿ë ÁßÀÎ ¾×ÅÍ¸¦ nullptr·Î ÃÊ±âÈ­
-		, LastInteractionCheckTime(0.0f) // ¸¶Áö¸· »óÈ£ÀÛ¿ë Ã¼Å© ½Ã°£À» 0.0f·Î ÃÊ±âÈ­
+		: CurrentInteractable(nullptr) // ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½È£ï¿½Û¿ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½Í¸ï¿½ nullptrï¿½ï¿½ ï¿½Ê±ï¿½È­
+		, LastInteractionCheckTime(0.0f) // ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½È£ï¿½Û¿ï¿½ Ã¼Å© ï¿½Ã°ï¿½ï¿½ï¿½ 0.0fï¿½ï¿½ ï¿½Ê±ï¿½È­
 	{
 	}
 
-	/** ÇöÀç ÇÃ·¹ÀÌ¾î°¡ »óÈ£ÀÛ¿ë ¹üÀ§ ³»¿¡¼­ ¹Ù¶óº¸°Å³ª °¡Àå °¡±îÀÌ ÀÖ´Â ¾×ÅÍ Æ÷ÀÎÅÍ */
+	/** ï¿½ï¿½ï¿½ï¿½ ï¿½Ã·ï¿½ï¿½Ì¾î°¡ ï¿½ï¿½È£ï¿½Û¿ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½Ù¶óº¸°Å³ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½Ö´ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ */
 	UPROPERTY()
 	AActor* CurrentInteractable;
 
-	/** ¸¶Áö¸·À¸·Î »óÈ£ÀÛ¿ë °¡´É ¿©ºÎ¸¦ Ã¼Å©ÇÑ °ÔÀÓ ½Ã°£ (ÇÁ·¹ÀÓ ´ÜÀ§°¡ ¾Æ´Ñ ½Ã°£ ±â¹Ý ÃÖÀûÈ­¸¦ À§ÇÔ) */
+	/** ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½È£ï¿½Û¿ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½Î¸ï¿½ Ã¼Å©ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½Ã°ï¿½ (ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½Æ´ï¿½ ï¿½Ã°ï¿½ ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½È­ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½) */
 	UPROPERTY()
 	float LastInteractionCheckTime;
 };
 
->>>>>>> feat-PlayerInteraction
 class AMainPlayerController;
 
 UCLASS()
@@ -48,14 +42,8 @@ class NIGHTMAREATSCHOOL_API APlayerCharacter : public ACharacter
 	GENERATED_BODY()
 
 public:
-<<<<<<< HEAD
-	// Sets default values for this character's properties
-	APlayerCharacter();
-
-private:
-=======
 	//=====================================================================
-	// ÇÔ¼ö
+	// ï¿½Ô¼ï¿½
 	//=====================================================================
 	// Sets default values for this character's properties
 	APlayerCharacter();
@@ -71,9 +59,8 @@ private:
 
 private:
 	//=====================================================================
-	// ÇÔ¼ö
+	// ï¿½Ô¼ï¿½
 	//=====================================================================
->>>>>>> feat-PlayerInteraction
 	void Move(const FInputActionValue& value);
 	void Look(const FInputActionValue& value);
 
@@ -81,13 +68,10 @@ private:
 	void StopSprint(const FInputActionValue& value);
 
 protected:
-<<<<<<< HEAD
-=======
 
 	//=====================================================================
-	// º¯¼ö
+	// ï¿½ï¿½ï¿½ï¿½
 	//=====================================================================
->>>>>>> feat-PlayerInteraction
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Movement")
 	float NormalSpeed;
 
@@ -97,69 +81,55 @@ protected:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Movement")
 	float SprintSpeed;
 
-<<<<<<< HEAD
-protected:
-	// Called when the game starts or when spawned
-	virtual void BeginPlay() override;
-
-public:	
-	// Called every frame
-	virtual void Tick(float DeltaTime) override;
-
-	// Called to bind functionality to input
-	virtual void SetupPlayerInputComponent(class UInputComponent* PlayerInputComponent) override;
-
-=======
-	/** * ÇöÀç »óÈ£ÀÛ¿ë ´ë»óÀÌ µÇ´Â °´Ã¼¸¦ ÀÎÅÍÆäÀÌ½º¸¦ ÅëÇØ ÂüÁ¶ÇÕ´Ï´Ù.
-	* IIInteractionInterface ÀÎÅÍÆäÀÌ½º¸¦ ±¸ÇöÇÑ ¸ðµç ¾×ÅÍ¸¦ ´ë»óÀ¸·Î ÇÒ ¼ö ÀÖ½À´Ï´Ù.
+	/** * ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½È£ï¿½Û¿ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½Ç´ï¿½ ï¿½ï¿½Ã¼ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ì½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½Õ´Ï´ï¿½.
+	* IIInteractionInterface ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ì½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½Í¸ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ ï¿½ï¿½ ï¿½Ö½ï¿½ï¿½Ï´ï¿½.
 	*/
 	UPROPERTY(VisibleAnywhere, Category = "Character | Interaction")
 	TScriptInterface<class IInteractionInterface> TargetInteractable;
 
-	/** »óÈ£ÀÛ¿ë °¡´É ¿©ºÎ¸¦ Ã¼Å©ÇÏ´Â ºóµµ (ÃÊ ´ÜÀ§) */
+	/** ï¿½ï¿½È£ï¿½Û¿ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½Î¸ï¿½ Ã¼Å©ï¿½Ï´ï¿½ ï¿½ï¿½ (ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½) */
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Character | Interaction")
 	float InteractionCheckFrequency;
 
-	/** »óÈ£ÀÛ¿ë Ã¼Å©¸¦ ¼öÇàÇÒ ÃÖ´ë °Å¸® */
+	/** ï¿½ï¿½È£ï¿½Û¿ï¿½ Ã¼Å©ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½Ö´ï¿½ ï¿½Å¸ï¿½ */
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Character | Interaction")
 	float InteractionCheckDistance;
 
-	/** »óÈ£ÀÛ¿ë Å¸ÀÌ¸Ó¸¦ °ü¸®ÇÏ´Â ÇÚµé */
+	/** ï¿½ï¿½È£ï¿½Û¿ï¿½ Å¸ï¿½Ì¸Ó¸ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½Ï´ï¿½ ï¿½Úµï¿½ */
 	FTimerHandle TimerHandle_Interaction;
 
-	/** ÇöÀç »óÈ£ÀÛ¿ë µ¥ÀÌÅÍ¸¦ ÀúÀåÇÏ´Â ±¸Á¶Ã¼ */
+	/** ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½È£ï¿½Û¿ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½Í¸ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½Ï´ï¿½ ï¿½ï¿½ï¿½ï¿½Ã¼ */
 	FInteractionData InteractionData;
 
 	//=====================================================================
-	// ÇÔ¼ö
+	// ï¿½Ô¼ï¿½
 	//=====================================================================
 
-	// ¿©±â¼­ È£ÃâÇÑ ÇÔ¼ö°¡
-	// IInteractionInterfaceÀÇ ÇÔ¼ö¸¦ ½ÇÇà½ÃÄÑÁØ´Ù.
+	// ï¿½ï¿½ï¿½â¼­ È£ï¿½ï¿½ï¿½ï¿½ ï¿½Ô¼ï¿½ï¿½ï¿½
+	// IInteractionInterfaceï¿½ï¿½ ï¿½Ô¼ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ø´ï¿½.
 
-	/** »óÈ£ÀÛ¿ë °¡´É °´Ã¼°¡ ÁÖº¯¿¡ ÀÖ´ÂÁö ÁÖ±âÀûÀ¸·Î Ã¼Å©ÇÏ´Â ÇÔ¼ö */
+	/** ï¿½ï¿½È£ï¿½Û¿ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½Ã¼ï¿½ï¿½ ï¿½Öºï¿½ï¿½ï¿½ ï¿½Ö´ï¿½ï¿½ï¿½ ï¿½Ö±ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ Ã¼Å©ï¿½Ï´ï¿½ ï¿½Ô¼ï¿½ */
 	void PerformInteractionCheck();
 
-	/** »óÈ£ÀÛ¿ë °¡´ÉÇÑ »õ·Î¿î °´Ã¼¸¦ ¹ß°ßÇßÀ» ¶§ È£ÃâµÇ´Â ÇÔ¼ö */
+	/** ï¿½ï¿½È£ï¿½Û¿ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½Î¿ï¿½ ï¿½ï¿½Ã¼ï¿½ï¿½ ï¿½ß°ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ È£ï¿½ï¿½Ç´ï¿½ ï¿½Ô¼ï¿½ */
 	void FoundInteractable(AActor* NewInteractable);
 
-	/** »óÈ£ÀÛ¿ë °¡´É °´Ã¼¸¦ Ã£Áö ¸øÇß°Å³ª ¹üÀ§¸¦ ¹þ¾î³µÀ» ¶§ È£ÃâµÇ´Â ÇÔ¼ö */
+	/** ï¿½ï¿½È£ï¿½Û¿ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½Ã¼ï¿½ï¿½ Ã£ï¿½ï¿½ ï¿½ï¿½ï¿½ß°Å³ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½î³µï¿½ï¿½ ï¿½ï¿½ È£ï¿½ï¿½Ç´ï¿½ ï¿½Ô¼ï¿½ */
 	void NoInteractableFound();
 
-	/** »óÈ£ÀÛ¿ë ½ÃÀÛ ·ÎÁ÷À» ¼öÇàÇÏ´Â ÇÔ¼ö */
+	/** ï¿½ï¿½È£ï¿½Û¿ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½Ï´ï¿½ ï¿½Ô¼ï¿½ */
 	void BeginInteract();
 
-	/** »óÈ£ÀÛ¿ë Á¾·á ·ÎÁ÷À» ¼öÇàÇÏ´Â ÇÔ¼ö */
+	/** ï¿½ï¿½È£ï¿½Û¿ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½Ï´ï¿½ ï¿½Ô¼ï¿½ */
 	void EndInteract();
 
-	/** »óÈ£ÀÛ¿ëÀ» ½ÇÁ¦·Î Ã³¸®ÇÏ´Â ÇÔ¼ö (¿¹: ¾ÆÀÌÅÛ ÁÝ±â, ¹® ¿­±â) */
+	/** ï¿½ï¿½È£ï¿½Û¿ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ Ã³ï¿½ï¿½ï¿½Ï´ï¿½ ï¿½Ô¼ï¿½ (ï¿½ï¿½: ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½Ý±ï¿½, ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½) */
 	void Interact();
 
 	//=====================================================================
-	// ÇÔ¼ö
+	// ï¿½Ô¼ï¿½
 	//=====================================================================
 	// 
 	// Called when the game starts or when spawned
 	virtual void BeginPlay() override;
->>>>>>> feat-PlayerInteraction
 };
