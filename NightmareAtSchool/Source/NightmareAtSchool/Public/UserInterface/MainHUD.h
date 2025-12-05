@@ -4,6 +4,9 @@
 
 #include "CoreMinimal.h"
 #include "GameFramework/HUD.h"
+#include "InteractionInterface.h"
+#include "UserInterface/Interaction/InteractionWidget.h"
+
 #include "MainHUD.generated.h"
 
 /**
@@ -12,6 +15,7 @@
 
 class UMainMenu;
 class UInteractionWidget;
+struct FInteractableData;
 
 UCLASS()
 class NIGHTMAREATSCHOOL_API AMainHUD : public AHUD
@@ -37,9 +41,9 @@ public:
 	void DisplayMenu();
 	void HideMenu();
 
-	void ShowInteractionWidget();
-	void HideInteractionWidget();
-	void UpdateInteractionWidget();
+	void ShowInteractionWidget() const;
+	void HideInteractionWidget() const;
+	void UpdateInteractionWidget(const  FInteractableData* InteractableData) const;
 
 protected:
 

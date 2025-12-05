@@ -27,8 +27,8 @@ enum class EInteractableType : uint8
     /** 켜거나 끌 수 있는 요소 (예: 조명, 간단한 스위치) */
     Toggle UMETA(DisplayName = "Toggle"),
 
-    ///** 아이템을 저장할 수 있는 컨테이너 (예: 상자, 보관함) */
-    //Container UMETA(DisplayName = "Container")
+    /** 아이템을 저장할 수 있는 컨테이너 (예: 상자, 보관함) */
+    Container UMETA(DisplayName = "Container")
 };
 
 USTRUCT()

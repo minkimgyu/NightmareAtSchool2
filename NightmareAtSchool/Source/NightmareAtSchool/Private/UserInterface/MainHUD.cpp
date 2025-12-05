@@ -2,6 +2,7 @@
 
 
 #include "UserInterface/MainHUD.h"
+#include "UserInterface/MainMenu.h"
 
 AMainHUD::AMainHUD()
 {
@@ -9,20 +10,66 @@ AMainHUD::AMainHUD()
 
 void AMainHUD::DisplayMenu()
 {
+	if (MainMenuWidget)
+	{
+		bIsMenuVisible = true;
+		MainMenuWidget->SetVisibility(ESlateVisibility::Visible);
+	}
 }
 
-void AMainHUD::ShowInteractionWidget()
+void AMainHUD::HideMenu()
 {
+	if (MainMenuWidget)
+	{
+		bIsMenuVisible = false;
+		MainMenuWidget->SetVisibility(ESlateVisibility::Collapsed);
+	}
 }
 
-void AMainHUD::HideInteractionWidget()
+void AMainHUD::ShowInteractionWidget() const
 {
+	if (InteractionWidget)
+	{
+		InteractionWidget->SetVisibility(ESlateVisibility::Visible);
+	}
 }
 
-void AMainHUD::UpdateInteractionWidget()
+void AMainHUD::HideInteractionWidget() const
 {
+	if (InteractionWidget)
+	{
+		InteractionWidget->SetVisibility(ESlateVisibility::Collapsed);
+	}
+}
+
+void AMainHUD::UpdateInteractionWidget(const  FInteractableData* InteractableData) const
+{
+	if (InteractionWidget)
+	{
+		if (InteractionWidget->GetVisibility() == ESlateVisibility::Collapsed)
+		{
+			InteractionWidget->SetVisibility(ESlateVisibility::Visible);
+		}
+
+		InteractionWidget->UpdateWidget(InteractableData);
+	}
 }
 
 void AMainHUD::BeginPlay()
 {
+	Super::BeginPlay();
+
+	if (MainMenuClass)
+	{
+		MainMenuWidget = CreateWidget<UMainMenu>(GetWorld(), MainMenuClass);
+		MainMenuWidget->AddToViewport(5); // zorder
+		MainMenuWidget->SetVisibility(ESlateVisibility::Collapsed);
+	}
+
+	if (InteractionWidgetClass)
+	{
+		InteractionWidget = CreateWidget<UInteractionWidget>(GetWorld(), InteractionWidgetClass);
+		InteractionWidget->AddToViewport(-1); // zorder
+		InteractionWidget->SetVisibility(ESlateVisibility::Collapsed);
+	}
 }
