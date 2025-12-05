@@ -2,6 +2,8 @@
 
 
 #include "PlayerCharacter.h"
+#include "UserInterface/MainHUD.h"
+
 #include "EnhancedInputSubSystems.h"
 #include "EnhancedInputComponent.h"
 #include "MainPlayerController.h"
@@ -61,7 +63,7 @@ void APlayerCharacter::StopSprint(const FInputActionValue& value)
 void APlayerCharacter::BeginPlay()
 {
 	Super::BeginPlay();
-
+	HUD = Cast<AMainHUD>(GetWorld()->GetFirstPlayerController()->GetHUD());
 }
 
 // Called every frame
@@ -153,6 +155,7 @@ void APlayerCharacter::FoundInteractable(AActor* NewInteractable)
 	InteractionData.CurrentInteractable = NewInteractable;
 	TargetInteractable = NewInteractable;
 
+	HUD->UpdateInteractionWidget(&TargetInteractable->InteractableData);
 	TargetInteractable->BeginFocus();
 }
 
@@ -176,6 +179,8 @@ void APlayerCharacter::NoInteractableFound()
 			// �������̽� �Լ��� EndFocus()�� ȣ���Ͽ� ��ü�� ��Ŀ�� ���¸� �����մϴ�.
 			TargetInteractable->EndFocus();
 		}
+
+		HUD->HideInteractionWidget();
 
 		// // ��ȣ�ۿ� ������ HUD���� ����� ���� (�ּ����� ������)
 		// hide interaction widget on the HUD

@@ -7,6 +7,7 @@
 #include "InputActionValue.h"
 #include "GameFramework/CharacterMovementComponent.h"
 #include "InteractionInterface.h"
+#include "UserInterface/MainHUD.h"
 
 #include "PlayerCharacter.generated.h"
 
@@ -35,6 +36,7 @@ struct FInteractionData
 };
 
 class AMainPlayerController;
+class AMainHUD;
 
 UCLASS()
 class NIGHTMAREATSCHOOL_API APlayerCharacter : public ACharacter
@@ -72,6 +74,9 @@ protected:
 	//=====================================================================
 	// ����
 	//=====================================================================
+	UPROPERTY()
+	AMainHUD* HUD;
+
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Movement")
 	float NormalSpeed;
 
