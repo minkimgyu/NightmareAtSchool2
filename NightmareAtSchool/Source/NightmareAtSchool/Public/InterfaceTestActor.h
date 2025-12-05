@@ -25,6 +25,10 @@ protected:
 	UPROPERTY(EditAnywhere, Category = "Test Actor")
 	UStaticMeshComponent* Mesh;
 
+	/** 상호작용 데이터입니다. */
+	UPROPERTY(EditAnywhere, Category = "Test Actor")
+	FInteractableData InstanceInteractableData;
+
 	// Called when the game starts or when spawned
 	virtual void BeginPlay() override;
 
