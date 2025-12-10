@@ -4,7 +4,13 @@
 
 #include "CoreMinimal.h"
 #include "Blueprint/UserWidget.h"
+
+#include "Components/TextBlock.h"
+#include "Components/WrapBox.h"
+
 #include "InventoryPanel.generated.h"
+
+class UInventoryItemSlot;
 
 /**
  * 
@@ -14,4 +20,38 @@ class NIGHTMAREATSCHOOL_API UInventoryPanel : public UUserWidget
 {
 	GENERATED_BODY()
 	
+public:
+	void RefreshInventory();
+
+	// UI Elements (Widgets)
+	UPROPERTY(meta = (BindWidget))
+	UWrapBox* InventoryWarpBox;
+
+	UPROPERTY(meta = (BindWidget))
+	UTextBlock* WeightInfo;
+
+	UPROPERTY(meta = (BindWidget))
+	UTextBlock* CapacityInfo;
+
+	// Gameplay References
+	UPROPERTY()
+	APlayerCharacter* PlayerCharacter;
+
+	UPROPERTY()
+	UInventoryComponent* InventoryReference;
+
+	// Class Reference for spawning/creating inventory slots
+	UPROPERTY(EditDefaultsOnly)
+	TSubclassOf<UInventoryItemSlot> InventorySlotClass;
+
+protected:
+	void SetInfoText() const;
+
+	virtual void NativeOnInitialized() override;
+
+	virtual bool NativeOnDrop(
+		const FGeometry& InGeometry, 
+		const FDragDropEvent& InDragDropEvent,
+		UDragDropOperation* InOperation
+	) override;
 };

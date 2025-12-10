@@ -29,8 +29,8 @@ public:
     // =========================================================
     // Owning Inventory (소유 인벤토리 - 나중에 구현)
     // =========================================================
-    // UPROPERTY(VisibleAnywhere, Category = "Item")
-    // class UInventoryComponent* OwningInventory; // 나중에 주석 해제
+    UPROPERTY(VisibleAnywhere, Category = "Item")
+    class UInventoryComponent* OwningInventory; // 나중에 주석 해제
 
     UPROPERTY(EditAnywhere, Category = "Item")
     FName ID;
@@ -47,10 +47,15 @@ public:
     UPROPERTY(EditAnywhere, Category = "Item")
     FItemTextData TextData;
 
+    bool bIsCopy;
+    bool bIsPickup;
+
     // =========================================================
     // Public Functions (공개 함수)
     // =========================================================
     UItemBase();
+
+    void ResetItemFlags();
 
     UFUNCTION(Category = "Item")
     UItemBase* CreateItemCopy() const;

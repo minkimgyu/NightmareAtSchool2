@@ -43,7 +43,7 @@ struct FItemNumericData
     float Weight;
 
     UPROPERTY(EditAnywhere, Category = "Item Numeric")
-    bool bStackable;
+    bool bIsStackable;
 };
 
 USTRUCT(BlueprintType)

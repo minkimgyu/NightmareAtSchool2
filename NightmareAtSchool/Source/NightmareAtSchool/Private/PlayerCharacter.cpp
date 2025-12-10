@@ -8,6 +8,9 @@
 #include "EnhancedInputComponent.h"
 #include "MainPlayerController.h"
 #include "InputActionValue.h"
+#include "Pickup.h"
+
+#include "Components/InventoryComponent.h"
 
 #include "DrawDebugHelpers.h"
 
@@ -21,8 +24,45 @@ APlayerCharacter::APlayerCharacter()
 	SprintSpeedMultiplier = 1.7f;
 	SprintSpeed = NormalSpeed * SprintSpeedMultiplier;
 
+	PlayerInventory = CreateDefaultSubobject<UInventoryComponent>(TEXT("PlayerInventory"));
+	PlayerInventory->SetSlotsCapacity(20);
+	PlayerInventory->SetWeightCapacity(50.0f);
+
 	InteractionCheckFrequency = 0.1f;
 	InteractionCheckDistance = 225.0f;
+}
+
+void APlayerCharacter::DropItem(UItemBase* ItemToDrop, int32 QuantityToDrop)
+{
+	// 아이템 드랍 가능 여부 확인 (인벤토리에서 매칭되는 아이템 찾기)
+	if (PlayerInventory->FindMatchingItem(ItemToDrop))
+	{
+		// 스폰 파라미터 설정
+		FActorSpawnParameters SpawnParams;
+		SpawnParams.Owner = this;
+		SpawnParams.bNoFail = true;
+		// 충돌 처리 설정: 가능한 경우 조정하지만, 항상 스폰 시도
+		SpawnParams.SpawnCollisionHandlingOverride = ESpawnActorCollisionHandlingMethod::AdjustIfPossibleButAlwaysSpawn;
+
+		// 아이템이 스폰될 위치 계산: 현재 액터 위치에서 앞쪽 방향으로 90.0f 떨어진 곳
+		const FVector SpawnLocation = (GetActorLocation() + (GetActorForwardVector() * 90.0f));
+		// 스폰 트랜스폼 생성: 현재 액터의 회전과 계산된 스폰 위치를 사용
+		const FTransform SpawnTransform(GetActorRotation(), SpawnLocation);
+
+		// 인벤토리에서 아이템 제거
+		const int32 RemovedQuantity = PlayerInventory->RemoveAmountOfItem(ItemToDrop, QuantityToDrop);
+
+		// 픽업(Pickup) 액터 스폰: 월드에 APickup 클래스의 인스턴스를 스폰
+		APickup* Pickup = GetWorld()->SpawnActor<APickup>(APickup::StaticClass(), SpawnTransform, SpawnParams);
+
+		// 스폰된 픽업 액터 초기화 (어떤 아이템이 얼마나 제거되었는지 전달)
+		Pickup->InitializeDrop(ItemToDrop, RemovedQuantity);
+	}
+	else
+	{
+		// 아이템이 null이거나 인벤토리에서 찾을 수 없는 경우 경고 로그 출력
+		UE_LOG(LogTemp, Warning, TEXT("Item to drop was somehow null!"));
+	}
 }
 
 void APlayerCharacter::Move(const FInputActionValue& value)
@@ -158,6 +198,22 @@ void APlayerCharacter::FoundInteractable(AActor* NewInteractable)
 	HUD->UpdateInteractionWidget(&TargetInteractable->InteractableData);
 	TargetInteractable->BeginFocus();
 }
+
+
+void APlayerCharacter::UpdateInteractionWidget() const
+{
+	if (IsValid(TargetInteractable.GetObject()))
+	{
+		HUD->UpdateInteractionWidget(&TargetInteractable->InteractableData);
+	}
+}
+
+
+void APlayerCharacter::ToggleMenu()
+{
+	HUD->ToggleMenu();
+}
+
 
 void APlayerCharacter::NoInteractableFound()
 {
@@ -319,7 +375,16 @@ void APlayerCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInputCom
 					&APlayerCharacter::EndInteract
 				);
 			}
+
+			if (PlayerController->ToggleMenuAction)
+			{
+				EnhancedInput->BindAction(
+					PlayerController->ToggleMenuAction,
+					ETriggerEvent::Started,
+					this,
+					&APlayerCharacter::ToggleMenu
+				);
+			}
 		}
 	}
 }
-

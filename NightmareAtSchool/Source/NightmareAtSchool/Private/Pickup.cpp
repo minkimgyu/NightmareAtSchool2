@@ -2,6 +2,8 @@
 
 
 #include "Pickup.h"
+#include "Components/InventoryComponent.h"
+#include "PlayerCharacter.h"
 
 // Sets default values
 APickup::APickup()
@@ -41,6 +43,13 @@ void APickup::InitializePickup(const TSubclassOf<UItemBase> BaseClass, const int
         ItemReference->TextData = ItemData->TextData;
         ItemReference->AssetData = ItemData->AssetData;
 
+        bool canStackable = false;
+        if (ItemData->NumericData.MaxStackSize > 1)
+        {
+            canStackable = true;
+        }
+
+        ItemReference->NumericData.bIsStackable = canStackable;
         // 수량을 체크하여 설정합니다. 0 이하일 경우 기본값 1로 설정합니다.
         InQuantity <= 0 ? ItemReference->SetQuantity(1) : ItemReference->SetQuantity(InQuantity);
 
@@ -114,11 +123,54 @@ void APickup::Interact(APlayerCharacter* PlayerCharacter)
 // 픽업을 가져가는 커스텀 함수
 void APickup::TakePickup(const APlayerCharacter* Taker)
 {
+    // 1. Kill Pending 상태 확인: 픽업 액터가 파괴 대기 중인지 확인합니다.
     if (!IsPendingKillPending())
     {
+        // 2. 아이템 참조 확인: 픽업할 아이템에 대한 유효한 참조가 있는지 확인합니다.
         if (ItemReference)
         {
+            // 3. 인벤토리 컴포넌트 가져오기: Taker 캐릭터로부터 인벤토리 컴포넌트를 가져옵니다.
+            if (UInventoryComponent* PlayerInventory = Taker->GetInventory())
+            {
+                // 4. 아이템 처리 시도: 인벤토리에 아이템을 추가하는 핸들러를 호출합니다.
+                const FItemAddResult AddResult = PlayerInventory->HandleAddItem(ItemReference);
 
+                // 5. 아이템 추가 결과에 따른 처리
+                switch (AddResult.OperationResult)
+                {
+                    // 아이템이 전혀 추가되지 않음 (예: 인벤토리 가득 참)
+                    case EItemAddResult::IAR_NoItemAdded:
+                        break;
+
+                    case EItemAddResult::IAR_PartialAmountItemAdded:
+                        // 일부만 추가됨 (예: 스택 제한)
+                        // 남은 아이템 수량을 반영하여 픽업 액터의 상호작용 데이터를 업데이트합니다.
+                        UpdateInteractableData();
+                        // 플레이어 HUD 등의 위젯을 업데이트합니다.
+                        //Taker->UpdateInteractionWidget();
+                        break;
+
+                    case EItemAddResult::IAR_AllItemAdded:
+                        // 모든 아이템이 성공적으로 추가됨
+                        // 픽업 액터를 월드에서 제거합니다.
+                        Destroy();
+                        break;
+                }
+
+                // 6. 로그 기록 (아이템 추가 결과 메시지)
+                // *AddResult.ResultMessage.ToString()는 FText 또는 FString을 TEXT() 매크로가 기대하는 const TCHAR*로 변환하는 일반적인 방법입니다.
+                UE_LOG(LogTemp, Warning, TEXT("%s"), *AddResult.ResultMessage.ToString());
+            }
+            else
+            {
+                // 7. 인벤토리 컴포넌트가 null인 경우 로그 기록
+                UE_LOG(LogTemp, Warning, TEXT("Player inventory component is null!"));
+            }
+        }
+        else
+        {
+            // 8. 픽업 아이템 참조가 null인 경우 로그 기록
+            UE_LOG(LogTemp, Warning, TEXT("Pickup internal item reference was somehow null!"));
         }
     }
 }

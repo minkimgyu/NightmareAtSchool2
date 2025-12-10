@@ -9,7 +9,14 @@
 #include "InteractionInterface.h"
 #include "UserInterface/MainHUD.h"
 
+#include "Components/InventoryComponent.h"
+
 #include "PlayerCharacter.generated.h"
+
+class AMainPlayerController;
+class AMainHUD;
+class UInventoryComponent;
+class UItemBase;
 
 /**
  * ĳ������ ��ȣ�ۿ� ���� �� �����͸� �����ϴ� ����ü�Դϴ�.
@@ -35,9 +42,6 @@ struct FInteractionData
 	float LastInteractionCheckTime;
 };
 
-class AMainPlayerController;
-class AMainHUD;
-
 UCLASS()
 class NIGHTMAREATSCHOOL_API APlayerCharacter : public ACharacter
 {
@@ -49,6 +53,8 @@ public:
 	//=====================================================================
 	// Sets default values for this character's properties
 	APlayerCharacter();
+	void ToggleMenu();
+	
 
 	// Called every frame
 	virtual void Tick(float DeltaTime) override;
@@ -58,6 +64,10 @@ public:
 
 	bool IsInteracting() const { return GetWorldTimerManager().IsTimerActive(TimerHandle_Interaction); };
 
+	FORCEINLINE UInventoryComponent* GetInventory() const { return PlayerInventory; }
+
+	void UpdateInteractionWidget() const;
+	void DropItem(UItemBase* ItemToDrop, const int32 QuantityToDrop);
 
 private:
 	//=====================================================================
@@ -91,6 +101,10 @@ protected:
 	*/
 	UPROPERTY(VisibleAnywhere, Category = "Character | Interaction")
 	TScriptInterface<class IInteractionInterface> TargetInteractable;
+
+
+	UPROPERTY(VisibleAnywhere, Category = "Character | Inventory")
+	UInventoryComponent* PlayerInventory;
 
 	/** ��ȣ�ۿ� ���� ���θ� üũ�ϴ� �� (�� ����) */
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Character | Interaction")
@@ -130,6 +144,7 @@ protected:
 
 	/** ��ȣ�ۿ��� ������ ó���ϴ� �Լ� (��: ������ �ݱ�, �� ����) */
 	void Interact();
+
 
 	//=====================================================================
 	// �Լ�
