@@ -11,6 +11,8 @@
 #include "InventoryPanel.generated.h"
 
 class UInventoryItemSlot;
+class APlayerCharacter;
+class UInventoryComponent;
 
 /**
  * 
