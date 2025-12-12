@@ -15,6 +15,8 @@
 
 class UMainMenu;
 class UInteractionWidget;
+class USprintBar;
+
 struct FInteractableData;
 
 UCLASS()
@@ -34,6 +36,9 @@ public:
 	UPROPERTY(EditDefaultsOnly, Category = "Widgets")
 	TSubclassOf<UInteractionWidget> InteractionWidgetClass;
 
+	UPROPERTY(EditDefaultsOnly, Category = "Widgets")
+	TSubclassOf<USprintBar> USprintBarClass;
+
 	bool bIsMenuVisible;
 
 	AMainHUD();
@@ -41,6 +46,9 @@ public:
 	void DisplayMenu();
 	void HideMenu();
 	void ToggleMenu();
+
+	void ShowSprintBar();
+	void HideSprintBar();
 
 	void ShowInteractionWidget() const;
 	void HideInteractionWidget() const;
@@ -55,6 +63,9 @@ protected:
 	UPROPERTY()
 
 	UInteractionWidget* InteractionWidget;
+
+	UPROPERTY()
+	USprintBar* SprintBar;
 
 	virtual void BeginPlay() override;
 };

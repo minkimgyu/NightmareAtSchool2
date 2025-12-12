@@ -3,6 +3,8 @@
 
 #include "UserInterface/MainHUD.h"
 #include "UserInterface/MainMenu.h"
+#include "UserInterface/Sprint/SprintBar.h"
+#include "InteractionInterface.h" // APlayerCharacter.h에서 사용되던 인터페이스
 
 AMainHUD::AMainHUD()
 {
@@ -43,6 +45,22 @@ void AMainHUD::ToggleMenu()
 		const FInputModeGameOnly InputMode;
 		GetOwningPlayerController()->SetInputMode(InputMode);
 		GetOwningPlayerController()->SetShowMouseCursor(true);
+	}
+}
+
+void AMainHUD::ShowSprintBar()
+{
+	if (SprintBar)
+	{
+		SprintBar->SetVisibility(ESlateVisibility::Visible);
+	}
+}
+
+void AMainHUD::HideSprintBar()
+{
+	if (SprintBar)
+	{
+		SprintBar->SetVisibility(ESlateVisibility::Collapsed);
 	}
 }
 
@@ -91,5 +109,12 @@ void AMainHUD::BeginPlay()
 		InteractionWidget = CreateWidget<UInteractionWidget>(GetWorld(), InteractionWidgetClass);
 		InteractionWidget->AddToViewport(-1); // zorder
 		InteractionWidget->SetVisibility(ESlateVisibility::Collapsed);
+	}
+
+	if (USprintBarClass)
+	{
+		SprintBar = CreateWidget<USprintBar>(GetWorld(), USprintBarClass);
+		SprintBar->AddToViewport(-1); // zorder
+		SprintBar->SetVisibility(ESlateVisibility::Collapsed);
 	}
 }
