@@ -3,6 +3,12 @@
 
 #include "PlayerCharacter.h"
 #include "UserInterface/MainHUD.h"
+#include "TimerManager.h"
+
+#include "Camera/CameraComponent.h" // 카메라
+#include "Components/SpotLightComponent.h" // 손전등
+
+#include "Components/CapsuleComponent.h" // ⬅️ 이 줄을 추가합니다.
 
 #include "EnhancedInputSubSystems.h"
 #include "EnhancedInputComponent.h"
@@ -20,9 +26,24 @@ APlayerCharacter::APlayerCharacter()
  	// Set this character to call Tick() every frame.  You can turn this off to improve performance if you don't need it.
 	PrimaryActorTick.bCanEverTick = true;
 
+	bUseControllerRotationPitch = true;
+	bUseControllerRotationYaw = true;
+	bUseControllerRotationRoll = false;
+
 	NormalSpeed = 600.0f;
 	SprintSpeedMultiplier = 1.7f;
 	SprintSpeed = NormalSpeed * SprintSpeedMultiplier;
+	CurrentSprintDuration = MaxSprintDuration;
+
+	CrouchSpeedMultiplier = 0.5f;
+	CrouchSpeed = NormalSpeed * CrouchSpeedMultiplier;
+
+	StandingHalfHeight = 96.f;
+	CrouchingHalfHeight = 48.f;
+	CrouchInterpSpeed = 8.f; // 부드러운 속도 설정
+
+	SetState(EPlayerActionState::Walk);
+	SetState(EPlayerPostureState::Stand);
 
 	PlayerInventory = CreateDefaultSubobject<UInventoryComponent>(TEXT("PlayerInventory"));
 	PlayerInventory->SetSlotsCapacity(20);
@@ -30,6 +51,42 @@ APlayerCharacter::APlayerCharacter()
 
 	InteractionCheckFrequency = 0.1f;
 	InteractionCheckDistance = 225.0f;
+
+	// 1) Mesh 먼저 붙임
+	GetMesh()->SetupAttachment(RootComponent);
+
+	// 2) 카메라 만들기
+	FirstPersonCamera = CreateDefaultSubobject<UCameraComponent>(TEXT("FirstPersonCamera"));
+	FirstPersonCamera->SetupAttachment(RootComponent);
+	FirstPersonCamera->SetRelativeLocation(FVector(0.f, 0.f, 64.f));
+	FirstPersonCamera->bUsePawnControlRotation = true;  // 마우스 회전 그대로 반영
+
+	// 3) 플래시라이트 만들기
+	Flashlight = CreateDefaultSubobject<USpotLightComponent>(TEXT("Flashlight"));
+	Flashlight->SetupAttachment(FirstPersonCamera);  // 카메라에 종속 → 자연스럽게 회전
+
+	// 초기 설정
+	// ⭐ 약간 노란색(따뜻한 손전등 색)
+	Flashlight->SetLightColor(FLinearColor(1.0f, 0.95f, 0.7f));
+	Flashlight->Intensity = 5000.f;
+	Flashlight->AttenuationRadius = 800.f;
+	Flashlight->OuterConeAngle = 25.f;
+
+	bFlashlightOn = false;
+	Flashlight->SetVisibility(bFlashlightOn); // 시작은 꺼진 상태
+
+
+}
+
+void APlayerCharacter::ToggleFlashlight()
+{
+	bFlashlightOn = !bFlashlightOn;
+	Flashlight->SetVisibility(bFlashlightOn);
+
+	// 필요하면 사운드 추가 가능
+	// UGameplayStatics::PlaySoundAtLocation(...);
+
+	UE_LOG(LogTemp, Log, TEXT("Flashlight: %s"), bFlashlightOn ? TEXT("ON") : TEXT("OFF"));
 }
 
 void APlayerCharacter::DropItem(UItemBase* ItemToDrop, int32 QuantityToDrop)
@@ -83,20 +140,14 @@ void APlayerCharacter::Look(const FInputActionValue& value)
 	AddControllerPitchInput(LookInput.Y);
 }
 
-void APlayerCharacter::StartSprint(const FInputActionValue& value)
+void APlayerCharacter::ToggleCrouch()
 {
-	if (GetCharacterMovement())
-	{
-		GetCharacterMovement()->MaxWalkSpeed = SprintSpeed;
-	}
-}
+	EPlayerPostureState NewPostureState;
 
-void APlayerCharacter::StopSprint(const FInputActionValue& value)
-{
-	if (GetCharacterMovement())
-	{
-		GetCharacterMovement()->MaxWalkSpeed = NormalSpeed;
-	}
+	if (PlayerPostureState == EPlayerPostureState::Crouch) NewPostureState = EPlayerPostureState::Stand;
+	else NewPostureState = EPlayerPostureState::Crouch;
+
+	SetState(NewPostureState);
 }
 
 // Called when the game starts or when spawned
@@ -104,6 +155,115 @@ void APlayerCharacter::BeginPlay()
 {
 	Super::BeginPlay();
 	HUD = Cast<AMainHUD>(GetWorld()->GetFirstPlayerController()->GetHUD());
+}
+
+void APlayerCharacter::ActCrouch(float DeltaTime)
+{
+	float TargetHeight = 0;
+
+	switch (PlayerPostureState)
+	{
+		case EPlayerPostureState::Crouch:
+			TargetHeight = CrouchingHalfHeight;
+			break;
+		default:
+			TargetHeight = StandingHalfHeight;
+			break;
+	}
+
+	float CurrentHeight = GetCapsuleComponent()->GetUnscaledCapsuleHalfHeight();
+
+	// 목표 높이와 거의 같으면 계산 중단
+	if (FMath::IsNearlyEqual(CurrentHeight, TargetHeight, 0.5f))
+	{
+		return;
+	}
+
+	float NewHeight = FMath::FInterpTo(CurrentHeight, TargetHeight, DeltaTime, CrouchInterpSpeed);
+	float Delta = CurrentHeight - NewHeight;
+
+	GetCapsuleComponent()->SetCapsuleHalfHeight(NewHeight, true);
+	GetMesh()->AddLocalOffset(FVector(0, 0, -Delta));
+}
+
+void APlayerCharacter::UpdateSprintDuration(float DeltaTime)
+{
+	// 스프린트 중일 경우
+	if (PlayerActionState == EPlayerActionState::Sprint)
+	{
+		CurrentSprintDuration -= DeltaTime;
+
+
+		UE_LOG(LogTemp, Log, TEXT("UpdateSprintDuration: %f"), CurrentSprintDuration);
+
+		// 스프린트 시간이 다 떨어지면, 강제로 걷기 상태로 전환하고 쿨다운 시작
+		if (CurrentSprintDuration <= 0.0f)
+		{
+			
+			CurrentSprintDuration = 0.0f;
+			StopSprint(); // StopSprint 내부에서 SetState(Walk) 호출
+			StartSprintCooldown();
+		}
+	}
+	// 걷기(Walk) 또는 멈춤(Idle) 상태일 경우 (쿨다운 중이 아닐 때만 회복)
+	else if (!GetWorldTimerManager().IsTimerActive(TimerHandle_SprintCooldown))
+	{
+		CurrentSprintDuration += DeltaTime * SprintRechargeRate;
+		CurrentSprintDuration = FMath::Min(CurrentSprintDuration, MaxSprintDuration);
+
+		if (FMath::IsNearlyEqual(MaxSprintDuration, CurrentSprintDuration))
+		{
+			HUD->HideSprintBar();
+		}
+	}
+
+	// UI 업데이트 (HUD에서 CurrentSprintDuration을 직접 가져가서 표시할 수도 있습니다.)
+	// 이 예시에서는 HUD 업데이트 로직은 생략합니다. (HUD 위젯에서 Tick을 사용하는 것이 일반적입니다.)
+}
+
+bool APlayerCharacter::CanSprint() const
+{
+	// 쿨다운 타이머가 활성화되지 않았고, 스프린트 시간이 0보다 커야 스프린트 가능
+	return !GetWorldTimerManager().IsTimerActive(TimerHandle_SprintCooldown) && (CurrentSprintDuration > 0.0f);
+}
+
+void APlayerCharacter::StartSprint()
+{
+	// ⭐ 스프린트 가능 여부 체크 로직 추가
+	if (CanSprint())
+	{
+		HUD->ShowSprintBar();
+		SetState(EPlayerActionState::Sprint);
+	}
+}
+
+void APlayerCharacter::StopSprint()
+{
+	SetState(EPlayerActionState::Walk);
+}
+
+void APlayerCharacter::ClearSprintCooldownTimer()
+{
+	// 쿨다운 타이머를 해제합니다.
+	GetWorldTimerManager().ClearTimer(TimerHandle_SprintCooldown);
+	// 필요하다면, 쿨다운이 끝났음을 알리는 로그나 UI 업데이트를 추가할 수 있습니다.
+	UE_LOG(LogTemp, Log, TEXT("Sprint Cooldown Finished."));
+}
+
+void APlayerCharacter::StartSprintCooldown()
+{
+	// 쿨다운 타이머 설정
+	GetWorldTimerManager().SetTimer(
+		TimerHandle_SprintCooldown,
+		this,
+		// 타이머가 만료되면 쿨다운 타이머를 클리어합니다.
+		&APlayerCharacter::ClearSprintCooldownTimer, // 실행할 멤버 함수 포인터
+		SprintCooldownDuration,
+		false // 반복하지 않음
+	);
+
+	// 쿨다운 종료 시 TimerHandle_SprintCooldown을 수동으로 해제하는 함수를 만들 수도 있습니다.
+	// 여기서는 TimerHandle을 그대로 두고, CanSprint()에서 IsTimerActive로 체크합니다.
 }
 
 // Called every frame
@@ -114,6 +274,79 @@ void APlayerCharacter::Tick(float DeltaTime)
 	if (GetWorld()->TimeSince(InteractionData.LastInteractionCheckTime) > InteractionCheckFrequency)
 	{
 		PerformInteractionCheck();
+	}
+
+	// ⭐ 스프린트 지속 시간 업데이트 로직 추가
+	UpdateSprintDuration(DeltaTime);
+
+	ActCrouch(DeltaTime);
+}
+
+//=====================================================================
+// ��ȣ �ۿ� �Լ�
+//=====================================================================
+
+void APlayerCharacter::SetState(EPlayerActionState ActionState)
+{
+	if (PlayerActionState == ActionState) return;  // 같은 상태 전이 불가능
+
+	// 만약 앉은 상태라면 달리기 변환 못함
+	if (PlayerPostureState == EPlayerPostureState::Crouch &&
+		ActionState == EPlayerActionState::Sprint) return;
+
+	// ⭐ 스프린트 상태로의 전환을 시도할 때, 스프린트 가능 여부 한 번 더 체크 (StartSprint에서 이미 했지만 방어 코드)
+	if (ActionState == EPlayerActionState::Sprint && CurrentSprintDuration <= 0.0f)
+	{
+		// 스프린트 불가능 상태에서는 Walk로 설정 유지
+		return;
+	}
+
+
+	PlayerActionState = ActionState;
+	UE_LOG(LogTemp, Warning, TEXT("Change ActionState"));
+
+	if (GetCharacterMovement())
+	{
+		switch (PlayerActionState)
+		{
+			case EPlayerActionState::Sprint:
+				GetCharacterMovement()->MaxWalkSpeed = SprintSpeed;
+				break;
+			case EPlayerActionState::Walk:
+				GetCharacterMovement()->MaxWalkSpeed = NormalSpeed;
+				break;
+
+			default:
+				break;
+		}
+	}
+}
+
+void APlayerCharacter::SetState(EPlayerPostureState PostureState)
+{
+	if (PlayerPostureState == PostureState) return; // 같은 상태 전이 불가능
+
+	// 만약 달리는 상태라면 자세 변환 못함
+	if (PlayerActionState == EPlayerActionState::Sprint &&
+		PostureState == EPlayerPostureState::Crouch) return;
+
+	PlayerPostureState = PostureState;
+	UE_LOG(LogTemp, Warning, TEXT("Change PostureState"));
+
+	if (GetCharacterMovement())
+	{
+		switch (PlayerPostureState)
+		{
+			case EPlayerPostureState::Crouch:
+				GetCharacterMovement()->MaxWalkSpeed = CrouchSpeed;
+				break;
+			case EPlayerPostureState::Stand:
+				GetCharacterMovement()->MaxWalkSpeed = NormalSpeed;
+				break;
+
+			default:
+				break;
+		}
 	}
 }
 
@@ -213,7 +446,6 @@ void APlayerCharacter::ToggleMenu()
 {
 	HUD->ToggleMenu();
 }
-
 
 void APlayerCharacter::NoInteractableFound()
 {
@@ -346,7 +578,7 @@ void APlayerCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInputCom
 			{
 				EnhancedInput->BindAction(
 					PlayerController->SprintAction,
-					ETriggerEvent::Triggered,
+					ETriggerEvent::Started,
 					this,
 					&APlayerCharacter::StartSprint
 				);
@@ -383,6 +615,26 @@ void APlayerCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInputCom
 					ETriggerEvent::Started,
 					this,
 					&APlayerCharacter::ToggleMenu
+				);
+			}
+
+			if (PlayerController->CrouchAction)
+			{
+				EnhancedInput->BindAction(
+					PlayerController->CrouchAction,
+					ETriggerEvent::Started,
+					this,
+					&APlayerCharacter::ToggleCrouch // 함수 이름 변경
+				);
+			}
+
+			if (PlayerController->FlashlightAction)
+			{
+				EnhancedInput->BindAction(
+					PlayerController->FlashlightAction,
+					ETriggerEvent::Started,
+					this,
+					&APlayerCharacter::ToggleFlashlight // 함수 이름 변경
 				);
 			}
 		}
