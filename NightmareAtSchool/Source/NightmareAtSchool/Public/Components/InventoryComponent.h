@@ -104,6 +104,8 @@ public:
 	FORCEINLINE void SetSlotsCapacity(const int32 NewSlotsCapacity) { InventorySlotsCapacity = NewSlotsCapacity; };
 	FORCEINLINE void SetWeightCapacity(const float NewWeightCapacity) { InventoryWeightCapacity = NewWeightCapacity; };
 
+	int32 GetItemAmountByID(const FName ItemID) const;
+
 protected:
 
 	// PROPERTIES & VARIABLES

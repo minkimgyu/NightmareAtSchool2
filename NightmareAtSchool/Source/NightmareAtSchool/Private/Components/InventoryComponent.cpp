@@ -46,7 +46,34 @@ UItemBase* UInventoryComponent::FindNextItemByID(UItemBase* ItemIn) const
     return nullptr;
 }
 
+int32 UInventoryComponent::GetItemAmountByID(const FName ItemID) const
+{
+    if (ItemID == NAME_None)
+    {
+        UE_LOG(LogTemp, Warning, TEXT("GetItemAmountByID called with NAME_None ID. Returning 0."));
+        return 0;
+    }
 
+    int32 TotalAmount = 0;
+
+    // 인벤토리의 모든 아이템을 순회합니다.
+    for (const UItemBase* Item : InventoryContents)
+    {
+        if (Item)
+        {
+            // 아이템의 ID와 입력된 ItemID가 일치하는지 확인합니다.
+            if (Item->ID == ItemID)
+            {
+                // 일치하면 해당 아이템 스택의 수량(Quantity)을 총 수량에 더합니다.
+                TotalAmount += Item->Quantity;
+            }
+        }
+    }
+
+    UE_LOG(LogTemp, Log, TEXT("Total amount of Item ID '%s' found: %d"), *ItemID.ToString(), TotalAmount);
+
+    return TotalAmount;
+}
 
 
 UItemBase* UInventoryComponent::FindNextPartialStack(UItemBase* ItemIn) const

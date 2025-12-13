@@ -428,6 +428,12 @@ void APlayerCharacter::FoundInteractable(AActor* NewInteractable)
 	InteractionData.CurrentInteractable = NewInteractable;
 	TargetInteractable = NewInteractable;
 
+	UE_LOG(LogTemp, Warning,
+		TEXT("name: %s, action: %s"),
+		*TargetInteractable->InteractableData.Name.ToString(),
+		*TargetInteractable->InteractableData.Action.ToString()
+	);
+
 	HUD->UpdateInteractionWidget(&TargetInteractable->InteractableData);
 	TargetInteractable->BeginFocus();
 }

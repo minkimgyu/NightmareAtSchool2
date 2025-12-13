@@ -113,6 +113,8 @@ void APushPullDoor::RotateDoor(float DeltaTime)
 
 void APushPullDoor::HandleInteraction(APlayerCharacter* PlayerCharacter)
 {
+    Super::HandleInteraction(PlayerCharacter);
+
     if (!PlayerCharacter) return;
 
     if (bIsOpen)

@@ -72,6 +72,8 @@ void ASlidingDoor::Tick(float DeltaTime)
 
 void ASlidingDoor::HandleInteraction(APlayerCharacter* PlayerCharacter)
 {
+    Super::HandleInteraction(PlayerCharacter);
+
     // ADoorBase의 InteractableData 및 bIsOpen 상태만 토글합니다.
     // Tick 함수가 나머지 작업을 처리합니다.
 
@@ -88,11 +90,7 @@ void ASlidingDoor::HandleInteraction(APlayerCharacter* PlayerCharacter)
         InteractableData.Action = FText::FromString("Close");
     }
 
-    // HUD 업데이트
-    if (PlayerCharacter)
-    {
-        PlayerCharacter->UpdateInteractionWidget();
-    }
+    PlayerCharacter->UpdateInteractionWidget();
 }
 
 void ASlidingDoor::SlideDoor(float DeltaTime)
@@ -120,13 +118,4 @@ void ASlidingDoor::SlideDoor(float DeltaTime)
 
     // 4. 문 메시의 위치를 업데이트합니다.
     RightDoorMesh->SetRelativeLocation(NewLocation);
-
-    // 5. 목표에 거의 도달했는지 확인 (선택 사항)
-    //    FVector::DistSquared를 사용하면 루트(sqrt) 연산 없이 거리 제곱을 비교하여 성능에 유리합니다.
-    //const float Tolerance = 1.0f; // 1.0 cm 이내를 허용 오차로 설정
-    //if (FVector::DistSquared(CurrentLocation, TargetLocation) < Tolerance * Tolerance)
-    //{
-    //    // 목표에 도달하면 Tick을 비활성화하여 성능을 절약할 수 있지만,
-    //    // 문이 다시 닫힐 때 Tick이 필요하므로 여기서는 Tick을 계속 유지합니다.
-    //}
 }

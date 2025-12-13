@@ -23,10 +23,9 @@ ADoorBase::ADoorBase()
     // 기본 상태 초기화
     bIsOpen = false;
 
-    // 상호작용 데이터 초기화
-    InteractableData.InteractionDuration = 0.0f; // 즉시 상호작용
-    InteractableData.Action = FText::FromString("Open");
-    InteractableData.Name = FText::FromString("Door");
+    UE_LOG(LogTemp, Log, TEXT("Name1: %s Desc1: %s"),
+        *InteractableData.Name.ToString(),
+        *InteractableData.Action.ToString());
 }
 
 
@@ -34,6 +33,15 @@ ADoorBase::ADoorBase()
 void ADoorBase::BeginPlay()
 {
     Super::BeginPlay(); // 부모 클래스의 BeginPlay 호출은 필수입니다.
+
+    // 상호작용 데이터 초기화
+    InteractableData.InteractionDuration = 0.0f; // 즉시 상호작용
+    InteractableData.Action = FText::FromString("Open");
+    InteractableData.Name = FText::FromString("the Door");
+
+    UE_LOG(LogTemp, Log, TEXT("Name: %s Desc: %s"), 
+        *InteractableData.Name.ToString(), 
+        *InteractableData.Action.ToString());
 
     // ADoorBase에서 BeginPlay 시 실행할 초기화 로직 (필요하다면)
 }
@@ -68,5 +76,11 @@ void ADoorBase::EndFocus()
 // ADoorBase의 HandleInteraction 기본 구현 (빈 함수 또는 간단한 로직)
 void ADoorBase::HandleInteraction(APlayerCharacter* PlayerCharacter)
 {
+    // HUD 업데이트
+   /* if (PlayerCharacter)
+    {
+        PlayerCharacter->UpdateInteractionWidget();
+    }*/
+
     // ADoorBase에서는 아무것도 하지 않고 자식 클래스가 구현하도록 비워둡니다.
 }

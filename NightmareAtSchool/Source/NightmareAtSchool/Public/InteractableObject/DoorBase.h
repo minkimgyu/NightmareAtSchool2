@@ -31,9 +31,9 @@ public:
 	virtual void BeginFocus() override;
 	virtual void EndFocus() override;
 
-	// UPROPERTY로 Blueprint에서 설정할 상호작용 데이터를 정의합니다.
-	UPROPERTY(EditInstanceOnly, Category = "Door | Interaction")
-	FInteractableData InteractableData;
+	//// UPROPERTY로 Blueprint에서 설정할 상호작용 데이터를 정의합니다.
+	//UPROPERTY(EditInstanceOnly, Category = "Door | Interaction")
+	//FInteractableData InteractableData;
 
 protected:
 	// ----------------------------------------------------------------------
