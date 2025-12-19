@@ -1,8 +1,8 @@
 // Fill out your copyright notice in the Description page of Project Settings.
 
-#include "AI/PatrolAIController.h"          // ★ 반드시 필요
+#include "AI/Patrol/PatrolAIController.h"          // ★ 반드시 필요
 #include "GameFramework/Character.h"         // 보통 포함되어 있음
-#include "AI/PatrolAICharacter.h"
+#include "AI/Patrol/PatrolAICharacter.h"
 
 // Sets default values
 APatrolAICharacter::APatrolAICharacter()
