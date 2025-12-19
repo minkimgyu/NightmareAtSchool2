@@ -1,7 +1,7 @@
 // Fill out your copyright notice in the Description page of Project Settings.
 
 
-#include "AI/PatrolPoint.h"
+#include "AI/Patrol/PatrolPoint.h"
 #include "Components/BillboardComponent.h"
 #include "DrawDebugHelpers.h"
 

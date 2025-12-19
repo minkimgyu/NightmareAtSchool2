@@ -1,11 +1,11 @@
 ﻿// Fill out your copyright notice in the Description page of Project Settings.
 
-#include "AI/PatrolPoint.h"
-#include "AI/PatrolManager.h"
-#include "AI/PatrolAIController.h"
+#include "AI/Patrol/PatrolPoint.h"
+#include "AI/Patrol/PatrolManager.h"
+#include "AI/Patrol/PatrolAIController.h"
 #include "BehaviorTree/BlackboardComponent.h"
 
-#include "AI/Node/SetInitialPatrolPoint.h"
+#include "AI/Patrol/Node/SetInitialPatrolPoint.h"
 
 USetInitialPatrolPoint::USetInitialPatrolPoint()
 {
