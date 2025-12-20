@@ -1,12 +1,12 @@
 // Fill out your copyright notice in the Description page of Project Settings.
 
+#include "AI/Patrol/PatrolAIController.h"
 
 #include "AI/Patrol/PatrolManager.h"
 #include "Kismet/GameplayStatics.h"
 #include "BehaviorTree/BehaviorTree.h"
 #include "BehaviorTree/BlackboardComponent.h"
 
-#include "AI/Patrol/PatrolAIController.h"
 
 APatrolAIController::APatrolAIController()
 {

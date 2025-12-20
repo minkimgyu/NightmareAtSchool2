@@ -1,11 +1,12 @@
 // Fill out your copyright notice in the Description page of Project Settings.
 
+#include "AI/Patrol/Node/SelectNextPatrolPoint.h"
+
 #include "AI/Patrol/PatrolPoint.h"
 #include "AI/Patrol/PatrolAIController.h"
 #include "AI/Patrol/PatrolManager.h"
 
 #include "BehaviorTree/BlackboardComponent.h"
-#include "AI/Patrol/Node/SelectNextPatrolPoint.h"
 
 EBTNodeResult::Type USelectNextPatrolPoint::ExecuteTask(
     UBehaviorTreeComponent& OwnerComp,

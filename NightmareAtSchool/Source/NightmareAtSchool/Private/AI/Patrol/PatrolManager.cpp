@@ -1,9 +1,10 @@
 // Fill out your copyright notice in the Description page of Project Settings.
 
+#include "AI/Patrol/PatrolManager.h"
+
 #include "AI/Patrol/PatrolPoint.h"
 #include "Kismet/GameplayStatics.h"
 
-#include "AI/Patrol/PatrolManager.h"
 
 // Sets default values
 APatrolManager::APatrolManager()
