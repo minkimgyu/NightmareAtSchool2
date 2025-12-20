@@ -2,6 +2,7 @@
 
 
 #include "AI/Patrol/PatrolPoint.h"
+
 #include "Components/BillboardComponent.h"
 #include "DrawDebugHelpers.h"
 
