@@ -1,6 +1,7 @@
 // Fill out your copyright notice in the Description page of Project Settings.
 
-#include "AI/Patrol/PatrolAIController.h"
+
+#include "AI/Guard/GuardAIController.h"
 
 #include "AI/Patrol/PatrolManager.h"
 #include "Kismet/GameplayStatics.h"
@@ -12,7 +13,7 @@
 #include "Perception/AISenseConfig_Hearing.h"
 #include "Perception/AISenseConfig_Sight.h"
 
-APatrolAIController::APatrolAIController()
+AGuardAIController::AGuardAIController()
 {
     // C++에서 컴포넌트를 생성하여 할당합니다.
     PerceptionComponent = CreateDefaultSubobject<UAIPerceptionComponent>(TEXT("PerceptionComponent"));
@@ -47,7 +48,7 @@ APatrolAIController::APatrolAIController()
     PerceptionComponent->SetDominantSense(UAISense_Sight::StaticClass());
 }
 
-void APatrolAIController::BeginPlay()
+void AGuardAIController::BeginPlay()
 {
     Super::BeginPlay();
 
@@ -76,10 +77,10 @@ void APatrolAIController::BeginPlay()
         UE_LOG(LogTemp, Error, TEXT("PatrolBehaviorTree is NULL"));
         return;
     }
-    
+
     // 1. Perception 컴포넌트가 있는지 확인하고 이벤트 연결
     UE_LOG(LogTemp, Warning, TEXT("Perception Connected!"));
-    GetPerceptionComponent()->OnTargetPerceptionUpdated.AddDynamic(this, &APatrolAIController::OnPerceptionUpdated);
+    GetPerceptionComponent()->OnTargetPerceptionUpdated.AddDynamic(this, &AGuardAIController::OnPerceptionUpdated);
 
     const bool bBTStarted = RunBehaviorTree(PatrolBehaviorTree);
 
@@ -97,7 +98,7 @@ void APatrolAIController::BeginPlay()
     }
 }
 
-void APatrolAIController::OnPossess(APawn* InPawn)
+void AGuardAIController::OnPossess(APawn* InPawn)
 {
     Super::OnPossess(InPawn);
 
@@ -117,7 +118,7 @@ void APatrolAIController::OnPossess(APawn* InPawn)
     }
 }
 
-void APatrolAIController::OnPerceptionUpdated(AActor* Actor, FAIStimulus Stimulus)
+void AGuardAIController::OnPerceptionUpdated(AActor* Actor, FAIStimulus Stimulus)
 {
     UE_LOG(LogTemp, Error, TEXT("OnUpdated - Sound"));
 

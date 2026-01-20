@@ -4,7 +4,7 @@
 
 #include "CoreMinimal.h"
 #include "AIController.h"
-#include "PatrolAIController.generated.h"
+#include "GuardAIController.generated.h"
 
 /**
  * 
@@ -15,13 +15,14 @@ class UAISenseConfig_Hearing;
 class UAISenseConfig_Sight;
 struct FAIStimulus;
 
+
 UCLASS()
-class NIGHTMAREATSCHOOL_API APatrolAIController : public AAIController
+class NIGHTMAREATSCHOOL_API AGuardAIController : public AAIController
 {
 	GENERATED_BODY()
 	
 public:
-    APatrolAIController();
+    AGuardAIController();
 
 protected:
     virtual void OnPossess(APawn* InPawn) override;
@@ -38,6 +39,8 @@ public:
     float GetInvestigateSpeed() const { return InvestigateSpeed; }
 
 private:
+    void DrawSightView(FVector Center, FVector Forward, FColor Color, float Range);
+    void DrawHearingView(FVector Center);
 
     // ... 기존 코드 아래 추가
 protected:
@@ -71,8 +74,9 @@ private:
     UBehaviorTree* PatrolBehaviorTree;
 
     UPROPERTY() // 중요
-    UAISenseConfig_Hearing* HearingConfig;
+        UAISenseConfig_Hearing* HearingConfig;
 
     UPROPERTY() // 중요
-    UAISenseConfig_Sight* SightConfig;
+        UAISenseConfig_Sight* SightConfig;
+
 };
