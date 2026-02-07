@@ -107,13 +107,13 @@ void APatrolAIController::OnPossess(APawn* InPawn)
     TArray<AActor*> Found;
     UGameplayStatics::GetAllActorsOfClass(
         GetWorld(),
-        APatrolManager::StaticClass(),
+        ABasePatrolManager::StaticClass(),
         Found
     );
 
     if (Found.Num() > 0)
     {
-        PatrolManager = Cast<APatrolManager>(Found[0]);
+        PatrolManager = Cast<ABasePatrolManager>(Found[0]);
     }
 }
 

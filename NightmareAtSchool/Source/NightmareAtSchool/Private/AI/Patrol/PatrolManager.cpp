@@ -5,7 +5,6 @@
 #include "AI/Patrol/PatrolPoint.h"
 #include "Kismet/GameplayStatics.h"
 
-
 // Sets default values
 APatrolManager::APatrolManager()
 {
@@ -60,14 +59,14 @@ void APatrolManager::BeginPlay()
     BuildPatrolConnections();
 }
 
-APatrolPoint* APatrolManager::GetRandomStartPoint() const
+APatrolPoint* APatrolManager::GetRandomStartPoint()
 {
     if (AllPatrolPoints.Num() == 0) return nullptr;
 
     return AllPatrolPoints[FMath::RandRange(0, AllPatrolPoints.Num() - 1)];
 }
 
-APatrolPoint* APatrolManager::GetNextPatrolPoint(APatrolPoint* CurrentPoint) const
+APatrolPoint* APatrolManager::GetNextPatrolPoint(APatrolPoint* CurrentPoint)
 {
     if (!CurrentPoint || CurrentPoint->ConnectedPoints.Num() == 0)
         return nullptr;

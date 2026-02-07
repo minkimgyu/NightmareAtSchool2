@@ -9,7 +9,7 @@
 /**
  * 
  */
-class APatrolManager;
+class ABasePatrolManager;
 class UBehaviorTree;
 class UAISenseConfig_Hearing;
 class UAISenseConfig_Sight;
@@ -32,7 +32,7 @@ protected:
     virtual void BeginPlay() override;
 
 public:
-    APatrolManager* GetPatrolManager() const { return PatrolManager; }
+    ABasePatrolManager* GetPatrolManager() const { return PatrolManager; }
 
     float GetPatrolSpeed() const { return PatrolSpeed; }
     float GetInvestigateSpeed() const { return InvestigateSpeed; }
@@ -65,7 +65,7 @@ protected:
 
 private:
     UPROPERTY()
-    APatrolManager* PatrolManager;
+    ABasePatrolManager* PatrolManager;
 
     UPROPERTY(EditAnywhere)
     UBehaviorTree* PatrolBehaviorTree;

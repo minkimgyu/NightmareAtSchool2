@@ -15,7 +15,7 @@ EBTNodeResult::Type USelectNextPatrolPoint::ExecuteTask(
     APatrolAIController* AICon = Cast<APatrolAIController>(OwnerComp.GetAIOwner());
     if (!AICon) return EBTNodeResult::Failed;
 
-    APatrolManager* Manager = AICon->GetPatrolManager();
+    ABasePatrolManager* Manager = AICon->GetPatrolManager();
     UBlackboardComponent* BB = OwnerComp.GetBlackboardComponent();
 
     APatrolPoint* Current =

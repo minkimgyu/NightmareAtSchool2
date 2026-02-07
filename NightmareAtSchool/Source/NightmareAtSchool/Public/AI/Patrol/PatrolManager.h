@@ -4,12 +4,14 @@
 
 #include "CoreMinimal.h"
 #include "GameFramework/Actor.h"
+#include "AI/Patrol/BasePatrolManager.h"
+
 #include "PatrolManager.generated.h"
 
 class APatrolPoint;
 
 UCLASS()
-class NIGHTMAREATSCHOOL_API APatrolManager : public AActor
+class NIGHTMAREATSCHOOL_API APatrolManager : public ABasePatrolManager
 {
 	GENERATED_BODY()
 	
@@ -35,12 +37,9 @@ public:
     UPROPERTY(EditAnywhere, Category = "Patrol|AutoConnect")
     bool bBidirectional = true;
 
-
-
     /** 에디터 버튼: 패트롤 포인트 연결 재생성 */
     UFUNCTION(CallInEditor, Category = "Patrol|Editor")
     void RebuildPatrolConnections();
-
 
     /** 월드에 존재하는 모든 패트롤 포인트 */
     UPROPERTY(VisibleAnywhere, Category = "Patrol")
@@ -48,9 +47,9 @@ public:
 
     /** 초기 포인트 하나 반환 */
     UFUNCTION(BlueprintCallable, Category = "Patrol")
-    APatrolPoint* GetRandomStartPoint() const;
+    virtual APatrolPoint* GetRandomStartPoint() override;
 
     /** 현재 포인트 기준 다음 포인트 선택 */
     UFUNCTION(BlueprintCallable, Category = "Patrol")
-    APatrolPoint* GetNextPatrolPoint(APatrolPoint* CurrentPoint) const;
+    virtual APatrolPoint* GetNextPatrolPoint(APatrolPoint* CurrentPoint) override;
 };
