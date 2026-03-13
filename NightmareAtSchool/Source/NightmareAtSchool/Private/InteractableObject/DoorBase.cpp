@@ -1,9 +1,10 @@
 ﻿// Fill out your copyright notice in the Description page of Project Settings.
 
 
+#include "InteractableObject/DoorBase.h"
+
 #include "InteractionInterface.h" // APlayerCharacter.h에서 사용되던 인터페이스
 
-#include "InteractableObject/DoorBase.h"
 #include "Components/StaticMeshComponent.h"
 
 
