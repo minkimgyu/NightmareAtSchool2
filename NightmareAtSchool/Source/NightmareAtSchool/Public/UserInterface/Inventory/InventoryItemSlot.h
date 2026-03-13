@@ -17,12 +17,19 @@ class UBorder;
 class UImage;
 class UTextBlock;
 
+// 1. 델리게이트 선언 (아이템 데이터를 파라미터로 전달)
+DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FOnInventorySlotClicked, UItemBase*, ItemData);
+
 UCLASS()
 class NIGHTMAREATSCHOOL_API UInventoryItemSlot : public UUserWidget
 {
 	GENERATED_BODY()
 
 public:
+    // 2. 외부(InventoryPanel)에서 접근 가능한 델리게이트 변수
+    UPROPERTY(BlueprintAssignable, Category = "Inventory Slot")
+    FOnInventorySlotClicked OnSlotClicked;
+
     // FORCEINLINE functions for setting and getting the item reference
     FORCEINLINE void SetItemReference(UItemBase* ItemIn) { ItemReference = ItemIn; }
     FORCEINLINE UItemBase* GetItemReference() const { return ItemReference; }
@@ -48,6 +55,8 @@ protected:
 
     UPROPERTY(EditDefaultsOnly, Category = "Inventory Slot", meta = (BindWidget))
     UTextBlock* ItemQuantity;
+
+
 
     // --- Virtual Functions for UI Event Handling (from image_17e95c.jpg) ---
     virtual void NativeOnInitialized() override;
