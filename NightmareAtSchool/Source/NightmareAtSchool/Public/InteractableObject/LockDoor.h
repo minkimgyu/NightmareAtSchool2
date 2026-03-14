@@ -23,7 +23,7 @@ protected:
     // Called when the game starts or when spawned
     virtual void BeginPlay() override;
 
-        /** 문을 열기 위해 인벤토리에 필요한 아이템의 ID */
+    /** 문을 열기 위해 인벤토리에 필요한 아이템의 ID */
     UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Lock Door | Requirements")
     FName RequiredItemID;
 

@@ -94,6 +94,8 @@ public:
 	int32 RemoveAmountOfItem(UItemBase* ItemIn, int32 DesiredAmountToRemove);
 	void SplitExistingStack(UItemBase* ItemIn, const int32 AmountToSplit);
 
+	bool RemoveItemByID(const FName ItemID, const int32 AmountToRemove);
+
 	// getters
 	FORCEINLINE float GetInventoryTotalWeight() const { return InventoryTotalWeight; };
 	FORCEINLINE float GetWeightCapacity() const { return InventoryWeightCapacity; };

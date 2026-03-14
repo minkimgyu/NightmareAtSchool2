@@ -39,6 +39,10 @@ void ALockDoor::HandleInteraction(APlayerCharacter* PlayerCharacter)
     // 2. 문이 닫혀있고, 영구 해제되지 않은 상태라면, 잠금 해제 조건을 검사합니다.
     if (CanUnlockDoor(PlayerCharacter))
     {
+        UInventoryComponent* Inventory = PlayerCharacter->FindComponentByClass<UInventoryComponent>();
+        Inventory->RemoveItemByID(RequiredItemID, RequiredItemAmount); // 아이템 제거
+
+
         // 2-1. 잠금 해제 성공: 영구 해제 상태로 변경
         bIsPermanentlyUnlocked = true; // ⬅️ 영구 해제 상태로 설정
         InteractableData.Action = FText::FromString("Close");

@@ -61,6 +61,9 @@ int32 UInventoryComponent::GetItemAmountByID(const FName ItemID) const
     {
         if (Item)
         {
+            // 내 인벤토리에 지금 뭐가 들어있는지 전부 찍어보기
+            UE_LOG(LogTemp, Warning, TEXT("In Inventory - Item ID: %s, Qty: %d"), *Item->ID.ToString(), Item->Quantity);
+
             // 아이템의 ID와 입력된 ItemID가 일치하는지 확인합니다.
             if (Item->ID == ItemID)
             {
@@ -183,6 +186,57 @@ void UInventoryComponent::SplitExistingStack(UItemBase* ItemIn, const int32 Amou
 void UInventoryComponent::TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction)
 {
 
+}
+
+bool UInventoryComponent::RemoveItemByID(const FName ItemID, const int32 AmountToRemove)
+{
+    if (ItemID == NAME_None || AmountToRemove <= 0) return false;
+
+    // 1. 총 수량 선제 확인 (원자성 보장)
+    int32 TotalOwned = GetItemAmountByID(ItemID);
+    if (TotalOwned < AmountToRemove)
+    {
+        UE_LOG(LogTemp, Warning, TEXT("RemoveItemByID: Not enough items. (Owned: %d, Required: %d)"), TotalOwned, AmountToRemove);
+        return false;
+    }
+
+    int32 RemainingToRemove = AmountToRemove;
+
+    // 2. 인벤토리 순회 및 차감
+    // 뒤에서부터 순회하는 것이 삭제 시 가장 안전합니다.
+    for (int32 i = InventoryContents.Num() - 1; i >= 0; --i)
+    {
+        UItemBase* Item = InventoryContents[i];
+
+        // 유효성 검사 추가
+        if (!IsValid(Item) || Item->ID != ItemID) continue;
+
+        int32 AmountInStack = Item->Quantity;
+        int32 CanRemoveFromThisStack = FMath::Min(RemainingToRemove, AmountInStack);
+
+        // 실제 수량 차감
+        Item->SetQuantity(Item->Quantity - CanRemoveFromThisStack);
+        InventoryTotalWeight -= (CanRemoveFromThisStack * Item->GetItemSingleWeight());
+        RemainingToRemove -= CanRemoveFromThisStack;
+
+        //// 수량이 0이 된 아이템은 배열에서 완전히 제거
+        //if (Item->Quantity <= 0)
+        //{
+        //    InventoryContents.RemoveAt(i);
+        //}
+
+        // 3. 목표 수량을 모두 제거했다면 루프를 즉시 종료하고 성공 리턴
+        if (RemainingToRemove <= 0)
+        {
+            OnInventoryUpdated.Broadcast();
+            UE_LOG(LogTemp, Log, TEXT("Successfully removed %d of Item ID: %s"), AmountToRemove, *ItemID.ToString());
+            return true;
+        }
+    }
+
+    // 만약 루프가 끝났는데 수량을 다 못 채웠다면 (이론상 위에서 체크해서 발생하면 안 됨)
+    OnInventoryUpdated.Broadcast();
+    return RemainingToRemove <= 0;
 }
 
 FItemAddResult UInventoryComponent::HandleNonStackableItems(UItemBase* InputItem)
