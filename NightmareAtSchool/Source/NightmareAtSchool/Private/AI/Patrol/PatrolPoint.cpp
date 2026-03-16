@@ -12,10 +12,10 @@ APatrolPoint::APatrolPoint()
 
     RootComponent = CreateDefaultSubobject<USceneComponent>(TEXT("Root"));
 
-    auto* Billboard = CreateDefaultSubobject<UBillboardComponent>(TEXT("Billboard"));
+    auto* Billboard = CreateDefaultSubobject<UBillboardComponent>(TEXT("Billboard")); // 스폰 위치설정? 하는거 같은데
     Billboard->SetupAttachment(RootComponent);
 
-    LineBatch = CreateDefaultSubobject<ULineBatchComponent>(TEXT("LineBatch"));
+    LineBatch = CreateDefaultSubobject<ULineBatchComponent>(TEXT("LineBatch")); // 경로 시각화용 컴포넌트
     LineBatch->SetupAttachment(RootComponent);
     LineBatch->bCalculateAccurateBounds = true;
 }
@@ -30,7 +30,7 @@ void APatrolPoint::RefreshConnectionLines()
     if (!bShowConnections)
         return;
 
-    for (APatrolPoint* Point : ConnectedPoints)
+    for (APatrolPoint* Point : ConnectedPoints) // 블루프린트 에디터에서 받아온 모든 연결 점들을 보여주기용
     {
         if (!Point) continue;
 

@@ -94,10 +94,10 @@ APatrolPoint* APatrolManager::GetNextPatrolPoint(APatrolPoint* CurrentPoint)
 
 void APatrolManager::GenerateConnections()
 {
-    if (AllPatrolPoints.Num() < 2)
+    if (AllPatrolPoints.Num() < 2) // 순회 포인트가 한군데면 연결필요없으므로 return
         return;
 
-    // 기존 연결 제거
+    // 기존 연결 제거 -> 왜 제거하지
     for (APatrolPoint* P : AllPatrolPoints)
     {
         P->ConnectedPoints.Empty();

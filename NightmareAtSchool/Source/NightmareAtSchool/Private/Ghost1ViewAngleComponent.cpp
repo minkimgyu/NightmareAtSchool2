@@ -1,8 +1,8 @@
 // Fill out your copyright notice in the Description page of Project Settings.
 
+#include "Ghost1ViewAngleComponent.h"
 #include "Ghost1.h"
 #include "BlackFigureDataAsset.h"
-#include "Ghost1ViewAngleComponent.h"
 
 void UGhost1ViewAngleComponent::BeginPlay()
 {

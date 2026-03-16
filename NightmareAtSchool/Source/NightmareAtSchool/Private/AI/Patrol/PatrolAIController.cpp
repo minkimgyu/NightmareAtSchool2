@@ -15,7 +15,7 @@
 APatrolAIController::APatrolAIController()
 {
     // C++에서 컴포넌트를 생성하여 할당합니다.
-    PerceptionComponent = CreateDefaultSubobject<UAIPerceptionComponent>(TEXT("PerceptionComponent"));
+    PerceptionComponent = CreateDefaultSubobject<UAIPerceptionComponent>(TEXT("PerceptionComponent")); // 언리얼 시야각컴포넌트를 하위에 추가한다.
     SetPerceptionComponent(*PerceptionComponent);
 
     // 기존 HearingConfig 아래에 추가

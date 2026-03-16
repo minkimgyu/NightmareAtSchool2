@@ -1,9 +1,9 @@
 // Fill out your copyright notice in the Description page of Project Settings.
 
 
+#include "State_BlackFigure_Attack.h"
 #include "BaseGhostAIController.h"
 #include "BehaviorTree/BlackboardComponent.h"
-#include "State_BlackFigure_Attack.h"
 
 State_BlackFigure_Attack::State_BlackFigure_Attack(ABaseGhostAIController* _AIComp)
 	:State_BlackFigure(_AIComp)
