@@ -136,6 +136,9 @@ void APlayerCharacter::Look(const FInputActionValue& value)
 {
 	const FVector2D LookInput = value.Get<FVector2D>();
 
+	// 입력값을 출력 로그 창에 표시합니다. (카테고리는 LogTemp를 사용)
+	UE_LOG(LogTemp, Warning, TEXT("Look Input - X: %f, Y: %f"), LookInput.X, LookInput.Y);
+
 	AddControllerYawInput(LookInput.X);
 	AddControllerPitchInput(LookInput.Y);
 }
