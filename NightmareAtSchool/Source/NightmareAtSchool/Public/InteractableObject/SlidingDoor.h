@@ -28,7 +28,10 @@ protected:
 	// ----------------------------------------------------------------------
 	/** 문이 열려야 할 최종 위치를 나타내는 컴포넌트입니다. (블루프린트에서 배치) */
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Sliding Door")
-	USceneComponent* OpenPositionMarker;
+	USceneComponent* OpenPositionMarkerRight;
+
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Sliding Door")
+	USceneComponent* OpenPositionMarkerLeft;
 
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Door | Components")
 	UStaticMeshComponent* LeftDoorMesh;
@@ -38,7 +41,8 @@ protected:
 
 
 	/** 문 닫힘 위치 (ADoorBase::DoorMesh의 초기 위치) */
-	FVector ClosedLocation;
+	FVector ClosedLocationLeft;
+	FVector ClosedLocationRight;
 
 	/** 문 움직임의 보간 속도 */
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Sliding Door")

@@ -24,9 +24,11 @@ ASlidingDoor::ASlidingDoor()
     RightDoorMesh->SetupAttachment(Root);
 
     // OpenPositionMarker 컴포넌트 생성
-    OpenPositionMarker = CreateDefaultSubobject<USceneComponent>(TEXT("OpenPositionMarker"));
+    OpenPositionMarkerRight = CreateDefaultSubobject<USceneComponent>(TEXT("OpenPositionMarkerRight"));
+    OpenPositionMarkerLeft = CreateDefaultSubobject<USceneComponent>(TEXT("OpenPositionMarkerLeft"));
     // Root에 부착
-    OpenPositionMarker->SetupAttachment(RootComponent);
+    OpenPositionMarkerLeft->SetupAttachment(RootComponent);
+    OpenPositionMarkerRight->SetupAttachment(RootComponent);
 
     // Marker는 문이 열릴 때 DoorMesh가 도달해야 할 최종 위치를 지정합니다.
     // Blueprint에서 이 Marker의 위치를 조정하여 문이 열리는 거리를 설정합니다.
@@ -58,7 +60,8 @@ void ASlidingDoor::BeginPlay()
 	
     // 문 닫힘 위치 (DoorMesh의 초기 상대 위치)를 저장합니다.
     // 문을 열고 닫을 때 이 위치를 기준으로 보간합니다.
-    ClosedLocation = RightDoorMesh->GetRelativeLocation();
+    ClosedLocationLeft = LeftDoorMesh->GetRelativeLocation();
+    ClosedLocationRight = RightDoorMesh->GetRelativeLocation();
 }
 
 // Called every frame
@@ -96,26 +99,43 @@ void ASlidingDoor::HandleInteraction(APlayerCharacter* PlayerCharacter)
 void ASlidingDoor::SlideDoor(float DeltaTime)
 {
     // 1. 목표 위치 설정
-    FVector TargetLocation;
+    FVector TargetLocationLeft;
+    FVector TargetLocationRight;
+
     if (bIsOpen)
     {
         // 열린 상태: OpenPositionMarker의 위치를 목표로 합니다.
         // GetRelativeLocation()을 사용하여 RootComponent에 대한 상대 위치를 가져옵니다.
-        TargetLocation = OpenPositionMarker->GetRelativeLocation();
+        TargetLocationLeft = OpenPositionMarkerLeft->GetRelativeLocation();
+        TargetLocationRight = OpenPositionMarkerRight->GetRelativeLocation();
     }
     else
     {
         // 닫힌 상태: BeginPlay에서 저장된 초기 위치를 목표로 합니다.
-        TargetLocation = ClosedLocation;
+        TargetLocationLeft = ClosedLocationLeft;
+        TargetLocationRight = ClosedLocationRight;
     }
 
+
     // 2. 현재 위치 가져오기
-    FVector CurrentLocation = RightDoorMesh->GetRelativeLocation();
+    FVector CurrentLocationLeft = LeftDoorMesh->GetRelativeLocation();
 
     // 3. FMath::VInterpTo를 사용하여 목표 위치로 부드럽게 보간합니다.
     //    DeltaTime * SlideSpeed를 사용하여 프레임 속도에 독립적인 부드러운 이동을 구현합니다.
-    FVector NewLocation = FMath::VInterpTo(CurrentLocation, TargetLocation, DeltaTime, SlideSpeed);
+    FVector NewLocationLeft = FMath::VInterpTo(CurrentLocationLeft, TargetLocationLeft, DeltaTime, SlideSpeed);
 
     // 4. 문 메시의 위치를 업데이트합니다.
-    RightDoorMesh->SetRelativeLocation(NewLocation);
+    LeftDoorMesh->SetRelativeLocation(NewLocationLeft);
+
+
+
+    // 2. 현재 위치 가져오기
+    FVector CurrentLocationRight = RightDoorMesh->GetRelativeLocation();
+
+    // 3. FMath::VInterpTo를 사용하여 목표 위치로 부드럽게 보간합니다.
+    //    DeltaTime * SlideSpeed를 사용하여 프레임 속도에 독립적인 부드러운 이동을 구현합니다.
+    FVector NewLocationRight = FMath::VInterpTo(CurrentLocationRight, TargetLocationRight, DeltaTime, SlideSpeed);
+
+    // 4. 문 메시의 위치를 업데이트합니다.
+    RightDoorMesh->SetRelativeLocation(NewLocationRight);
 }
