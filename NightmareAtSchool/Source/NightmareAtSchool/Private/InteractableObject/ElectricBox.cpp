@@ -92,6 +92,9 @@ void AElectricBox::HandleInteraction(APlayerCharacter* PlayerCharacter)
 		// 닫는 로직 (C++ 회전 시작)
 		bIsPlanted = true;
 
+		// 등록된 모든 리스너에게 이벤트 전송 (블루프린트의 Call)
+		OnElectricBoxInstalled.Broadcast();
+
 		// 렌더링을 활성화하여 보이게 만듦
 		BoxMesh->SetHiddenInGame(false);
 	}

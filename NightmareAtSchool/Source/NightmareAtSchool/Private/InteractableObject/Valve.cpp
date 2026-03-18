@@ -120,6 +120,9 @@ void AValve::HandleInteraction(APlayerCharacter* PlayerCharacter)
     {
         // 닫는 로직 (C++ 회전 시작)
         bIsLock = true;
+
+        // 등록된 모든 리스너에게 이벤트 전송 (블루프린트의 Call)
+        OnValveOpened.Broadcast();
     }
 
     // 로그를 찍어서 함수가 실행되는지 확인하세요!

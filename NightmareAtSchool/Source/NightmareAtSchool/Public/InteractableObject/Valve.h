@@ -11,6 +11,9 @@
 
 #include "Valve.generated.h"
 
+// 델리게이트 선언 (매개변수가 없는 형태)
+DECLARE_DYNAMIC_MULTICAST_DELEGATE(FOnValveOpenedSignature);
+
 class USceneComponent;
 class UStaticMeshComponent;
 class APlayerCharacter;
@@ -31,6 +34,10 @@ public:
 	virtual void Interact(APlayerCharacter* PlayerCharacter) override;
 	virtual void BeginFocus() override;
 	virtual void EndFocus() override;
+
+	// 블루프린트에서 호출하거나 바인딩할 수 있도록 노출
+	UPROPERTY(BlueprintAssignable, Category = "Events")
+	FOnValveOpenedSignature OnValveOpened;
 
 	//// UPROPERTY로 Blueprint에서 설정할 상호작용 데이터를 정의합니다.
 	//UPROPERTY(EditInstanceOnly, Category = "Door | Interaction")

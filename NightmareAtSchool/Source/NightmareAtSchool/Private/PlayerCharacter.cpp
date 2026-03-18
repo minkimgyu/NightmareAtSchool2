@@ -61,32 +61,30 @@ APlayerCharacter::APlayerCharacter()
 	FirstPersonCamera->SetRelativeLocation(FVector(0.f, 0.f, 64.f));
 	FirstPersonCamera->bUsePawnControlRotation = true;  // 마우스 회전 그대로 반영
 
-	// 3) 플래시라이트 만들기
-	Flashlight = CreateDefaultSubobject<USpotLightComponent>(TEXT("Flashlight"));
-	Flashlight->SetupAttachment(FirstPersonCamera);  // 카메라에 종속 → 자연스럽게 회전
+	// 3) 플래시라이트 컴포넌트 만들기 (기존 USpotLightComponent 생성 코드 삭제)
+	FlashlightComponent = CreateDefaultSubobject<UFlashlightComponent>(TEXT("FlashlightCom"));
+	FlashlightComponent->SetupAttachment(FirstPersonCamera); // 붙이기
 
-	// 초기 설정
-	// ⭐ 약간 노란색(따뜻한 손전등 색)
-	Flashlight->SetLightColor(FLinearColor(1.0f, 0.95f, 0.7f));
-	Flashlight->Intensity = 5000.f;
-	Flashlight->AttenuationRadius = 800.f;
-	Flashlight->OuterConeAngle = 25.f;
+	// 1. 콜라이더 생성 및 설정
+	DetectionSphere123 = CreateDefaultSubobject<USphereComponent>(TEXT("SphereComp123"));
+	FlashlightMesh123 = CreateDefaultSubobject<USpotLightComponent>(TEXT("LightComp123"));
 
-	bFlashlightOn = false;
-	Flashlight->SetVisibility(bFlashlightOn); // 시작은 꺼진 상태
-
-
+	// 이 SceneComponent(FlashlightComponent) 밑에 콜라이더를 붙임
+	DetectionSphere123->SetupAttachment(FirstPersonCamera);
+	FlashlightMesh123->SetupAttachment(FirstPersonCamera);
 }
 
 void APlayerCharacter::ToggleFlashlight()
 {
-	bFlashlightOn = !bFlashlightOn;
-	Flashlight->SetVisibility(bFlashlightOn);
+	if (FlashlightComponent)
+	{
+		// 컴포넌트 내부의 Toggle 함수를 호출하여 빛 + 판정 동시 제어
+		FlashlightComponent->ToggleFlashlight();
 
-	// 필요하면 사운드 추가 가능
-	// UGameplayStatics::PlaySoundAtLocation(...);
-
-	UE_LOG(LogTemp, Log, TEXT("Flashlight: %s"), bFlashlightOn ? TEXT("ON") : TEXT("OFF"));
+		// 현재 상태 로그 출력
+		bool bCurrentState = FlashlightComponent->bIsOn;
+		UE_LOG(LogTemp, Log, TEXT("Flashlight: %s"), bCurrentState ? TEXT("ON") : TEXT("OFF"));
+	}
 }
 
 void APlayerCharacter::DropItem(UItemBase* ItemToDrop, int32 QuantityToDrop)
@@ -136,9 +134,6 @@ void APlayerCharacter::Look(const FInputActionValue& value)
 {
 	const FVector2D LookInput = value.Get<FVector2D>();
 
-	// 입력값을 출력 로그 창에 표시합니다. (카테고리는 LogTemp를 사용)
-	UE_LOG(LogTemp, Warning, TEXT("Look Input - X: %f, Y: %f"), LookInput.X, LookInput.Y);
-
 	AddControllerYawInput(LookInput.X);
 	AddControllerPitchInput(LookInput.Y);
 }
@@ -157,6 +152,14 @@ void APlayerCharacter::ToggleCrouch()
 void APlayerCharacter::BeginPlay()
 {
 	Super::BeginPlay();
+
+	// 로직 컴포넌트에게 조작해야 할 부품(라이트, 구역)을 넘겨줌
+	if (FlashlightComponent)
+	{
+		FlashlightComponent->InitializeFlashlight(FlashlightMesh123, DetectionSphere123);
+		FlashlightComponent->SetFlashlightState(false); // 시작은 꺼짐
+	}
+
 	HUD = Cast<AMainHUD>(GetWorld()->GetFirstPlayerController()->GetHUD());
 }
 

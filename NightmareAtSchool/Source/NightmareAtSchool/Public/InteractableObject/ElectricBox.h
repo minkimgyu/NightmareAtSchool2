@@ -10,6 +10,9 @@
 
 #include "ElectricBox.generated.h"
 
+// 델리게이트 선언 (매개변수가 없는 형태)
+DECLARE_DYNAMIC_MULTICAST_DELEGATE(FOnInstallElectricBoxSignature);
+
 class USceneComponent;
 class UStaticMeshComponent;
 class APlayerCharacter;
@@ -30,6 +33,10 @@ public:
 	virtual void Interact(APlayerCharacter* PlayerCharacter) override;
 	virtual void BeginFocus() override;
 	virtual void EndFocus() override;
+
+	// 블루프린트에서 호출하거나 바인딩할 수 있도록 노출
+	UPROPERTY(BlueprintAssignable, Category = "Events")
+	FOnInstallElectricBoxSignature OnElectricBoxInstalled;
 
 protected:
 	// Called when the game starts or when spawned

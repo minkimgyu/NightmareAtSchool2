@@ -9,6 +9,9 @@
 #include "InteractionInterface.h"
 #include "UserInterface/MainHUD.h"
 
+// PlayerCharacter.h 상단 include 추가
+#include "Flashlight/FlashlightComponent.h" // 경로 확인 필수!
+
 #include "Components/InventoryComponent.h"
 
 #include "PlayerCharacter.generated.h"
@@ -32,7 +35,7 @@ struct FInteractionData
 	/** �⺻ ������ */
 	FInteractionData()
 		: CurrentInteractable(nullptr) // ���� ��ȣ�ۿ� ���� ���͸� nullptr�� �ʱ�ȭ
-		, LastInteractionCheckTime(0.0f) // ������ ��ȣ�ۿ� üũ �ð��� 0.0f�� �ʱ�ȭ
+		, LastInteractionCheckTime(0.0f) // ������ ��ȣ�ۿ� üũ �ð ��� 0.0f�� �ʱ�ȭ
 	{
 	}
 
@@ -132,17 +135,29 @@ protected:
 	UPROPERTY(BlueprintReadWrite, Category = "State")
 	EPlayerPostureState PlayerPostureState;
 
-	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Flashlight")
-	class USpotLightComponent* Flashlight;
+
+
+	//UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Flashlight")
+	//class USpotLightComponent* Flashlight;
+
+	//UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Flashlight")
+	//bool bFlashlightOn;
+
+
+	// 기존 USpotLightComponent* Flashlight; 를 아래로 교체
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "New_Flashlight")
+	UFlashlightComponent* FlashlightComponent;
 
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Flashlight")
-	bool bFlashlightOn;
+	USpotLightComponent* FlashlightMesh123; // 시각적 라이트 추가
+
+	// 컴포넌트 내부에 직접 콜라이더 생성
+	UPROPERTY(VisibleAnywhere, Category = "Flashlight")
+	USphereComponent* DetectionSphere123;
+
 
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Camera")
 	class UCameraComponent* FirstPersonCamera;
-
-
-
 
 
 
@@ -238,7 +253,7 @@ protected:
 
 
 	// ���⼭ ȣ���� �Լ���
-	// IInteractionInterface�� �Լ��� ��������ش�.
+	// IInteractionInterface�� �Լ��� ��������ش.
 
 	/** ��ȣ�ۿ� ���� ��ü�� �ֺ��� �ִ��� �ֱ������� üũ�ϴ� �Լ� */
 	void PerformInteractionCheck();
