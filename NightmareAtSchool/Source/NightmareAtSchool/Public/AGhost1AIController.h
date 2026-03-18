@@ -7,6 +7,7 @@
 #include "BaseGhostAIController.h"
 #include "AGhost1AIController.generated.h"
 
+class ABasePatrolManager;
 class UBehaviorTree;
 class GhostStateBase;
 enum class EGhostState;
@@ -27,6 +28,7 @@ protected:
 	GhostStateBase* GStateBase;
 public:
 
+	ABasePatrolManager* GetPatrolManager() const { return PatrolManager; }
 //	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category="AI")
 //	UBehaviorTree* BehaviorTree;
 //
@@ -39,7 +41,8 @@ public:
 //
 //	AActor* Target;
 //	
-//private:
-//	void GetAIController();
-//	void SaveBlackboard();
+private:
+	UPROPERTY()
+	ABasePatrolManager* PatrolManager;
+
 };

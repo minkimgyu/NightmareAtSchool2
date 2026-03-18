@@ -2,6 +2,9 @@
 
 
 #include "AGhost1AIController.h"
+
+#include "AI/Patrol/PatrolManager.h"
+#include "Kismet/GameplayStatics.h"
 #include "BehaviorTree/BehaviorTree.h"
 #include "BehaviorTree/BlackboardComponent.h"
 #include "State_BlackFigure_Idle.h"
@@ -17,6 +20,20 @@ void AAGhost1AIController::OnPossess(APawn* InPawn)
 
 	GStateBase = new State_BlackFigure_Idle(this);
 	GStateBase->Enter();
+	UE_LOG(LogTemp, Error, TEXT("Controller class: %s"), *GetClass()->GetName());
+
+	// 월드에 배치된 PatrolManager 찾기
+	TArray<AActor*> Found;
+	UGameplayStatics::GetAllActorsOfClass(
+		GetWorld(),
+		ABasePatrolManager::StaticClass(),
+		Found
+	);
+
+	if (Found.Num() > 0)
+	{
+		PatrolManager = Cast<ABasePatrolManager>(Found[0]);
+	}
 }
 
 void AAGhost1AIController::Tick(float DeltaTime)
