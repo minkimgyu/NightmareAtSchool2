@@ -27,7 +27,7 @@ protected:
 	virtual void EndFocus() override;
 
 	// ADoorBase의 핵심 상호작용 로직을 오버라이드합니다.
-	virtual void HandleInteraction(APlayerCharacter* PlayerCharacter) override;
+	virtual void HandleInteraction(IInteractorInterface* Interactor) override;
 
 
 	// Called when the game starts or when spawned
@@ -58,7 +58,7 @@ private:
 	/** * 플레이어 캐릭터가 문을 기준으로 앞에 있는지(Push) 뒤에 있는지(Pull) 확인합니다.
 	 * @return true: 문 뒤편(Pull 방향), false: 문 앞편(Push 방향)
 	 */
-	bool IsPlayerBehindDoor(const APlayerCharacter* PlayerCharacter) const;
+	bool IsPlayerBehindDoor(IInteractorInterface* Interactor);
 
 	/** 문 메시를 목표 각도로 부드럽게 회전시키는 함수 */
 	void RotateDoor(float DeltaTime);

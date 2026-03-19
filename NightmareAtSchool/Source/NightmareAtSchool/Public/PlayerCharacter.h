@@ -6,7 +6,11 @@
 #include "GameFramework/Character.h"
 #include "InputActionValue.h"
 #include "GameFramework/CharacterMovementComponent.h"
+
 #include "InteractionInterface.h"
+#include "InteractorInterface.h"
+
+
 #include "UserInterface/MainHUD.h"
 
 // PlayerCharacter.h 상단 include 추가
@@ -16,6 +20,10 @@
 
 #include "PlayerCharacter.generated.h"
 
+// 헤더 상단에 컴포넌트 추가
+
+class UQuestManagerComponent;
+class UInteractionComponent;
 class AMainPlayerController;
 class AMainHUD;
 class UInventoryComponent;
@@ -24,29 +32,29 @@ class UCameraComponent;
 class USpotLightComponent;
 struct FTimerHandle;
 
-/**
- * ĳ������ ��ȣ�ۿ� ���� �� �����͸� �����ϴ� ����ü�Դϴ�.
- */
-USTRUCT(BlueprintType)
-struct FInteractionData
-{
-	GENERATED_BODY()
-
-	/** �⺻ ������ */
-	FInteractionData()
-		: CurrentInteractable(nullptr) // ���� ��ȣ�ۿ� ���� ���͸� nullptr�� �ʱ�ȭ
-		, LastInteractionCheckTime(0.0f) // ������ ��ȣ�ۿ� üũ �ð ��� 0.0f�� �ʱ�ȭ
-	{
-	}
-
-	/** ���� �÷��̾ ��ȣ�ۿ� ���� ������ �ٶ󺸰ų� ���� ������ �ִ� ���� ������ */
-	UPROPERTY()
-	AActor* CurrentInteractable;
-
-	/** ���������� ��ȣ�ۿ� ���� ���θ� üũ�� ���� �ð� (������ ������ �ƴ� �ð� ��� ����ȭ�� ����) */
-	UPROPERTY()
-	float LastInteractionCheckTime;
-};
+///**
+// * ĳ������ ��ȣ�ۿ� ���� �� �����͸� �����ϴ� ����ü�Դϴ�.
+// */
+//USTRUCT(BlueprintType)
+//struct FInteractionData
+//{
+//	GENERATED_BODY()
+//
+//	/** �⺻ ������ */
+//	FInteractionData()
+//		: CurrentInteractable(nullptr) // ���� ��ȣ�ۿ� ���� ���͸� nullptr�� �ʱ�ȭ
+//		, LastInteractionCheckTime(0.0f) // ������ ��ȣ�ۿ� üũ �ð ��� 0.0f�� �ʱ�ȭ
+//	{
+//	}
+//
+//	/** ���� �÷��̾ ��ȣ�ۿ� ���� ������ �ٶ󺸰ų� ���� ������ �ִ� ���� ������ */
+//	UPROPERTY()
+//	AActor* CurrentInteractable;
+//
+//	/** ���������� ��ȣ�ۿ� ���� ���θ� üũ�� ���� �ð� (������ ������ �ƴ� �ð� ��� ����ȭ�� ����) */
+//	UPROPERTY()
+//	float LastInteractionCheckTime;
+//};
 
 UENUM(BlueprintType)
 enum class EPlayerActionState : uint8
@@ -64,7 +72,7 @@ enum class EPlayerPostureState : uint8
 
 
 UCLASS()
-class NIGHTMAREATSCHOOL_API APlayerCharacter : public ACharacter
+class NIGHTMAREATSCHOOL_API APlayerCharacter : public ACharacter, public IInteractorInterface
 {
 	GENERATED_BODY()
 
@@ -83,11 +91,27 @@ public:
 	// Called to bind functionality to input
 	virtual void SetupPlayerInputComponent(class UInputComponent* PlayerInputComponent) override;
 
-	bool IsInteracting() const { return GetWorldTimerManager().IsTimerActive(TimerHandle_Interaction); };
+	//bool IsInteracting() const { return GetWorldTimerManager().IsTimerActive(TimerHandle_Interaction); };
 
-	FORCEINLINE UInventoryComponent* GetInventory() const { return PlayerInventory; }
 
-	void UpdateInteractionWidget() const;
+	// 새롭게 추가한 인터페이스 함수
+	/////////////////////////////////////////////////////////////////////////
+
+
+	// IInteractorInterface 구현 (정확한 시그니처 일치 필요)
+	virtual AActor* GetInteractorActor() override { return this; }
+
+	// 로그에서 경고가 났던 부분: const 유무를 인터페이스와 일치시켜야 함
+	virtual UInventoryComponent* GetInventory() const override { return PlayerInventory; }
+
+	// PlayerCharacter.h 에 선언
+	virtual void UpdateInteractionWidget(FInteractableData* InteractableData) override;
+
+	/////////////////////////////////////////////////////////////////////////
+
+
+
+	//void UpdateInteractionWidget() const;
 	void DropItem(UItemBase* ItemToDrop, const int32 QuantityToDrop);
 
 	// ... (기존 public 함수)
@@ -123,6 +147,14 @@ private:
 
 protected:
 
+	// 새로 추가할 상호작용 컴포넌트
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Components")
+	UInteractionComponent* InteractionComp;
+
+	// UI 델리게이트 연동용 콜백 함수
+	void OnInteractableFound(FInteractableData* InteractableData);
+	void OnInteractableLost();
+
 	//=====================================================================
 	// ����
 	//=====================================================================
@@ -154,6 +186,14 @@ protected:
 	// 컴포넌트 내부에 직접 콜라이더 생성
 	UPROPERTY(VisibleAnywhere, Category = "Flashlight")
 	USphereComponent* DetectionSphere123;
+
+	// 컴포넌트 내부에 직접 콜라이더 생성
+	UPROPERTY(VisibleAnywhere, Category = "Interaction")
+	USceneComponent* InteractionSight;
+
+	// 컴포넌트 내부에 직접 콜라이더 생성
+	UPROPERTY(VisibleAnywhere, Category = "Quest")
+	UQuestManagerComponent* QuestManagerCom;
 
 
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Camera")
@@ -219,26 +259,26 @@ protected:
 	/** * ���� ��ȣ�ۿ� ����� �Ǵ� ��ü�� �������̽��� ���� �����մϴ�.
 	* IIInteractionInterface �������̽��� ������ ��� ���͸� ������� �� �� �ֽ��ϴ�.
 	*/
-	UPROPERTY(VisibleAnywhere, Category = "Character | Interaction")
-	TScriptInterface<class IInteractionInterface> TargetInteractable;
+	/*UPROPERTY(VisibleAnywhere, Category = "Character | Interaction")
+	TScriptInterface<class IInteractionInterface> TargetInteractable;*/
 
 
 	UPROPERTY(VisibleAnywhere, Category = "Character | Inventory")
 	UInventoryComponent* PlayerInventory;
 
-	/** ��ȣ�ۿ� ���� ���θ� üũ�ϴ� �� (�� ����) */
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Character | Interaction")
-	float InteractionCheckFrequency;
+	///** ��ȣ�ۿ� ���� ���θ� üũ�ϴ� �� (�� ����) */
+	//UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Character | Interaction")
+	//float InteractionCheckFrequency;
 
-	/** ��ȣ�ۿ� üũ�� ������ �ִ� �Ÿ� */
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Character | Interaction")
-	float InteractionCheckDistance;
+	///** ��ȣ�ۿ� üũ�� ������ �ִ� �Ÿ� */
+	//UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Character | Interaction")
+	//float InteractionCheckDistance;
 
-	/** ��ȣ�ۿ� Ÿ�̸Ӹ� �����ϴ� �ڵ� */
-	FTimerHandle TimerHandle_Interaction;
+	///** ��ȣ�ۿ� Ÿ�̸Ӹ� �����ϴ� �ڵ� */
+	//FTimerHandle TimerHandle_Interaction;
 
-	/** ���� ��ȣ�ۿ� �����͸� �����ϴ� ����ü */
-	FInteractionData InteractionData;
+	///** ���� ��ȣ�ۿ� �����͸� �����ϴ� ����ü */
+	//FInteractionData InteractionData;
 
 	//=====================================================================
 	// �Լ�
@@ -252,26 +292,26 @@ protected:
 	void ActCrouch(float DeltaTime);
 
 
-	// ���⼭ ȣ���� �Լ���
-	// IInteractionInterface�� �Լ��� ��������ش.
+	//// ���⼭ ȣ���� �Լ���
+	//// IInteractionInterface�� �Լ��� ��������ش.
 
-	/** ��ȣ�ۿ� ���� ��ü�� �ֺ��� �ִ��� �ֱ������� üũ�ϴ� �Լ� */
-	void PerformInteractionCheck();
+	///** ��ȣ�ۿ� ���� ��ü�� �ֺ��� �ִ��� �ֱ������� üũ�ϴ� �Լ� */
+	//void PerformInteractionCheck();
 
-	/** ��ȣ�ۿ� ������ ���ο� ��ü�� �߰����� �� ȣ��Ǵ� �Լ� */
-	void FoundInteractable(AActor* NewInteractable);
+	///** ��ȣ�ۿ� ������ ���ο� ��ü�� �߰����� �� ȣ��Ǵ� �Լ� */
+	//void FoundInteractable(AActor* NewInteractable);
 
-	/** ��ȣ�ۿ� ���� ��ü�� ã�� ���߰ų� ������ ����� �� ȣ��Ǵ� �Լ� */
-	void NoInteractableFound();
+	///** ��ȣ�ۿ� ���� ��ü�� ã�� ���߰ų� ������ ����� �� ȣ��Ǵ� �Լ� */
+	//void NoInteractableFound();
 
-	/** ��ȣ�ۿ� ���� ������ �����ϴ� �Լ� */
-	void BeginInteract();
+	///** ��ȣ�ۿ� ���� ������ �����ϴ� �Լ� */
+	//void BeginInteract();
 
-	/** ��ȣ�ۿ� ���� ������ �����ϴ� �Լ� */
-	void EndInteract();
+	///** ��ȣ�ۿ� ���� ������ �����ϴ� �Լ� */
+	//void EndInteract();
 
-	/** ��ȣ�ۿ��� ������ ó���ϴ� �Լ� (��: ������ �ݱ�, �� ����) */
-	void Interact();
+	///** ��ȣ�ۿ��� ������ ó���ϴ� �Լ� (��: ������ �ݱ�, �� ����) */
+	//void Interact();
 
 
 	//=====================================================================

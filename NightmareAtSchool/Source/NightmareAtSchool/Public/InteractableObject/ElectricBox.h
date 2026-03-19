@@ -13,9 +13,10 @@
 // 델리게이트 선언 (매개변수가 없는 형태)
 DECLARE_DYNAMIC_MULTICAST_DELEGATE(FOnInstallElectricBoxSignature);
 
+// 전방 선언 추가
+class IInteractorInterface;
 class USceneComponent;
 class UStaticMeshComponent;
-class APlayerCharacter;
 struct FInteractableData;
 
 UCLASS()
@@ -30,7 +31,7 @@ public:
 	// ----------------------------------------------------------------------
 	// IInteractionInterface 구현
 	// ----------------------------------------------------------------------
-	virtual void Interact(APlayerCharacter* PlayerCharacter) override;
+	virtual void Interact(IInteractorInterface* Interactor) override;
 	virtual void BeginFocus() override;
 	virtual void EndFocus() override;
 
@@ -72,9 +73,9 @@ protected:
 	// ----------------------------------------------------------------------
 	// 핵심 로직: Box 설치를 담당하는 함수
 	// ----------------------------------------------------------------------
-	virtual void HandleInteraction(APlayerCharacter* PlayerCharacter);
+	virtual void HandleInteraction(IInteractorInterface* Interactor);
 
-	bool CanInstallElectricBox(APlayerCharacter* PlayerCharacter) const;
+	bool CanInstallElectricBox(IInteractorInterface* Interactor) const;
 
 public:	
 	// Called every frame

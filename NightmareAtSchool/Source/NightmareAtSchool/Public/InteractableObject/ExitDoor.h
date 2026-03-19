@@ -45,5 +45,5 @@ protected:
     // ----------------------------------------------------------------------
 
     /** 부모 클래스의 상호 작용 로직을 오버라이드하여 잠금 해제 로직을 추가합니다. */
-    virtual void HandleInteraction(APlayerCharacter* PlayerCharacter) override;
+    virtual void HandleInteraction(IInteractorInterface* Interactor) override;
 };

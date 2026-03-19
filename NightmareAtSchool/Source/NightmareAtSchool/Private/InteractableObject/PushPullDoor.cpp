@@ -4,6 +4,7 @@
 #include "InteractableObject/PushPullDoor.h"
 
 #include "InteractionInterface.h" // APlayerCharacter.h에서 사용되던 인터페이스
+#include "InteractorInterface.h"
 
 
 #include "InteractableObject/DoorBase.h"
@@ -112,11 +113,11 @@ void APushPullDoor::RotateDoor(float DeltaTime)
     }
 }
 
-void APushPullDoor::HandleInteraction(APlayerCharacter* PlayerCharacter)
+void APushPullDoor::HandleInteraction(IInteractorInterface* Interactor)
 {
-    Super::HandleInteraction(PlayerCharacter);
+    Super::HandleInteraction(Interactor);
 
-    if (!PlayerCharacter) return;
+    if (!Interactor) return;
 
     if (bIsOpen)
     {
@@ -130,7 +131,7 @@ void APushPullDoor::HandleInteraction(APlayerCharacter* PlayerCharacter)
         bIsOpen = true;
 
         // 🚨 이 부분이 중요합니다. 플레이어 위치에 따라 회전 방향(OpenAngle)을 결정합니다.
-        if (IsPlayerBehindDoor(PlayerCharacter))
+        if (IsPlayerBehindDoor(Interactor))
         {
             // 플레이어가 문 뒤(당기기)에 있으면 문이 플레이어 쪽으로 열리도록 양수 각도 설정 (예: 90도)
             OpenAngle = FMath::Abs(OpenAngle);
@@ -147,15 +148,15 @@ void APushPullDoor::HandleInteraction(APlayerCharacter* PlayerCharacter)
     // 회전을 시작하기 위해 Tick을 활성화합니다.
     SetActorTickEnabled(true);
 
-    PlayerCharacter->UpdateInteractionWidget();
+    Interactor->UpdateInteractionWidget(&InteractableData);
 }
 
-bool APushPullDoor::IsPlayerBehindDoor(const APlayerCharacter* PlayerCharacter) const
+bool APushPullDoor::IsPlayerBehindDoor(IInteractorInterface* Interactor)
 {
-    if (!PlayerCharacter) return false;
+    if (!Interactor) return false;
 
     // 1. 문에서 플레이어로 향하는 벡터
-    FVector DoorToPlayer = PlayerCharacter->GetActorLocation() - GetActorLocation();
+    FVector DoorToPlayer = Interactor->GetInteractorActor()->GetActorLocation() - GetActorLocation();
     DoorToPlayer.Normalize();
 
     // 2. 문의 정면 방향 벡터 (예: X축)

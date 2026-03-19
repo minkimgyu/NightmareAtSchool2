@@ -7,6 +7,8 @@
 #include "InteractionInterface.generated.h"
 
 
+// 전방 선언 추가
+class IInteractorInterface;
 class APlayerCharacter;
 
 /**
@@ -89,7 +91,7 @@ public:
 	virtual void BeginInteract();
 	virtual void EndInteract();
 
-	virtual void Interact(APlayerCharacter* PlayerCharacter); // [00:04:21]
+	virtual void Interact(IInteractorInterface* Interactor); // [00:04:21]
 
 	FInteractableData InteractableData;
 };

@@ -2,9 +2,9 @@
 
 
 #include "InteractableObject/ExitDoor.h"
-#include "PlayerCharacter.h"
 #include "Components/InventoryComponent.h"
 #include "Kismet/GameplayStatics.h" // UGameplayStatics 사용을 위해 필요
+#include "InteractorInterface.h"
 
 AExitDoor::AExitDoor()
 {
@@ -20,15 +20,15 @@ void AExitDoor::BeginPlay()
     InteractableData.Name = FText::FromString("the Door");
 }
 
-void AExitDoor::HandleInteraction(APlayerCharacter* PlayerCharacter)
+void AExitDoor::HandleInteraction(IInteractorInterface* Interactor)
 {
-    if (!PlayerCharacter) return;
+    if (!Interactor) return;
 
     // 1. 문이 열려있는 상태이거나, 이미 영구적으로 잠금 해제된 상태라면,
     //    조건 검사 없이 바로 부모 클래스의 여닫기 로직을 실행합니다.
     if (bIsOpen || bIsPermanentlyUnlocked) // ⬅️ 영구 해제 상태 검사 추가
     {
-        Super::HandleInteraction(PlayerCharacter);
+        Super::HandleInteraction(Interactor);
 
         // 등록된 모든 리스너에게 이벤트 전송 (블루프린트의 Call)
         OnDoorOpened.Broadcast();

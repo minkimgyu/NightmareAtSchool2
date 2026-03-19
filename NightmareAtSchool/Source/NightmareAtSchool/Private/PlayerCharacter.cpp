@@ -5,6 +5,8 @@
 #include "UserInterface/MainHUD.h"
 #include "TimerManager.h"
 
+#include "Quest/QueseManagerCompoent.h"
+
 #include "Camera/CameraComponent.h" // 카메라
 #include "Components/SpotLightComponent.h" // 손전등
 
@@ -17,6 +19,7 @@
 #include "Pickup.h"
 
 #include "Components/InventoryComponent.h"
+#include "Components/InteractionComponent.h" // 인클루드 추가
 
 #include "DrawDebugHelpers.h"
 
@@ -45,12 +48,17 @@ APlayerCharacter::APlayerCharacter()
 	SetState(EPlayerActionState::Walk);
 	SetState(EPlayerPostureState::Stand);
 
+	QuestManagerCom = CreateDefaultSubobject<UQuestManagerComponent>(TEXT("QuestManagerCom123"));
+
 	PlayerInventory = CreateDefaultSubobject<UInventoryComponent>(TEXT("PlayerInventory"));
 	PlayerInventory->SetSlotsCapacity(20);
 	PlayerInventory->SetWeightCapacity(50.0f);
 
-	InteractionCheckFrequency = 0.1f;
-	InteractionCheckDistance = 225.0f;
+	InteractionComp = CreateDefaultSubobject<UInteractionComponent>(TEXT("InteractionComponent"));
+	// bEnableAutoCheck는 기본값이 true이므로 플레이어는 자동 라인트레이스가 작동합니다.
+
+	//InteractionCheckFrequency = 0.1f;
+	//InteractionCheckDistance = 225.0f;
 
 	// 1) Mesh 먼저 붙임
 	GetMesh()->SetupAttachment(RootComponent);
@@ -68,10 +76,12 @@ APlayerCharacter::APlayerCharacter()
 	// 1. 콜라이더 생성 및 설정
 	DetectionSphere123 = CreateDefaultSubobject<USphereComponent>(TEXT("SphereComp123"));
 	FlashlightMesh123 = CreateDefaultSubobject<USpotLightComponent>(TEXT("LightComp123"));
+	InteractionSight = CreateDefaultSubobject<USceneComponent>(TEXT("InteractionSight123"));
 
 	// 이 SceneComponent(FlashlightComponent) 밑에 콜라이더를 붙임
 	DetectionSphere123->SetupAttachment(FirstPersonCamera);
 	FlashlightMesh123->SetupAttachment(FirstPersonCamera);
+	InteractionSight->SetupAttachment(FirstPersonCamera);
 }
 
 void APlayerCharacter::ToggleFlashlight()
@@ -161,6 +171,26 @@ void APlayerCharacter::BeginPlay()
 	}
 
 	HUD = Cast<AMainHUD>(GetWorld()->GetFirstPlayerController()->GetHUD());
+
+	// 컴포넌트의 델리게이트와 HUD 업데이트 로직 바인딩
+	if (InteractionComp)
+	{
+		InteractionComp->OnInteractableFound.AddUObject(this, &APlayerCharacter::OnInteractableFound);
+		InteractionComp->OnInteractableLost.AddUObject(this, &APlayerCharacter::OnInteractableLost);
+
+		InteractionComp->InitializeInteraction(InteractionSight);
+	}
+}
+
+// 콜백 함수 구현
+void APlayerCharacter::OnInteractableFound(FInteractableData* InteractableData)
+{
+	if (HUD) HUD->UpdateInteractionWidget(InteractableData);
+}
+
+void APlayerCharacter::OnInteractableLost()
+{
+	if (HUD) HUD->HideInteractionWidget();
 }
 
 void APlayerCharacter::ActCrouch(float DeltaTime)
@@ -277,10 +307,10 @@ void APlayerCharacter::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
 
-	if (GetWorld()->TimeSince(InteractionData.LastInteractionCheckTime) > InteractionCheckFrequency)
+	/*if (GetWorld()->TimeSince(InteractionData.LastInteractionCheckTime) > InteractionCheckFrequency)
 	{
 		PerformInteractionCheck();
-	}
+	}*/
 
 	// ⭐ 스프린트 지속 시간 업데이트 로직 추가
 	UpdateSprintDuration(DeltaTime);
@@ -360,198 +390,200 @@ void APlayerCharacter::SetState(EPlayerPostureState PostureState)
 // ��ȣ �ۿ� �Լ�
 //=====================================================================
 
-void APlayerCharacter::PerformInteractionCheck()
+//void APlayerCharacter::PerformInteractionCheck()
+//{
+//	InteractionData.LastInteractionCheckTime = GetWorld()->GetTimeSeconds();
+//
+//	// 1. Ʈ���̽� ������ ����
+//	FVector TraceStart = GetPawnViewLocation();
+//
+//	// 2. Ʈ���̽� ���� ����
+//	// ���� �þ� ȸ��(GetViewRotation())�� ���� ���Ϳ� ��ȣ�ۿ� �Ÿ�(InteractionCheckDistance)�� ���Ͽ� ������ ����մϴ�.
+//	FVector TraceEnd = TraceStart + (GetViewRotation().Vector() * InteractionCheckDistance);
+//
+//	// ������ �ٶ󺸴��� ���� �ľ�
+//	//double LookDirection = FVector::DotProduct(GetActorForwardVector(), GetViewRotation().Vector());
+//	//if (LookDirection > 0)
+//	//{
+//		// ����, ���� �ð�, ���� �켱����, ����
+//		//DrawDebugLine(GetWorld(), TraceStart, TraceEnd, FColor::Red, false, 1.0f, 0, 2.0f);
+//
+//		// 3. ���� �Ķ���� ����
+//		FCollisionQueryParams QueryParams;
+//		// Ʈ���̽��� �����ϴ� ����(�ַ� �÷��̾� ĳ����)�� �����Ͽ� �ڱ� �ڽŰ� �浹���� �ʵ��� �մϴ�.
+//		QueryParams.AddIgnoredActor(this);
+//
+//		// 4. Ʈ���̽� ��� ����ü
+//		FHitResult TraceHit;
+//
+//		// 5. ���� Ʈ���̽� ����
+//		// GetWorld()->LineTraceSingleByChannel(���, ������, ����, �浹 ä��, ���� �Ķ����)
+//		if (GetWorld()->LineTraceSingleByChannel(TraceHit, TraceStart, TraceEnd, ECC_Visibility, QueryParams))
+//		{
+//			// 6. Ʈ���̽��� �ɸ� ���Ͱ� ��ȣ�ۿ� �������̽��� �����ߴ��� Ȯ��
+//			if (TraceHit.GetActor()->GetClass()->ImplementsInterface(UInteractionInterface::StaticClass()))
+//			{
+//				// 7. Ʈ���̽��� �ɸ� ��ü�� ���� ��ü�� �ƴϰų� (���ο� ��ȣ�ۿ� ���)
+//				//    ���� �Ÿ��� ��ȣ�ۿ� �Ÿ�(InteractionCheckDistance) �̳����� Ȯ��
+//				//const float Distance = (TraceStart - TraceHit.ImpactPoint).Size(); // �浹 ���������� �Ÿ� ���
+//				// && Distance <= InteractionCheckDistance
+//
+//				if (TraceHit.GetActor() != InteractionData.CurrentInteractable)
+//				{
+//					// ���ο� ��ȣ�ۿ� ���� ��ü�� �߰����� ���� ó�� �Լ� ȣ��
+//					FoundInteractable(TraceHit.GetActor());
+//					return;
+//				}
+//
+//				// 8. Ʈ���̽��� �ɸ� ��ü�� ���� ��ȣ�ۿ� ���� ��ü�� �����ϴٸ�
+//				if (TraceHit.GetActor() == InteractionData.CurrentInteractable)
+//				{
+//					// Ư���� ���� ��ȭ ���� �Լ� ���� (��ȣ�ۿ� ���� ���� ����)
+//					return;
+//				}
+//			}
+//		}
+//	//}
+//
+//	NoInteractableFound();
+//}
+//
+//void APlayerCharacter::FoundInteractable(AActor* NewInteractable)
+//{
+//	if (IsInteracting())
+//	{
+//		EndInteract();
+//	}
+//
+//	if (InteractionData.CurrentInteractable)
+//	{
+//		TargetInteractable = InteractionData.CurrentInteractable;
+//		TargetInteractable->EndFocus();
+//	}
+//
+//	InteractionData.CurrentInteractable = NewInteractable;
+//	TargetInteractable = NewInteractable;
+//
+//	UE_LOG(LogTemp, Warning,
+//		TEXT("name: %s, action: %s"),
+//		*TargetInteractable->InteractableData.Name.ToString(),
+//		*TargetInteractable->InteractableData.Action.ToString()
+//	);
+//
+//	HUD->UpdateInteractionWidget(&TargetInteractable->InteractableData);
+//	TargetInteractable->BeginFocus();
+//}
+//
+//
+
+// PlayerCharacter.cpp 구현
+void APlayerCharacter::UpdateInteractionWidget(FInteractableData* InteractableData)
 {
-	InteractionData.LastInteractionCheckTime = GetWorld()->GetTimeSeconds();
-
-	// 1. Ʈ���̽� ������ ����
-	FVector TraceStart = GetPawnViewLocation();
-
-	// 2. Ʈ���̽� ���� ����
-	// ���� �þ� ȸ��(GetViewRotation())�� ���� ���Ϳ� ��ȣ�ۿ� �Ÿ�(InteractionCheckDistance)�� ���Ͽ� ������ ����մϴ�.
-	FVector TraceEnd = TraceStart + (GetViewRotation().Vector() * InteractionCheckDistance);
-
-	// ������ �ٶ󺸴��� ���� �ľ�
-	//double LookDirection = FVector::DotProduct(GetActorForwardVector(), GetViewRotation().Vector());
-	//if (LookDirection > 0)
-	//{
-		// ����, ���� �ð�, ���� �켱����, ����
-		//DrawDebugLine(GetWorld(), TraceStart, TraceEnd, FColor::Red, false, 1.0f, 0, 2.0f);
-
-		// 3. ���� �Ķ���� ����
-		FCollisionQueryParams QueryParams;
-		// Ʈ���̽��� �����ϴ� ����(�ַ� �÷��̾� ĳ����)�� �����Ͽ� �ڱ� �ڽŰ� �浹���� �ʵ��� �մϴ�.
-		QueryParams.AddIgnoredActor(this);
-
-		// 4. Ʈ���̽� ��� ����ü
-		FHitResult TraceHit;
-
-		// 5. ���� Ʈ���̽� ����
-		// GetWorld()->LineTraceSingleByChannel(���, ������, ����, �浹 ä��, ���� �Ķ����)
-		if (GetWorld()->LineTraceSingleByChannel(TraceHit, TraceStart, TraceEnd, ECC_Visibility, QueryParams))
-		{
-			// 6. Ʈ���̽��� �ɸ� ���Ͱ� ��ȣ�ۿ� �������̽��� �����ߴ��� Ȯ��
-			if (TraceHit.GetActor()->GetClass()->ImplementsInterface(UInteractionInterface::StaticClass()))
-			{
-				// 7. Ʈ���̽��� �ɸ� ��ü�� ���� ��ü�� �ƴϰų� (���ο� ��ȣ�ۿ� ���)
-				//    ���� �Ÿ��� ��ȣ�ۿ� �Ÿ�(InteractionCheckDistance) �̳����� Ȯ��
-				//const float Distance = (TraceStart - TraceHit.ImpactPoint).Size(); // �浹 ���������� �Ÿ� ���
-				// && Distance <= InteractionCheckDistance
-
-				if (TraceHit.GetActor() != InteractionData.CurrentInteractable)
-				{
-					// ���ο� ��ȣ�ۿ� ���� ��ü�� �߰����� ���� ó�� �Լ� ȣ��
-					FoundInteractable(TraceHit.GetActor());
-					return;
-				}
-
-				// 8. Ʈ���̽��� �ɸ� ��ü�� ���� ��ȣ�ۿ� ���� ��ü�� �����ϴٸ�
-				if (TraceHit.GetActor() == InteractionData.CurrentInteractable)
-				{
-					// Ư���� ���� ��ȭ ���� �Լ� ���� (��ȣ�ۿ� ���� ���� ����)
-					return;
-				}
-			}
-		}
-	//}
-
-	NoInteractableFound();
-}
-
-void APlayerCharacter::FoundInteractable(AActor* NewInteractable)
-{
-	if (IsInteracting())
+	// HUD와 데이터가 유효한지 확인 후 업데이트
+	if (HUD && InteractableData)
 	{
-		EndInteract();
-	}
-
-	if (InteractionData.CurrentInteractable)
-	{
-		TargetInteractable = InteractionData.CurrentInteractable;
-		TargetInteractable->EndFocus();
-	}
-
-	InteractionData.CurrentInteractable = NewInteractable;
-	TargetInteractable = NewInteractable;
-
-	UE_LOG(LogTemp, Warning,
-		TEXT("name: %s, action: %s"),
-		*TargetInteractable->InteractableData.Name.ToString(),
-		*TargetInteractable->InteractableData.Action.ToString()
-	);
-
-	HUD->UpdateInteractionWidget(&TargetInteractable->InteractableData);
-	TargetInteractable->BeginFocus();
-}
-
-
-void APlayerCharacter::UpdateInteractionWidget() const
-{
-	if (IsValid(TargetInteractable.GetObject()))
-	{
-		HUD->UpdateInteractionWidget(&TargetInteractable->InteractableData);
+		HUD->UpdateInteractionWidget(InteractableData);
 	}
 }
-
 
 void APlayerCharacter::ToggleMenu()
 {
 	HUD->ToggleMenu();
 }
 
-void APlayerCharacter::NoInteractableFound()
-{
-	// 1. ��ȣ�ۿ� ���̾��ٸ� Ÿ�̸Ӹ� �����մϴ�.
-	if (IsInteracting())
-	{
-		// Ÿ�̸Ӱ� Ȱ��ȭ�Ǿ� ������ �ش� Ÿ�̸Ӹ� �����ϰ� �ڵ��� �����մϴ�.
-		GetWorldTimerManager().ClearTimer(TimerHandle_Interaction);
-		// ����: ��ũ�������� ���� ĸó(&)�� ������, FTimerHandle ������ ���� �����ϴ� ���� �Ϲ����Դϴ�.
-	}
-
-	// 2. ���� ��ȣ�ۿ� ����� �־��ٸ� ��Ŀ���� �����մϴ�.
-	if (InteractionData.CurrentInteractable)
-	{
-		// TargetInteractable�� IInteractionInterface�� ������ TScriptInterface�Դϴ�.
-		// GetObject()�� ���� UObject �����͸� ������ �� IsValid()�� ��ȿ���� �˻��մϴ�.
-		if (IsValid(TargetInteractable.GetObject()))
-		{
-			// �������̽� �Լ��� EndFocus()�� ȣ���Ͽ� ��ü�� ��Ŀ�� ���¸� �����մϴ�.
-			TargetInteractable->EndFocus();
-		}
-
-		HUD->HideInteractionWidget();
-
-		// // ��ȣ�ۿ� ������ HUD���� ����� ���� (�ּ����� ������)
-		// hide interaction widget on the HUD
-
-		// 3. �����͸� �ʱ�ȭ�մϴ�.
-		// CurrentInteractable ���� �����͸� nullptr�� �ʱ�ȭ�մϴ�.
-		InteractionData.CurrentInteractable = nullptr;
-
-		// TargetInteractable �������̽� �����͸� nullptr�� �ʱ�ȭ�մϴ�.
-		TargetInteractable = nullptr;
-	}
-}
-
-void APlayerCharacter::BeginInteract()
-{
-	// 1. ��ȣ�ۿ��� ������ �������� ���°� ������� �ʾҴ��� Ȯ���մϴ�.
-	// (��: Line Trace�� �ٽ� �����Ͽ� ���� �ٶ󺸴� ��ü�� ������ ��ȣ�ۿ� �������� Ȯ��)
-	PerformInteractionCheck();
-
-	// 2. InteractionData�� ��ȿ�� CurrentInteractable�� �ִ��� Ȯ���մϴ�.
-	if (InteractionData.CurrentInteractable)
-	{
-		// 3. TargetInteractable �������̽� �����Ͱ� ��ȿ���� Ȯ���մϴ�.
-		if (IsValid(TargetInteractable.GetObject()))
-		{
-			// �������̽� �Լ��� BeginInteract()�� ȣ���Ͽ� ��ȣ�ۿ� ��� ��ü�� ��ȣ�ۿ� ������ �˸��ϴ�.
-			TargetInteractable->BeginInteract();
-
-			// 4. ��ȣ�ۿ뿡 ���� �ð��� �ʿ����� Ȯ���մϴ�.
-			// FMath::IsNearlyZero�� �ε��Ҽ���(float) ���� 0�� ������� Ȯ���ϴ� ������ ����Դϴ�.
-			if (FMath::IsNearlyZero(TargetInteractable->InteractableData.InteractionDuration, 0.1f))
-			{
-				// ���� �ð��� 0�� �����ٸ� (��� ��ȣ�ۿ�)
-				Interact(); // Interact() �Լ��� ��� ȣ���մϴ�. (��ŸŸ�� 0.0f ����)
-			}
-			else
-			{
-				// ���� �ð��� �ִٸ� (��� ������ �ϴ� ��ȣ�ۿ�)
-				// Ÿ�̸Ӹ� �����Ͽ� ���� �ð� �Ŀ� Interact() �Լ��� �����ϵ��� �����մϴ�.
-				GetWorldTimerManager().SetTimer(
-					TimerHandle_Interaction,                                       // FTimerHandle: Ÿ�̸Ӹ� ������ �ڵ�
-					this,                                                          // InObj: �Լ��� ������ ��ü (���� Ŭ���� �ν��Ͻ�)
-					&APlayerCharacter::Interact,                                     // InRate: ������ �Լ� ������
-					TargetInteractable->InteractableData.InteractionDuration,      // Rate: Ÿ�̸� �ֱ� (���⼭�� ��ȣ�ۿ� ���� �ð�)
-					false                                                          // InbLoop: �ݺ� ���� (false: �� ���� ����)
-				);
-			}
-		}
-	}
-}
-
-void APlayerCharacter::EndInteract()
-{
-	GetWorldTimerManager().ClearTimer(TimerHandle_Interaction);
-
-	if (IsValid(TargetInteractable.GetObject()))
-	{
-		TargetInteractable->EndInteract();
-	}
-}
-
-
-void APlayerCharacter::Interact()
-{
-	GetWorldTimerManager().ClearTimer(TimerHandle_Interaction);
-
-	if (IsValid(TargetInteractable.GetObject()))
-	{
-		TargetInteractable->Interact(this);
-	}
-}
+//void APlayerCharacter::NoInteractableFound()
+//{
+//	// 1. ��ȣ�ۿ� ���̾��ٸ� Ÿ�̸Ӹ� �����մϴ�.
+//	if (IsInteracting())
+//	{
+//		// Ÿ�̸Ӱ� Ȱ��ȭ�Ǿ� ������ �ش� Ÿ�̸Ӹ� �����ϰ� �ڵ��� �����մϴ�.
+//		GetWorldTimerManager().ClearTimer(TimerHandle_Interaction);
+//		// ����: ��ũ�������� ���� ĸó(&)�� ������, FTimerHandle ������ ���� �����ϴ� ���� �Ϲ����Դϴ�.
+//	}
+//
+//	// 2. ���� ��ȣ�ۿ� ����� �־��ٸ� ��Ŀ���� �����մϴ�.
+//	if (InteractionData.CurrentInteractable)
+//	{
+//		// TargetInteractable�� IInteractionInterface�� ������ TScriptInterface�Դϴ�.
+//		// GetObject()�� ���� UObject �����͸� ������ �� IsValid()�� ��ȿ���� �˻��մϴ�.
+//		if (IsValid(TargetInteractable.GetObject()))
+//		{
+//			// �������̽� �Լ��� EndFocus()�� ȣ���Ͽ� ��ü�� ��Ŀ�� ���¸� �����մϴ�.
+//			TargetInteractable->EndFocus();
+//		}
+//
+//		HUD->HideInteractionWidget();
+//
+//		// // ��ȣ�ۿ� ������ HUD���� ����� ���� (�ּ����� ������)
+//		// hide interaction widget on the HUD
+//
+//		// 3. �����͸� �ʱ�ȭ�մϴ�.
+//		// CurrentInteractable ���� �����͸� nullptr�� �ʱ�ȭ�մϴ�.
+//		InteractionData.CurrentInteractable = nullptr;
+//
+//		// TargetInteractable �������̽� �����͸� nullptr�� �ʱ�ȭ�մϴ�.
+//		TargetInteractable = nullptr;
+//	}
+//}
+//
+//void APlayerCharacter::BeginInteract()
+//{
+//	// 1. ��ȣ�ۿ��� ������ �������� ���°� ������� �ʾҴ��� Ȯ���մϴ�.
+//	// (��: Line Trace�� �ٽ� �����Ͽ� ���� �ٶ󺸴� ��ü�� ������ ��ȣ�ۿ� �������� Ȯ��)
+//	PerformInteractionCheck();
+//
+//	// 2. InteractionData�� ��ȿ�� CurrentInteractable�� �ִ��� Ȯ���մϴ�.
+//	if (InteractionData.CurrentInteractable)
+//	{
+//		// 3. TargetInteractable �������̽� �����Ͱ� ��ȿ���� Ȯ���մϴ�.
+//		if (IsValid(TargetInteractable.GetObject()))
+//		{
+//			// �������̽� �Լ��� BeginInteract()�� ȣ���Ͽ� ��ȣ�ۿ� ��� ��ü�� ��ȣ�ۿ� ������ �˸��ϴ�.
+//			TargetInteractable->BeginInteract();
+//
+//			// 4. ��ȣ�ۿ뿡 ���� �ð��� �ʿ����� Ȯ���մϴ�.
+//			// FMath::IsNearlyZero�� �ε��Ҽ���(float) ���� 0�� ������� Ȯ���ϴ� ������ ����Դϴ�.
+//			if (FMath::IsNearlyZero(TargetInteractable->InteractableData.InteractionDuration, 0.1f))
+//			{
+//				// ���� �ð��� 0�� �����ٸ� (��� ��ȣ�ۿ�)
+//				Interact(); // Interact() �Լ��� ��� ȣ���մϴ�. (��ŸŸ�� 0.0f ����)
+//			}
+//			else
+//			{
+//				// ���� �ð��� �ִٸ� (��� ������ �ϴ� ��ȣ�ۿ�)
+//				// Ÿ�̸Ӹ� �����Ͽ� ���� �ð� �Ŀ� Interact() �Լ��� �����ϵ��� �����մϴ�.
+//				GetWorldTimerManager().SetTimer(
+//					TimerHandle_Interaction,                                       // FTimerHandle: Ÿ�̸Ӹ� ������ �ڵ�
+//					this,                                                          // InObj: �Լ��� ������ ��ü (���� Ŭ���� �ν��Ͻ�)
+//					&APlayerCharacter::Interact,                                     // InRate: ������ �Լ� ������
+//					TargetInteractable->InteractableData.InteractionDuration,      // Rate: Ÿ�̸� �ֱ� (���⼭�� ��ȣ�ۿ� ���� �ð�)
+//					false                                                          // InbLoop: �ݺ� ���� (false: �� ���� ����)
+//				);
+//			}
+//		}
+//	}
+//}
+//
+//void APlayerCharacter::EndInteract()
+//{
+//	GetWorldTimerManager().ClearTimer(TimerHandle_Interaction);
+//
+//	if (IsValid(TargetInteractable.GetObject()))
+//	{
+//		TargetInteractable->EndInteract();
+//	}
+//}
+//
+//
+//void APlayerCharacter::Interact()
+//{
+//	GetWorldTimerManager().ClearTimer(TimerHandle_Interaction);
+//
+//	if (IsValid(TargetInteractable.GetObject()))
+//	{
+//		TargetInteractable->Interact(this);
+//	}
+//}
 
 //=====================================================================
 // �Լ�
@@ -605,6 +637,12 @@ void APlayerCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInputCom
 
 			if (PlayerController->InteractAction)
 			{
+				EnhancedInput->BindAction(PlayerController->InteractAction, ETriggerEvent::Started, InteractionComp, &UInteractionComponent::BeginInteract);
+				EnhancedInput->BindAction(PlayerController->InteractAction, ETriggerEvent::Completed, InteractionComp, &UInteractionComponent::EndInteract);
+			}
+
+			/*if (PlayerController->InteractAction)
+			{
 				EnhancedInput->BindAction(
 					PlayerController->InteractAction,
 					ETriggerEvent::Started,
@@ -618,7 +656,7 @@ void APlayerCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInputCom
 					this,
 					&APlayerCharacter::EndInteract
 				);
-			}
+			}*/
 
 			if (PlayerController->ToggleMenuAction)
 			{

@@ -14,9 +14,10 @@
 // 델리게이트 선언 (매개변수가 없는 형태)
 DECLARE_DYNAMIC_MULTICAST_DELEGATE(FOnValveOpenedSignature);
 
+// 전방 선언 추가
+class IInteractorInterface;
 class USceneComponent;
 class UStaticMeshComponent;
-class APlayerCharacter;
 struct FInteractableData;
 
 UCLASS()
@@ -31,7 +32,7 @@ public:
 	// ----------------------------------------------------------------------
 	// IInteractionInterface 구현
 	// ----------------------------------------------------------------------
-	virtual void Interact(APlayerCharacter* PlayerCharacter) override;
+	virtual void Interact(IInteractorInterface* Interactor) override;
 	virtual void BeginFocus() override;
 	virtual void EndFocus() override;
 
@@ -75,7 +76,7 @@ protected:
 	// ----------------------------------------------------------------------
 	// 핵심 로직: Valve 열기 처리를 담당하는 함수
 	// ----------------------------------------------------------------------
-	virtual void HandleInteraction(APlayerCharacter* PlayerCharacter);
+	virtual void HandleInteraction(IInteractorInterface* Interactor);
 
 	// Called when the game starts or when spawned
 	virtual void BeginPlay() override;

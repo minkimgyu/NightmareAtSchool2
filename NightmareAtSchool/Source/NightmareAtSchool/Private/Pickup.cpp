@@ -3,7 +3,7 @@
 
 #include "Pickup.h"
 #include "Components/InventoryComponent.h"
-#include "PlayerCharacter.h"
+#include "InteractorInterface.h"
 
 // Sets default values
 APickup::APickup()
@@ -112,16 +112,16 @@ void APickup::EndFocus()
     }
 }
 
-void APickup::Interact(APlayerCharacter* PlayerCharacter)
+void APickup::Interact(IInteractorInterface* Interactor)
 {
-    if(PlayerCharacter)
+    if(Interactor)
     {
-        TakePickup(PlayerCharacter);
+        TakePickup(Interactor);
 	}
 }
 
 // 픽업을 가져가는 커스텀 함수
-void APickup::TakePickup(const APlayerCharacter* Taker)
+void APickup::TakePickup(IInteractorInterface* Interactor)
 {
     // 1. Kill Pending 상태 확인: 픽업 액터가 파괴 대기 중인지 확인합니다.
     if (!IsPendingKillPending())
@@ -130,7 +130,7 @@ void APickup::TakePickup(const APlayerCharacter* Taker)
         if (ItemReference)
         {
             // 3. 인벤토리 컴포넌트 가져오기: Taker 캐릭터로부터 인벤토리 컴포넌트를 가져옵니다.
-            if (UInventoryComponent* PlayerInventory = Taker->GetInventory())
+            if (UInventoryComponent* PlayerInventory = Interactor->GetInventory())
             {
                 // 4. 아이템 처리 시도: 인벤토리에 아이템을 추가하는 핸들러를 호출합니다.
                 const FItemAddResult AddResult = PlayerInventory->HandleAddItem(ItemReference);

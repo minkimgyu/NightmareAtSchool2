@@ -2,7 +2,7 @@
 
 
 #include "InteractionInterface.h"
-#include "PlayerCharacter.h"
+#include "InteractorInterface.h"
 
 // Add default functionality here for any IInteractionInterface functions that are not pure virtual.
 
@@ -31,6 +31,6 @@ void IInteractionInterface::EndInteract()
 /**
  * 실제 상호작용 처리 인터페이스 함수 오버라이드
  */
-void IInteractionInterface::Interact(APlayerCharacter* PlayerCharacter)
+void IInteractionInterface::Interact(IInteractorInterface* Interactor)
 {
 }

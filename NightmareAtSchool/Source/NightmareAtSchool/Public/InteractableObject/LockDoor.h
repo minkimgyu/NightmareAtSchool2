@@ -6,6 +6,8 @@
 #include "InteractableObject/PushPullDoor.h"
 #include "LockDoor.generated.h"
 
+class IInteractorInterface;
+
 UCLASS()
 class NIGHTMAREATSCHOOL_API ALockDoor : public APushPullDoor
 {
@@ -40,13 +42,13 @@ protected:
     // ----------------------------------------------------------------------
 
     /** 부모 클래스의 상호 작용 로직을 오버라이드하여 잠금 해제 로직을 추가합니다. */
-    virtual void HandleInteraction(APlayerCharacter* PlayerCharacter) override;
+    virtual void HandleInteraction(IInteractorInterface* Interactor) override;
 
     /**
      * @brief 플레이어의 인벤토리를 확인하여 문을 열 수 있는 자격이 있는지 검사합니다.
      * @param PlayerCharacter 검사할 플레이어입니다.
      * @return 요구 사항이 충족되면 true, 아니면 false를 반환합니다.
      */
-    bool CanUnlockDoor(APlayerCharacter* PlayerCharacter) const;
+    bool CanUnlockDoor(IInteractorInterface* Interactor) const;
 
 };

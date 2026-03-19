@@ -6,8 +6,8 @@
 #include "InteractionInterface.h" // APlayerCharacter.h에서 사용되던 인터페이스
 
 #include "Components/StaticMeshComponent.h"
-
-#include "PlayerCharacter.h" // Interact 함수에서 사용
+#include "Components/InventoryComponent.h"
+#include "InteractorInterface.h"
 
 // Sets default values
 AElectricBox::AElectricBox()
@@ -56,10 +56,10 @@ void AElectricBox::Tick(float DeltaTime)
 	Super::Tick(DeltaTime);
 }
 
-void AElectricBox::Interact(APlayerCharacter* PlayerCharacter)
+void AElectricBox::Interact(IInteractorInterface* Interactor)
 {
 	// 문 상호작용을 처리하는 핵심 로직 호출
-	HandleInteraction(PlayerCharacter);
+	HandleInteraction(Interactor);
 }
 
 void AElectricBox::BeginFocus()
@@ -75,18 +75,18 @@ void AElectricBox::EndFocus()
 }
 
 // ADoorBase의 HandleInteraction 기본 구현 (빈 함수 또는 간단한 로직)
-void AElectricBox::HandleInteraction(APlayerCharacter* PlayerCharacter)
+void AElectricBox::HandleInteraction(IInteractorInterface* Interactor)
 {
 	//Super::HandleInteraction(PlayerCharacter);
 
-	if (!PlayerCharacter) return;
+	if (!Interactor) return;
 	if (bIsPlanted) return;
-	if (CanInstallElectricBox(PlayerCharacter) == false) return;
+	if (CanInstallElectricBox(Interactor) == false) return;
 
 	if (bIsPlanted == false)
 	{
 		// 아이템 제거
-		UInventoryComponent* Inventory = PlayerCharacter->FindComponentByClass<UInventoryComponent>();
+		UInventoryComponent* Inventory = Interactor->GetInventory();
 		Inventory->RemoveItemByID(RequiredItemID, RequiredItemAmount);
 
 		// 닫는 로직 (C++ 회전 시작)
@@ -102,15 +102,15 @@ void AElectricBox::HandleInteraction(APlayerCharacter* PlayerCharacter)
 	// 로그를 찍어서 함수가 실행되는지 확인하세요!
 	UE_LOG(LogTemp, Warning, TEXT("Box Interacted! bIsPlanted: %s"), bIsPlanted ? TEXT("True") : TEXT("False"));
 
-	PlayerCharacter->UpdateInteractionWidget();
+	Interactor->UpdateInteractionWidget(&InteractableData);
 }
 
-bool AElectricBox::CanInstallElectricBox(APlayerCharacter* PlayerCharacter) const
+bool AElectricBox::CanInstallElectricBox(IInteractorInterface* Interactor) const
 {
-	if (!PlayerCharacter) return false;
+	if (!Interactor) return false;
 
 	// 1. 플레이어의 인벤토리 컴포넌트 가져오기
-	UInventoryComponent* Inventory = PlayerCharacter->FindComponentByClass<UInventoryComponent>();
+	UInventoryComponent* Inventory = Interactor->GetInventory();
 
 	if (!Inventory)
 	{

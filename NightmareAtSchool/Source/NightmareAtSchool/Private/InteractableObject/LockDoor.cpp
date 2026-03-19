@@ -2,8 +2,9 @@
 
 
 #include "InteractableObject/LockDoor.h"
-#include "PlayerCharacter.h"
 #include "Components/InventoryComponent.h"
+#include "InteractorInterface.h"
+
 #include "Kismet/GameplayStatics.h" // UGameplayStatics 사용을 위해 필요
 
 ALockDoor::ALockDoor()
@@ -24,22 +25,22 @@ void ALockDoor::BeginPlay()
 }
 
 
-void ALockDoor::HandleInteraction(APlayerCharacter* PlayerCharacter)
+void ALockDoor::HandleInteraction(IInteractorInterface* Interactor)
 {
-    if (!PlayerCharacter) return;
+    if (!Interactor) return;
 
     // 1. 문이 열려있는 상태이거나, 이미 영구적으로 잠금 해제된 상태라면,
     //    조건 검사 없이 바로 부모 클래스의 여닫기 로직을 실행합니다.
     if (bIsOpen || bIsPermanentlyUnlocked) // ⬅️ 영구 해제 상태 검사 추가
     {
-        Super::HandleInteraction(PlayerCharacter);
+        Super::HandleInteraction(Interactor);
         return;
     }
 
     // 2. 문이 닫혀있고, 영구 해제되지 않은 상태라면, 잠금 해제 조건을 검사합니다.
-    if (CanUnlockDoor(PlayerCharacter))
+    if (CanUnlockDoor(Interactor))
     {
-        UInventoryComponent* Inventory = PlayerCharacter->FindComponentByClass<UInventoryComponent>();
+        UInventoryComponent* Inventory = Interactor->GetInventory();
         Inventory->RemoveItemByID(RequiredItemID, RequiredItemAmount); // 아이템 제거
 
 
@@ -48,7 +49,7 @@ void ALockDoor::HandleInteraction(APlayerCharacter* PlayerCharacter)
         InteractableData.Action = FText::FromString("Close");
 
         // 2-2. 부모(APushPullDoor)의 상호 작용 로직을 실행 (문을 엽니다).
-        Super::HandleInteraction(PlayerCharacter);
+        Super::HandleInteraction(Interactor);
 
         // 2-3. 잠금 해제 성공 메시 (선택 사항)
         FText UnlockMsg = FText::Format(FText::FromString("{0}을(를) 사용하여 문을 잠금 해제했습니다!"), FText::FromName(RequiredItemID));
@@ -70,12 +71,12 @@ void ALockDoor::HandleInteraction(APlayerCharacter* PlayerCharacter)
     }
 }
 
-bool ALockDoor::CanUnlockDoor(APlayerCharacter* PlayerCharacter) const
+bool ALockDoor::CanUnlockDoor(IInteractorInterface* Interactor) const
 {
-    if (!PlayerCharacter) return false;
+    if (!Interactor) return false;
 
     // 1. 플레이어의 인벤토리 컴포넌트 가져오기
-    UInventoryComponent* Inventory = PlayerCharacter->FindComponentByClass<UInventoryComponent>();
+    UInventoryComponent* Inventory = Interactor->GetInventory();
 
     if (!Inventory)
     {

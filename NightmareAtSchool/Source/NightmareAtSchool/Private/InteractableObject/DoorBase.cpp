@@ -8,7 +8,7 @@
 #include "Components/StaticMeshComponent.h"
 
 
-#include "PlayerCharacter.h" // Interact 함수에서 사용
+#include "InteractorInterface.h"
 
 ADoorBase::ADoorBase()
 {
@@ -56,10 +56,10 @@ void ADoorBase::Tick(float DeltaTime)
     // ADoorBase에서 Tick 시 실행할 로직 (예: 문 애니메이션 업데이트 등)
 }
 
-void ADoorBase::Interact(APlayerCharacter* PlayerCharacter)
+void ADoorBase::Interact(IInteractorInterface* Interactor)
 {
     // 문 상호작용을 처리하는 핵심 로직 호출
-    HandleInteraction(PlayerCharacter);
+    HandleInteraction(Interactor);
 }
 
 void ADoorBase::BeginFocus()
@@ -75,7 +75,7 @@ void ADoorBase::EndFocus()
 }
 
 // ADoorBase의 HandleInteraction 기본 구현 (빈 함수 또는 간단한 로직)
-void ADoorBase::HandleInteraction(APlayerCharacter* PlayerCharacter)
+void ADoorBase::HandleInteraction(IInteractorInterface* Interactor)
 {
     // HUD 업데이트
    /* if (PlayerCharacter)

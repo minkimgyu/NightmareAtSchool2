@@ -2,7 +2,8 @@
 
 
 #include "InterfaceTestActor.h"
-#include "PlayerCharacter.h"
+#include "InteractorInterface.h"
+
 
 // Sets default values
 AInterfaceTestActor::AInterfaceTestActor()
@@ -65,7 +66,7 @@ void AInterfaceTestActor::EndInteract()
 /**
  * 실제 상호작용 처리 인터페이스 함수 오버라이드
  */
-void AInterfaceTestActor::Interact(APlayerCharacter* PlayerCharacter)
+void AInterfaceTestActor::Interact(IInteractorInterface* Interactor)
 {
 	// 인터페이스 테스트 액터에서 Interact 오버라이드가 호출되었음을 경고 레벨로 로그 출력
 	UE_LOG(LogTemp, Warning, TEXT("Calling Interact override on interface test actor."));

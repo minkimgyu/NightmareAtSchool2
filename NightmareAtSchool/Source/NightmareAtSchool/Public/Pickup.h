@@ -9,6 +9,8 @@
 
 #include "Pickup.generated.h"
 
+// 전방 선언 추가
+class IInteractorInterface;
 class UDataTable;
 class UItemBase;
 
@@ -56,11 +58,11 @@ protected:
 
     // FUNCTIONS
     virtual void BeginPlay() override;
-	virtual void Interact(APlayerCharacter* PlayerCharacter) override; // [00:04:21]
+	virtual void Interact(IInteractorInterface* Interactor) override; // [00:04:21]
 
 	void UpdateInteractableData();
 
-	void TakePickup(const APlayerCharacter* PlayerCharacter);
+	void TakePickup(IInteractorInterface* Interactor);
 
 #if WITH_EDITOR
 	virtual void PostEditChangeProperty(FPropertyChangedEvent& PropertyChangedEvent);

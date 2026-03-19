@@ -2,11 +2,11 @@
 
 
 #include "InteractableObject/SlidingDoor.h"
-#include "PlayerCharacter.h"
 
 #include "InteractableObject/DoorBase.h"
 
 #include "InteractionInterface.h"
+#include "InteractorInterface.h"
 
 #include "Components/StaticMeshComponent.h"
 #include "Components/SceneComponent.h" // USceneComponent 사용을 위해 필요
@@ -73,9 +73,9 @@ void ASlidingDoor::Tick(float DeltaTime)
     SlideDoor(DeltaTime);
 }
 
-void ASlidingDoor::HandleInteraction(APlayerCharacter* PlayerCharacter)
+void ASlidingDoor::HandleInteraction(IInteractorInterface* Interactor)
 {
-    Super::HandleInteraction(PlayerCharacter);
+    Super::HandleInteraction(Interactor);
 
     // ADoorBase의 InteractableData 및 bIsOpen 상태만 토글합니다.
     // Tick 함수가 나머지 작업을 처리합니다.
@@ -93,7 +93,7 @@ void ASlidingDoor::HandleInteraction(APlayerCharacter* PlayerCharacter)
         InteractableData.Action = FText::FromString("Close");
     }
 
-    PlayerCharacter->UpdateInteractionWidget();
+    Interactor->UpdateInteractionWidget(&InteractableData);
 }
 
 void ASlidingDoor::SlideDoor(float DeltaTime)

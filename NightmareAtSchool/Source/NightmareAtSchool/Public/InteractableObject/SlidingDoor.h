@@ -8,7 +8,7 @@
 
 #include "SlidingDoor.generated.h"
 
-class APlayerCharacter;
+class IInteractorInterface;
 
 UCLASS()
 class NIGHTMAREATSCHOOL_API ASlidingDoor : public ADoorBase
@@ -62,7 +62,7 @@ protected:
 
 	// 여기서는 ADoorBase의 OpenDoor/CloseDoor Blueprint 이벤트 대신,
 	// ADoorBase::HandleInteraction을 오버라이드하여 C++ 로직을 사용하겠습니다.
-	virtual void HandleInteraction(APlayerCharacter* PlayerCharacter) override;
+	virtual void HandleInteraction(IInteractorInterface* Interactor) override;
 
 private:
 	// ----------------------------------------------------------------------

@@ -10,9 +10,10 @@
 
 #include "DoorBase.generated.h"
 
+// 전방 선언 추가
+class IInteractorInterface;
 class USceneComponent;
 class UStaticMeshComponent;
-class APlayerCharacter;
 struct FInteractableData;
 
 UCLASS()
@@ -27,7 +28,7 @@ public:
 	// ----------------------------------------------------------------------
 	// IInteractionInterface 구현
 	// ----------------------------------------------------------------------
-	virtual void Interact(APlayerCharacter* PlayerCharacter) override;
+	virtual void Interact(IInteractorInterface* Interactor) override;
 	virtual void BeginFocus() override;
 	virtual void EndFocus() override;
 
@@ -62,7 +63,7 @@ protected:
 	// ----------------------------------------------------------------------
 	// 핵심 로직: 문 열기/닫기 처리를 담당하는 함수
 	// ----------------------------------------------------------------------
-	virtual void HandleInteraction(APlayerCharacter* PlayerCharacter);
+	virtual void HandleInteraction(IInteractorInterface* Interactor);
 
 
 	// Called when the game starts or when spawned
