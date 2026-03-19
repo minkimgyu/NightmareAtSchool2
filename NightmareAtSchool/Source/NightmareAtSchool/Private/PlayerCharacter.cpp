@@ -84,6 +84,24 @@ APlayerCharacter::APlayerCharacter()
 	InteractionSight->SetupAttachment(FirstPersonCamera);
 }
 
+float APlayerCharacter::TakeDamage(float DamageAmount, struct FDamageEvent const& DamageEvent, class AController* EventInstigator, AActor* DamageCauser)
+{
+	float ActualDamage = Super::TakeDamage(DamageAmount, DamageEvent, EventInstigator, DamageCauser);
+
+	// 체력 감소
+	Health -= ActualDamage;
+
+	UE_LOG(LogTemp, Warning, TEXT("Player Health: %f"), Health);
+
+	if (Health <= 0.0f)
+	{
+		// 사망 처리 로직 호출
+		UE_LOG(LogTemp, Error, TEXT("Player is Dead!"));
+	}
+
+	return ActualDamage;
+}
+
 void APlayerCharacter::ToggleFlashlight()
 {
 	if (FlashlightComponent)

@@ -82,6 +82,15 @@ public:
 	//=====================================================================
 	// Sets default values for this character's properties
 	APlayerCharacter();
+
+	// Actor의 TakeDamage 오버라이드
+	virtual float TakeDamage(float DamageAmount, struct FDamageEvent const& DamageEvent, class AController* EventInstigator, AActor* DamageCauser) override;
+
+	// 체력 변수
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Status")
+	float Health = 100.0f;
+
+
 	void ToggleMenu();
 	
 
