@@ -5,6 +5,8 @@
 #include "UserInterface/MainHUD.h"
 #include "TimerManager.h"
 
+#include "Kismet/GameplayStatics.h" // PlaySoundAtLocation 사용을 위해 필요
+
 #include "Quest/QueseManagerCompoent.h"
 
 #include "Camera/CameraComponent.h" // 카메라
@@ -320,15 +322,55 @@ void APlayerCharacter::StartSprintCooldown()
 	// 여기서는 TimerHandle을 그대로 두고, CanSprint()에서 IsTimerActive로 체크합니다.
 }
 
+void APlayerCharacter::PlayFootstepSound()
+{
+	// 왼발/오른발 상태에 따라 사운드 선택
+	USoundBase* SoundToPlay = bIsLeftFoot ? FootstepSound_Left : FootstepSound_Right;
+
+	if (SoundToPlay)
+	{
+		// 캐릭터 발 위치 근처에서 사운드 재생
+		UGameplayStatics::PlaySoundAtLocation(this, SoundToPlay, GetActorLocation());
+	}
+
+	// 다음 실행 시 반대 발 소리가 나도록 토글
+	bIsLeftFoot = !bIsLeftFoot;
+}
+
 // Called every frame
 void APlayerCharacter::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
 
-	/*if (GetWorld()->TimeSince(InteractionData.LastInteractionCheckTime) > InteractionCheckFrequency)
+	// 1. 이동 및 접지 상태 확인
+	float Speed = GetVelocity().Size();
+	bool bIsMoving = Speed > 10.0f;
+	bool bIsOnGround = !GetCharacterMovement()->IsFalling();
+
+	if (bIsMoving && bIsOnGround)
 	{
-		PerformInteractionCheck();
-	}*/
+		// 2. 현재 상태(Walk/Sprint)에 따른 목표 딜레이 결정
+		float TargetDelay = (PlayerActionState == EPlayerActionState::Sprint) ? RunFootstepDelay : WalkFootstepDelay;
+
+		// 3. 딜레이가 바뀌었거나(걷다 뛰기 시작 등) 타이머가 꺼져있을 때만 타이머 갱신
+		if (!FMath::IsNearlyEqual(TargetDelay, CurrentFootstepDelay) || !GetWorldTimerManager().IsTimerActive(FootstepTimerHandle))
+		{
+			CurrentFootstepDelay = TargetDelay;
+
+			// 기존 타이머가 있다면 초기화하고 새로운 주기로 시작
+			GetWorldTimerManager().SetTimer(FootstepTimerHandle, this, &APlayerCharacter::PlayFootstepSound, CurrentFootstepDelay, true);
+		}
+	}
+	else
+	{
+		// 멈추거나 공중이면 타이머 즉시 해제
+		if (GetWorldTimerManager().IsTimerActive(FootstepTimerHandle))
+		{
+			GetWorldTimerManager().ClearTimer(FootstepTimerHandle);
+			CurrentFootstepDelay = 0.0f;
+			bIsLeftFoot = true; // 다음에 걸을 때 다시 왼발부터 시작하도록 초기화
+		}
+	}
 
 	// ⭐ 스프린트 지속 시간 업데이트 로직 추가
 	UpdateSprintDuration(DeltaTime);

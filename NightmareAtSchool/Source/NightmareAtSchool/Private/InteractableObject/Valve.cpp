@@ -9,6 +9,9 @@
 
 #include "InteractorInterface.h"
 
+#include "Kismet/GameplayStatics.h" // PlaySoundAtLocation 사용을 위해 필요
+
+
 // Sets default values
 AValve::AValve()
 {
@@ -123,7 +126,11 @@ void AValve::HandleInteraction(IInteractorInterface* Interactor)
         // 등록된 모든 리스너에게 이벤트 전송 (블루프린트의 Call)
         OnValveOpened.Broadcast();
 
-        
+        if (ValveLockSound)
+        {
+            FVector SoundLocation = GetActorLocation();
+            UGameplayStatics::PlaySoundAtLocation(this, ValveLockSound, SoundLocation);
+        }
     }
 
     // 로그를 찍어서 함수가 실행되는지 확인하세요!

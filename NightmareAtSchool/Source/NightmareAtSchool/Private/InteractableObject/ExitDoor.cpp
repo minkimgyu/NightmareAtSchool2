@@ -3,7 +3,6 @@
 
 #include "InteractableObject/ExitDoor.h"
 #include "Components/InventoryComponent.h"
-#include "Kismet/GameplayStatics.h" // UGameplayStatics 사용을 위해 필요
 #include "InteractorInterface.h"
 
 AExitDoor::AExitDoor()

@@ -45,6 +45,12 @@ public:
 	//FInteractableData InteractableData;
 
 protected:
+
+	/** 3. 문 열리는 소리 */
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Sound | Interaction")
+	class USoundBase* ValveLockSound;
+
+
 	// ----------------------------------------------------------------------
 	// 컴포넌트
 	// ----------------------------------------------------------------------

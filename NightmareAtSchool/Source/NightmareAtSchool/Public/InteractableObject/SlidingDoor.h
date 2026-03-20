@@ -40,6 +40,11 @@ protected:
 	UStaticMeshComponent* RightDoorMesh;
 
 
+	/** 3. 문 열리는 소리 */
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Sound | Interaction")
+	class USoundBase* DoorOpenSound;
+
+
 	/** 문 닫힘 위치 (ADoorBase::DoorMesh의 초기 위치) */
 	FVector ClosedLocationLeft;
 	FVector ClosedLocationRight;

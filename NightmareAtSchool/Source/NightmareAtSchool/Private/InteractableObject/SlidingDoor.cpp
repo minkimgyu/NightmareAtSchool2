@@ -11,6 +11,9 @@
 #include "Components/StaticMeshComponent.h"
 #include "Components/SceneComponent.h" // USceneComponent 사용을 위해 필요
 
+#include "Kismet/GameplayStatics.h" // PlaySoundAtLocation 사용을 위해 필요
+
+
 // Sets default values
 ASlidingDoor::ASlidingDoor()
 {
@@ -91,6 +94,13 @@ void ASlidingDoor::HandleInteraction(IInteractorInterface* Interactor)
         // 열기 상태로 전환
         bIsOpen = true;
         InteractableData.Action = FText::FromString("Close");
+    }
+
+    if (DoorOpenSound)
+    {
+        // 소리가 캐릭터 위치가 아닌 '문'의 위치에서 나게 하여 입체감을 줍니다.
+        FVector SoundLocation = GetActorLocation();
+        UGameplayStatics::PlaySoundAtLocation(this, DoorOpenSound, SoundLocation);
     }
 
     Interactor->UpdateInteractionWidget(&InteractableData);

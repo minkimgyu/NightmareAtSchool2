@@ -43,6 +43,10 @@ protected:
 	// Called when the game starts or when spawned
 	virtual void BeginPlay() override;
 
+	/** 3. 문 열리는 소리 */
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Sound | Interaction")
+	class USoundBase* BoxInstallSound;
+
 	// ----------------------------------------------------------------------
 	// 컴포넌트
 	// ----------------------------------------------------------------------

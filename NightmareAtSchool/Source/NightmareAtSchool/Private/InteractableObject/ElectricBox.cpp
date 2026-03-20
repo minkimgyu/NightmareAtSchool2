@@ -9,6 +9,8 @@
 #include "Components/InventoryComponent.h"
 #include "InteractorInterface.h"
 
+#include "Kismet/GameplayStatics.h" // PlaySoundAtLocation 사용을 위해 필요
+
 // Sets default values
 AElectricBox::AElectricBox()
 {
@@ -94,6 +96,13 @@ void AElectricBox::HandleInteraction(IInteractorInterface* Interactor)
 
 		// 등록된 모든 리스너에게 이벤트 전송 (블루프린트의 Call)
 		OnElectricBoxInstalled.Broadcast();
+
+
+		if (BoxInstallSound)
+		{
+			FVector SoundLocation = GetActorLocation();
+			UGameplayStatics::PlaySoundAtLocation(this, BoxInstallSound, SoundLocation);
+		}
 
 		// 렌더링을 활성화하여 보이게 만듦
 		BoxMesh->SetHiddenInGame(false);

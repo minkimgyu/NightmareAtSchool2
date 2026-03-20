@@ -6,6 +6,7 @@
 #include "InteractionInterface.h" // APlayerCharacter.h에서 사용되던 인터페이스
 #include "InteractorInterface.h"
 
+#include "Kismet/GameplayStatics.h" // PlaySoundAtLocation 사용을 위해 필요
 
 #include "InteractableObject/DoorBase.h"
 
@@ -115,18 +116,32 @@ void APushPullDoor::RotateDoor(float DeltaTime)
 
 void APushPullDoor::HandleInteraction(IInteractorInterface* Interactor)
 {
-    Super::HandleInteraction(Interactor);
-
     if (!Interactor) return;
+
+    Super::HandleInteraction(Interactor);
 
     if (bIsOpen)
     {
+        if (DoorCloseSound)
+        {
+            // 소리가 캐릭터 위치가 아닌 '문'의 위치에서 나게 하여 입체감을 줍니다.
+            FVector SoundLocation = GetActorLocation();
+            UGameplayStatics::PlaySoundAtLocation(this, DoorCloseSound, SoundLocation);
+        }
+
         // 닫는 로직 (C++ 회전 시작)
         bIsOpen = false;
         InteractableData.Action = FText::FromString("Open"); // ⬅️ ActionName으로 수정
     }
     else
     {
+        if (DoorOpenSound)
+        {
+            // 소리가 캐릭터 위치가 아닌 '문'의 위치에서 나게 하여 입체감을 줍니다.
+            FVector SoundLocation = GetActorLocation();
+            UGameplayStatics::PlaySoundAtLocation(this, DoorOpenSound, SoundLocation);
+        }
+
         // 여는 로직 (C++ 회전 시작)
         bIsOpen = true;
 
@@ -144,6 +159,7 @@ void APushPullDoor::HandleInteraction(IInteractorInterface* Interactor)
 
         InteractableData.Action = FText::FromString("Close"); // ⬅️ ActionName으로 수정
     }
+
 
     // 회전을 시작하기 위해 Tick을 활성화합니다.
     SetActorTickEnabled(true);

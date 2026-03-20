@@ -33,6 +33,18 @@ protected:
 	// Called when the game starts or when spawned
 	virtual void BeginPlay() override;
 
+
+	/** 3. 巩 凯府绰 家府 */
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Sound | Interaction")
+	class USoundBase* DoorOpenSound;
+
+	/** 3. 巩 凯府绰 家府 */
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Sound | Interaction")
+	class USoundBase* DoorCloseSound;
+
+
+
+
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Door | Components")
 	UStaticMeshComponent* LeftDoorMesh;
 

@@ -154,7 +154,38 @@ private:
 	/** 스프린트 사용 가능 여부를 확인합니다. */
 	bool CanSprint() const;
 
+
 protected:
+
+	/** 왼발 소리 에셋 */
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Sound")
+	class USoundBase* FootstepSound_Left;
+
+	/** 오른발 소리 에셋 */
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Sound")
+	class USoundBase* FootstepSound_Right;
+
+	/** 걷기 발소리 간격 (기본 0.55초) */
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Sound")
+	float WalkFootstepDelay = 0.55f;
+
+	/** 뛰기 발소리 간격 (기본 0.3초) */
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Sound")
+	float RunFootstepDelay = 0.3f;
+
+	/** 현재 적용 중인 발소리 딜레이 저장용 */
+	float CurrentFootstepDelay = 0.0f;
+
+	/** 현재 어떤 발소리를 낼지 (true: 왼발, false: 오른발) */
+	bool bIsLeftFoot = true;
+
+	/** 발소리 재생 함수 */
+	void PlayFootstepSound();
+
+	/** 발소리 타이머 핸들러 */
+	FTimerHandle FootstepTimerHandle;
+
+
 
 	// 새로 추가할 상호작용 컴포넌트
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Components")
