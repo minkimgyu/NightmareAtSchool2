@@ -17,12 +17,15 @@ class NIGHTMAREATSCHOOL_API UAttackPlayer : public UBTTaskNode
 public:
     UAttackPlayer();
 
+    void PerformBoxOverlapAttack(ACharacter* Attacker, AAIController* Controller);
+
 protected:
     // Task가 시작될 때 호출
     virtual EBTNodeResult::Type ExecuteTask(UBehaviorTreeComponent& OwnerComp, uint8* NodeMemory) override;
 
     // Task 진행 중 매 프레임 호출 (애니메이션 대기용)
     virtual void TickTask(UBehaviorTreeComponent& OwnerComp, uint8* NodeMemory, float DeltaSeconds) override;
+
 
     // 에디터에서 할당할 공격 몽타주
     UPROPERTY(EditAnywhere, Category = "Attack")

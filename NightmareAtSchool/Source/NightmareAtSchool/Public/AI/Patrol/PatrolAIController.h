@@ -58,7 +58,7 @@ protected:
     float LoseSightRadius = 1000.f;
 
     UPROPERTY(EditAnywhere, Category = "AI|Sight")
-    float SightAngle = 360; // 이제 360도이므로 원형으로 그려집니다.
+    float SightAngle = 120; // 이제 360도이므로 원형으로 그려집니다.
 
     UPROPERTY(EditAnywhere, Category = "AI|Hearing")
     float HearingRange = 1500.f;
