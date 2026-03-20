@@ -16,6 +16,8 @@ State_BlackFigure_MoveToward::~State_BlackFigure_MoveToward()
 void State_BlackFigure_MoveToward::Enter()
 {
 	AIComp->BlackboardComp->SetValueAsName(TEXT("State"), FName("MoveToward"));
+	float MovementSpeed = BBComp->GetValueAsFloat(TEXT("MovementSpeed"));
+	AIComp->BlackboardComp->SetValueAsFloat(TEXT("Speed"), MovementSpeed);
 }
 
 EGhostState State_BlackFigure_MoveToward::InputHandler()

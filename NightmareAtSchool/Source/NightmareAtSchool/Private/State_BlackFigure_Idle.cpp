@@ -17,6 +17,8 @@ State_BlackFigure_Idle::~State_BlackFigure_Idle()
 void State_BlackFigure_Idle::Enter()
 {
 	AIComp->BlackboardComp->SetValueAsName(TEXT("State"), FName("Idle"));
+	float PatrolSpeed = BBComp->GetValueAsFloat(TEXT("PatrolSpeed"));
+	AIComp->BlackboardComp->SetValueAsFloat(TEXT("Speed"), PatrolSpeed);
 }
 
 EGhostState State_BlackFigure_Idle::InputHandler()

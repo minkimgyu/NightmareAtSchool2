@@ -4,7 +4,7 @@
 
 
 #include "AI/Patrol/PatrolAIController.h"          // ★ 반드시 필요
-#include "GameFramework/Character.h"         // 보통 포함되어 있음
+#include "GameFramework/Character.h"         // 보통 포함되어 있음                                                 
 
 // Sets default values
 APatrolAICharacter::APatrolAICharacter()
