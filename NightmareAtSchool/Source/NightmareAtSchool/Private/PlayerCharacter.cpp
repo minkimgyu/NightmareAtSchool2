@@ -431,23 +431,23 @@ void APlayerCharacter::Tick(float DeltaTime)
 	UpdateSprintDuration(DeltaTime);
 
 	// 자동 회복 로직
-	//if (bCanRegen && Health < MaxHealth)
-	//{
-	//	Health += HealthRegenRate * DeltaTime;
+	if (bCanRegen && Health < MaxHealth)
+	{
+		Health += HealthRegenRate * DeltaTime;
 
-	//	// MaxHealth를 넘지 않도록 제한
-	//	Health = FMath::Min(Health, MaxHealth);
+		// MaxHealth를 넘지 않도록 제한
+		Health = FMath::Min(Health, MaxHealth);
 
-	//	// HUD 업데이트
-	//	if (HUD) HUD->UpdateHPUI(Health);
+		// HUD 업데이트
+		if (HUD) HUD->UpdateHPUI(Health);
 
-	//	// 풀피가 되면 회복 중단
-	//	if (Health >= MaxHealth)
-	//	{
-	//		bCanRegen = false;
-	//		UE_LOG(LogTemp, Log, TEXT("Health Fully Restored"));
-	//	}
-	//}
+		// 풀피가 되면 회복 중단
+		if (Health >= MaxHealth)
+		{
+			bCanRegen = false;
+			UE_LOG(LogTemp, Log, TEXT("Health Fully Restored"));
+		}
+	}
 
 	ActCrouch(DeltaTime);
 }

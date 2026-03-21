@@ -50,8 +50,7 @@ void UAttackPlayer::PerformBoxOverlapAttack(ACharacter* Attacker, AAIController*
 
     // [설정] SD 도트 캐릭터 특성에 맞춘 오프셋과 크기
     // 정면으로 70cm 지점, 가로100x세로100x높이100 박스 (절반값인 50 사용)
-    FVector Center = Attacker->GetActorLocation() + Attacker->GetActorForwardVector() * 70.0f;
-    FVector BoxHalfSize = FVector(100.0f, 100.0f, 50.0f);
+    FVector Center = Attacker->GetActorLocation() + Attacker->GetActorForwardVector() * AttackOffset;
     FRotator Rotation = Attacker->GetActorRotation();
 
     // 탐색할 객체 타입 설정 (Pawn)

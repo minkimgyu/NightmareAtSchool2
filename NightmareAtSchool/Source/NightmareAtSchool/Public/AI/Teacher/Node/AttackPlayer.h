@@ -31,6 +31,14 @@ protected:
     UPROPERTY(EditAnywhere, Category = "Combat")
     float AttackDamage = 40.0f;
 
+    /** [추가] 공격 판정 박스의 크기 (Half Size) */
+    UPROPERTY(EditAnywhere, Category = "Attack|Collision")
+    FVector BoxHalfSize = FVector(100.0f, 100.0f, 50.0f);
+
+    /** [추가] 캐릭터 중심으로부터 판정 박스까지의 거리(앞방향) */
+    UPROPERTY(EditAnywhere, Category = "Attack|Collision")
+    float AttackOffset = 70.0f;
+
     // 에디터에서 할당할 공격 몽타주
     UPROPERTY(EditAnywhere, Category = "Attack")
     TObjectPtr<UAnimMontage> AttackMontage;
