@@ -8,6 +8,9 @@
 #include "PushPullDoor.generated.h"
 
 class APlayerCharacter;
+class UBoxComponent;
+class UNavModifierComponent;
+class ANavBlockOnlyActor;
 
 UCLASS()
 class NIGHTMAREATSCHOOL_API APushPullDoor : public ADoorBase
@@ -32,6 +35,12 @@ protected:
 
 	// Called when the game starts or when spawned
 	virtual void BeginPlay() override;
+
+	UPROPERTY(VisibleAnywhere, Category = "Navigation")
+	class UChildActorComponent* LeftNavBlocker;
+
+	UPROPERTY(VisibleAnywhere, Category = "Navigation")
+	class UChildActorComponent* RightNavBlocker;
 
 
 	/** 3. 문 열리는 소리 */

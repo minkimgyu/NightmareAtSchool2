@@ -3,12 +3,16 @@
 
 #include "InteractableObject/PushPullDoor.h"
 
+#include "InteractableObject/NavBlockOnlyActor.h"
+
 #include "InteractionInterface.h" // APlayerCharacter.h에서 사용되던 인터페이스
 #include "InteractorInterface.h"
 
 #include "Kismet/GameplayStatics.h" // PlaySoundAtLocation 사용을 위해 필요
 
 #include "InteractableObject/DoorBase.h"
+
+#include "Components/BoxComponent.h"
 
 #include "PlayerCharacter.h" // Interact 함수에서 사용
 
@@ -27,6 +31,19 @@ APushPullDoor::APushPullDoor()
 
     // Marker는 문이 열릴 때 DoorMesh가 도달해야 할 최종 위치를 지정합니다.
     // Blueprint에서 이 Marker의 위치를 조정하여 문이 열리는 거리를 설정합니다.
+
+    // 🔥 NavBlocker (왼쪽)
+    LeftNavBlocker = CreateDefaultSubobject<UChildActorComponent>(TEXT("LeftNavBlocker"));
+    LeftNavBlocker->SetupAttachment(RootComponent);
+    LeftNavBlocker->SetChildActorClass(ANavBlockOnlyActor::StaticClass());
+
+    // 🔥 NavBlocker (오른쪽)
+    RightNavBlocker = CreateDefaultSubobject<UChildActorComponent>(TEXT("RightNavBlocker"));
+    RightNavBlocker->SetupAttachment(RootComponent);
+    RightNavBlocker->SetChildActorClass(ANavBlockOnlyActor::StaticClass());
+
+    LeftNavBlocker->SetRelativeLocation(FVector(0.0f, -220.0f, 0.0f));
+    RightNavBlocker->SetRelativeLocation(FVector(0.0f, 220.0f, 0.0f));
 }
 
 void APushPullDoor::BeginFocus()
@@ -122,6 +139,8 @@ void APushPullDoor::HandleInteraction(IInteractorInterface* Interactor)
 
     if (bIsOpen)
     {
+
+
         if (DoorCloseSound)
         {
             // 소리가 캐릭터 위치가 아닌 '문'의 위치에서 나게 하여 입체감을 줍니다.

@@ -58,6 +58,9 @@ public:
 	UFUNCTION(BlueprintCallable, Category = "Interaction")
 	void InitializeInteraction(USceneComponent* InTraceAnchor);
 
+	// 현재 타겟 액터를 반환하는 게터 (BT Task에서 사용)
+	AActor* GetCurrentInteractable() const { return InteractionData.CurrentInteractable; }
+
 protected:
 	// Called when the game starts
 	virtual void BeginPlay() override;

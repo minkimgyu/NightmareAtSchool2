@@ -36,6 +36,9 @@ public:
 	//UPROPERTY(EditInstanceOnly, Category = "Door | Interaction")
 	//FInteractableData InteractableData;
 
+	// 문이 열려있는지 확인하는 함수
+	FORCEINLINE bool GetIsOpen() const { return bIsOpen; }
+
 protected:
 	// ----------------------------------------------------------------------
 	// 컴포넌트
