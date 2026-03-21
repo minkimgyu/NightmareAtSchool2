@@ -1,6 +1,8 @@
 // Fill out your copyright notice in the Description page of Project Settings.
 
 #include "AI/Patrol/PatrolAICharacter.h"
+
+
 #include "Components/InteractionComponent.h" // ��Ŭ��� �߰�
 #include "GameFramework/Character.h"         // ���� ���ԵǾ� ����
 
@@ -24,6 +26,16 @@ APatrolAICharacter::APatrolAICharacter()
 	//AutoPossessAI = EAutoPossessAI::PlacedInWorldOrSpawned;
 	//AIControllerClass = APatrolAIController::StaticClass();
 }
+
+
+void APatrolAICharacter::SetIlluminated(bool bState)
+{
+	if (bIsIlluminated != bState)
+	{
+		bIsIlluminated = bState;
+	}
+}
+
 //
 //// Called when the game starts or when spawned
 //void APatrolAICharacter::BeginPlay()
