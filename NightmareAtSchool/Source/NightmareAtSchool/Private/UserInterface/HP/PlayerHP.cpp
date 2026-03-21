@@ -15,5 +15,7 @@ void UPlayerHP::UpdateHPText(float CurrentHP)
         FString HPString = FString::Printf(TEXT("%d"), FMath::FloorToInt(DisplayHP));
 
         HPText->SetText(FText::FromString(HPString));
+
+        OnHPChanged.Broadcast(CurrentHP);
     }
 }
