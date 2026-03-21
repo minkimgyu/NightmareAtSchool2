@@ -30,7 +30,7 @@ public:
 //	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category="AI")
 //	UBehaviorTree* BehaviorTree;
 //
-//	//ÀÌº¥Æ®·Î ¹Þ¾Æ¿Ã Å¸°Ù ¼³Á¤
+//	//ï¿½Ìºï¿½Æ®ï¿½ï¿½ ï¿½Þ¾Æ¿ï¿½ Å¸ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½
 //	UFUNCTION(BlueprintCallable)
 //	void SetTarget(AActor* NewTarget);
 //	

@@ -1,8 +1,8 @@
 // Fill out your copyright notice in the Description page of Project Settings.
 
 #include "AI/Patrol/PatrolAICharacter.h"
-#include "Components/InteractionComponent.h" // ÀÎÅ¬·çµå Ãß°¡
-#include "GameFramework/Character.h"         // º¸Åë Æ÷ÇÔµÇ¾î ÀÖÀ½
+#include "Components/InteractionComponent.h" // ï¿½ï¿½Å¬ï¿½ï¿½ï¿½ ï¿½ß°ï¿½
+#include "GameFramework/Character.h"         // ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ÔµÇ¾ï¿½ ï¿½ï¿½ï¿½ï¿½
 
 // Sets default values
 APatrolAICharacter::APatrolAICharacter()
@@ -10,12 +10,12 @@ APatrolAICharacter::APatrolAICharacter()
  	// Set this character to call Tick() every frame.  You can turn this off to improve performance if you don't need it.
 	PrimaryActorTick.bCanEverTick = true;
 
-	// »óÈ£ÀÛ¿ë ÄÄÆ÷³ÍÆ® »ý¼º ¹× ±âº» ¼³Á¤
+	// ï¿½ï¿½È£ï¿½Û¿ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Æ® ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ ï¿½âº» ï¿½ï¿½ï¿½ï¿½
 	InteractionComp = CreateDefaultSubobject<UInteractionComponent>(TEXT("InteractionComponent"));
 	InteractionSight = CreateDefaultSubobject<USceneComponent>(TEXT("InteractionSight"));
 	InteractionSight->SetupAttachment(RootComponent);
 
-	// ÄÄÆ÷³ÍÆ®ÀÇ µ¨¸®°ÔÀÌÆ®¿Í HUD ¾÷µ¥ÀÌÆ® ·ÎÁ÷ ¹ÙÀÎµù
+	// ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Æ®ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Æ®ï¿½ï¿½ HUD ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Æ® ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½Îµï¿½
 	if (InteractionComp)
 	{
 		InteractionComp->InitializeInteraction(InteractionSight);

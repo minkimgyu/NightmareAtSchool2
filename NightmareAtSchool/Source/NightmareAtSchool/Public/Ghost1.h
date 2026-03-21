@@ -20,16 +20,31 @@ public:
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Monster Data")
 	UBlackFigureDataAsset* BlackFigureData;
 
+	UPROPERTY(VisibleAnywhere)
+	class UBoxComponent* AttackCollisionBox;
+
 protected:
 	// Called when the game starts or when spawned
 	virtual void BeginPlay() override;
 
-public:	
+public:
 	// Called every frame
 	virtual void Tick(float DeltaTime) override;
 
 	// Called to bind functionality to input
 	virtual void SetupPlayerInputComponent(class UInputComponent* PlayerInputComponent) override;
 
+	UFUNCTION(BlueprintCallable)
+	void OnAttackStart();
+
+	UFUNCTION(BlueprintCallable)
+	void OnAttackEnd();
+
+	UFUNCTION()
+	void OnAttackOverlap(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor,
+		UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult);
+
+private:
+	TArray<AActor*> HitActors; //맞은 액터 보관용
 
 };
