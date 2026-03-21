@@ -4,6 +4,8 @@
 #include "UserInterface/MainHUD.h"
 #include "UserInterface/MainMenu.h"
 #include "UserInterface/Sprint/SprintBar.h"
+#include "UserInterface/HP/PlayerHP.h"
+
 #include "InteractionInterface.h" // APlayerCharacter.h에서 사용되던 인터페이스
 
 AMainHUD::AMainHUD()
@@ -26,6 +28,11 @@ void AMainHUD::HideMenu()
 		bIsMenuVisible = false;
 		MainMenuWidget->SetVisibility(ESlateVisibility::Collapsed);
 	}
+}
+
+void AMainHUD::UpdateHPUI(float CurrentHP)
+{
+	HPWidget->UpdateHPText(CurrentHP);
 }
 
 void AMainHUD::ToggleMenu()
@@ -116,5 +123,12 @@ void AMainHUD::BeginPlay()
 		SprintBar = CreateWidget<USprintBar>(GetWorld(), USprintBarClass);
 		SprintBar->AddToViewport(-1); // zorder
 		SprintBar->SetVisibility(ESlateVisibility::Collapsed);
+	}
+
+	if (HPWidgetClass)
+	{
+		HPWidget = CreateWidget<UPlayerHP>(GetWorld(), HPWidgetClass);
+		HPWidget->AddToViewport(-1); // zorder
+		HPWidget->SetVisibility(ESlateVisibility::Visible);
 	}
 }

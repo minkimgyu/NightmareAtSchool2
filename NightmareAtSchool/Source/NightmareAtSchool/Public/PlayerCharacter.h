@@ -83,13 +83,14 @@ public:
 	// Sets default values for this character's properties
 	APlayerCharacter();
 
-	// Actor의 TakeDamage 오버라이드
+	// Engine의 TakeDamage 함수를 오버라이드합니다.
 	virtual float TakeDamage(float DamageAmount, struct FDamageEvent const& DamageEvent, class AController* EventInstigator, AActor* DamageCauser) override;
 
-	// 체력 변수
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Status")
-	float Health = 100.0f;
+	// 데미지 처리 후 실행할 로직 (애니메이션 재생 등)
+	void HandleDamage();
 
+	// 사망 처리 함수
+	void HandleDeath();
 
 	void ToggleMenu();
 	
@@ -99,8 +100,6 @@ public:
 
 	// Called to bind functionality to input
 	virtual void SetupPlayerInputComponent(class UInputComponent* PlayerInputComponent) override;
-
-	//bool IsInteracting() const { return GetWorldTimerManager().IsTimerActive(TimerHandle_Interaction); };
 
 
 	// 새롭게 추가한 인터페이스 함수
@@ -157,6 +156,36 @@ private:
 
 protected:
 
+	// 캐릭터의 현재 체력
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Stats")
+	float Health = 100.0f;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Stats")
+	float MaxHealth = 100.0f;
+
+	/** 자동 회복 관련 변수 */
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Stats")
+	float HealthRegenRate = 10.0f; // 초당 회복량
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Stats")
+	float RegenDelay = 3.0f; // 피격 후 회복 시작까지 대기 시간
+
+	bool bCanRegen = false; // 현재 회복 가능한 상태인지 확인
+
+	FTimerHandle TimerHandle_RegenDelay; // 회복 대기용 타이머 핸들
+
+	/** 회복 시작을 위한 함수 */
+	void StartHealthRegen();
+
+	// 이동할 게임 오버 레벨의 이름 (에디터에서 수정 가능)
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Level")
+	FName GameOverLevelName = TEXT("L_GameOver");
+
+
+
+
+
+
 	/** 왼발 소리 에셋 */
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Sound")
 	class USoundBase* FootstepSound_Left;
@@ -208,12 +237,6 @@ protected:
 	EPlayerPostureState PlayerPostureState;
 
 
-
-	//UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Flashlight")
-	//class USpotLightComponent* Flashlight;
-
-	//UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Flashlight")
-	//bool bFlashlightOn;
 
 
 	// 기존 USpotLightComponent* Flashlight; 를 아래로 교체
@@ -291,34 +314,10 @@ protected:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Movement")
 	float CrouchInterpSpeed; // 부드러운 속도 설정
 
-	//UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Movement")
-	//bool bIsCrouching;
-
-
-
-	/** * ���� ��ȣ�ۿ� ����� �Ǵ� ��ü�� �������̽��� ���� �����մϴ�.
-	* IIInteractionInterface �������̽��� ������ ��� ���͸� ������� �� �� �ֽ��ϴ�.
-	*/
-	/*UPROPERTY(VisibleAnywhere, Category = "Character | Interaction")
-	TScriptInterface<class IInteractionInterface> TargetInteractable;*/
-
 
 	UPROPERTY(VisibleAnywhere, Category = "Character | Inventory")
 	UInventoryComponent* PlayerInventory;
 
-	///** ��ȣ�ۿ� ���� ���θ� üũ�ϴ� �� (�� ����) */
-	//UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Character | Interaction")
-	//float InteractionCheckFrequency;
-
-	///** ��ȣ�ۿ� üũ�� ������ �ִ� �Ÿ� */
-	//UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Character | Interaction")
-	//float InteractionCheckDistance;
-
-	///** ��ȣ�ۿ� Ÿ�̸Ӹ� �����ϴ� �ڵ� */
-	//FTimerHandle TimerHandle_Interaction;
-
-	///** ���� ��ȣ�ۿ� �����͸� �����ϴ� ����ü */
-	//FInteractionData InteractionData;
 
 	//=====================================================================
 	// �Լ�
@@ -330,28 +329,6 @@ protected:
 
 	// 웅크리기 액션 처리 함수
 	void ActCrouch(float DeltaTime);
-
-
-	//// ���⼭ ȣ���� �Լ���
-	//// IInteractionInterface�� �Լ��� ��������ش.
-
-	///** ��ȣ�ۿ� ���� ��ü�� �ֺ��� �ִ��� �ֱ������� üũ�ϴ� �Լ� */
-	//void PerformInteractionCheck();
-
-	///** ��ȣ�ۿ� ������ ���ο� ��ü�� �߰����� �� ȣ��Ǵ� �Լ� */
-	//void FoundInteractable(AActor* NewInteractable);
-
-	///** ��ȣ�ۿ� ���� ��ü�� ã�� ���߰ų� ������ ����� �� ȣ��Ǵ� �Լ� */
-	//void NoInteractableFound();
-
-	///** ��ȣ�ۿ� ���� ������ �����ϴ� �Լ� */
-	//void BeginInteract();
-
-	///** ��ȣ�ۿ� ���� ������ �����ϴ� �Լ� */
-	//void EndInteract();
-
-	///** ��ȣ�ۿ��� ������ ó���ϴ� �Լ� (��: ������ �ݱ�, �� ����) */
-	//void Interact();
 
 
 	//=====================================================================

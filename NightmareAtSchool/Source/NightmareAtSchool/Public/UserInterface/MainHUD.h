@@ -16,6 +16,7 @@
 class UMainMenu;
 class UInteractionWidget;
 class USprintBar;
+class UPlayerHP;
 
 struct FInteractableData;
 
@@ -39,9 +40,15 @@ public:
 	UPROPERTY(EditDefaultsOnly, Category = "Widgets")
 	TSubclassOf<USprintBar> USprintBarClass;
 
+	UPROPERTY(EditDefaultsOnly, Category = "Widgets")
+	TSubclassOf<UPlayerHP> HPWidgetClass;
+
 	bool bIsMenuVisible;
 
 	AMainHUD();
+
+	// 캐릭터에서 데미지를 입었을 때 컨트롤러의 이 함수를 호출하게 합니다.
+	void UpdateHPUI(float CurrentHP);
 
 	void DisplayMenu();
 	void HideMenu();
@@ -66,6 +73,9 @@ protected:
 
 	UPROPERTY()
 	USprintBar* SprintBar;
+
+	UPROPERTY()
+	UPlayerHP* HPWidget;
 
 	virtual void BeginPlay() override;
 };

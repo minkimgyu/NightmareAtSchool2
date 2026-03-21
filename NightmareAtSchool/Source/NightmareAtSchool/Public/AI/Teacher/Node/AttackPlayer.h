@@ -27,6 +27,10 @@ protected:
     virtual void TickTask(UBehaviorTreeComponent& OwnerComp, uint8* NodeMemory, float DeltaSeconds) override;
 
 
+    // 공격 데미지 수치 (BT 에디터에서 수정 가능)
+    UPROPERTY(EditAnywhere, Category = "Combat")
+    float AttackDamage = 40.0f;
+
     // 에디터에서 할당할 공격 몽타주
     UPROPERTY(EditAnywhere, Category = "Attack")
     TObjectPtr<UAnimMontage> AttackMontage;
