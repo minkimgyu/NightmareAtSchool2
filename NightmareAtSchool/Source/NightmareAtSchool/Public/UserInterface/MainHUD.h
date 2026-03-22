@@ -13,6 +13,9 @@
  * 
  */
 
+ /** 메뉴 상태 변경을 알리기 위한 델리게이트 선언 (파라미터: bool bIsVisible) */
+DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FOnMenuVisibilityChanged, bool, bIsVisible);
+
 class UMainMenu;
 class UInteractionWidget;
 class USprintBar;
@@ -26,6 +29,11 @@ class NIGHTMAREATSCHOOL_API AMainHUD : public AHUD
 	GENERATED_BODY()
 	
 public:
+
+	/** 블루프린트에서 바인딩할 수 있는 델리게이트 인스턴스 */
+	UPROPERTY(BlueprintAssignable, Category = "Events")
+	FOnMenuVisibilityChanged OnMenuVisibilityChanged;
+
 	// =========================================================
 	// 프로퍼티, 변수
 	// =========================================================

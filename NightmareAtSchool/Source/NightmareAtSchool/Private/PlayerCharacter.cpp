@@ -388,6 +388,45 @@ void APlayerCharacter::PlayFootstepSound()
 		UGameplayStatics::PlaySoundAtLocation(this, SoundToPlay, GetActorLocation());
 	}
 
+	// Pawn::MakeNoise(소음크기, 소음발생지점, 최대거리, 태그)
+	// 이 함수는 Pawn에 기본 내장되어 있으며 UPawnSensingComponent나 AISense_Hearing이 감지합니다.
+
+	if (PlayerActionState == EPlayerActionState::Sprint)
+	{
+
+		MakeNoise(SprintNoiseLoudness, this, GetActorLocation(), NoiseMaxRange, TEXT("Footstep"));
+
+		// 로그로 확인 (디버깅용)
+		UE_LOG(LogTemp, Log, TEXT("Make Noise: Loudness %f"), SprintNoiseLoudness);
+
+		// 2. ⭐ 디버그 서클 그리기 로직 추가
+		if (bShowFootstepDebug)
+		{
+			// 원의 중심점 (발 위치이므로 바닥 쪽)
+			FVector DebugLocation = GetActorLocation();
+			DebugLocation.Z -= GetCapsuleComponent()->GetScaledCapsuleHalfHeight(); // 캡슐 하단으로 맞춤
+
+			// 소음 크기에 비례하여 원의 크기 조절 (작게 그리려면 고정값 사용 가능)
+			float CircleRadius = 30.0f * SprintNoiseLoudness;
+
+			// 디버그 서클 그리기 (평면 원)
+			DrawDebugCircle(
+				GetWorld(),
+				DebugLocation,
+				CircleRadius,
+				32,                  // 선의 세그먼트 수 (높을수록 매끄러움)
+				DebugCircleColor,
+				false,               // 영구 지속 여부
+				DebugCircleLifeTime, // 지속 시간
+				0,                   // 우선순위
+				2.0f,                // 선 두께
+				FVector(0, 0, 1),    // 법선 벡터 (하늘 방향을 바라보는 원)
+				FVector(1, 0, 0),    // 수평 벡터
+				false                // 채우기 여부
+			);
+		}
+	}
+
 	// 다음 실행 시 반대 발 소리가 나도록 토글
 	bIsLeftFoot = !bIsLeftFoot;
 }

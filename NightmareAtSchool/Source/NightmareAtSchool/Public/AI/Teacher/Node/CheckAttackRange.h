@@ -1,4 +1,4 @@
-// Fill out your copyright notice in the Description page of Project Settings.
+ï»¿// Fill out your copyright notice in the Description page of Project Settings.
 
 #pragma once
 
@@ -20,11 +20,15 @@ public:
 protected:
 	virtual void TickNode(UBehaviorTreeComponent& OwnerComp, uint8* NodeMemory, float DeltaSeconds) override;
 
-	// ¿¡µğÅÍ¿¡¼­ ¼³Á¤ÇÒ °ø°İ »ç°Å¸®
+	// ì—ë””í„°ì—ì„œ ì„¤ì •í•  ê³µê²© ì‚¬ê±°ë¦¬
 	UPROPERTY(EditAnywhere, Category = "AI")
 	float AttackRange = 150.0f;
 
-	// ºí·¢º¸µåÀÇ CanAttack(Bool) º¯¼ö¿Í ¿¬°áÇÒ Å°
+	// ë¸”ë™ë³´ë“œì˜ CanAttack(Bool) ë³€ìˆ˜ì™€ ì—°ê²°í•  í‚¤
 	UPROPERTY(EditAnywhere, Category = "AI")
 	FBlackboardKeySelector CanAttackKey;
+
+	/** â­ ê³µê²© ì‚¬ê±°ë¦¬ ë””ë²„ê·¸ êµ¬ì²´ í‘œì‹œ ì—¬ë¶€ */
+	UPROPERTY(EditAnywhere, Category = "AI | Debug")
+	bool bShowDebugSphere = true;
 };

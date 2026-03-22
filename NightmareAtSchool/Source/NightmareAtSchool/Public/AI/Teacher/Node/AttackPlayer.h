@@ -1,4 +1,4 @@
-// Fill out your copyright notice in the Description page of Project Settings.
+ï»¿// Fill out your copyright notice in the Description page of Project Settings.
 
 #pragma once
 
@@ -20,30 +20,39 @@ public:
     void PerformBoxOverlapAttack(ACharacter* Attacker, AAIController* Controller);
 
 protected:
-    // Task°¡ ½ÃÀÛµÉ ¶§ È£Ãâ
+    // Taskê°€ ì‹œì‘ë  ë•Œ í˜¸ì¶œ
     virtual EBTNodeResult::Type ExecuteTask(UBehaviorTreeComponent& OwnerComp, uint8* NodeMemory) override;
 
-    // Task ÁøÇà Áß ¸Å ÇÁ·¹ÀÓ È£Ãâ (¾Ö´Ï¸ŞÀÌ¼Ç ´ë±â¿ë)
+    // Task ì§„í–‰ ì¤‘ ë§¤ í”„ë ˆì„ í˜¸ì¶œ (ì• ë‹ˆë©”ì´ì…˜ ëŒ€ê¸°ìš©)
     virtual void TickTask(UBehaviorTreeComponent& OwnerComp, uint8* NodeMemory, float DeltaSeconds) override;
 
 
-    // °ø°İ µ¥¹ÌÁö ¼öÄ¡ (BT ¿¡µğÅÍ¿¡¼­ ¼öÁ¤ °¡´É)
+    // ê³µê²© ë°ë¯¸ì§€ ìˆ˜ì¹˜ (BT ì—ë””í„°ì—ì„œ ìˆ˜ì • ê°€ëŠ¥)
     UPROPERTY(EditAnywhere, Category = "Combat")
     float AttackDamage = 40.0f;
 
-    /** [Ãß°¡] °ø°İ ÆÇÁ¤ ¹Ú½ºÀÇ Å©±â (Half Size) */
+    /** [ì¶”ê°€] ê³µê²© íŒì • ë°•ìŠ¤ì˜ í¬ê¸° (Half Size) */
     UPROPERTY(EditAnywhere, Category = "Attack|Collision")
     FVector BoxHalfSize = FVector(100.0f, 100.0f, 50.0f);
 
-    /** [Ãß°¡] Ä³¸¯ÅÍ Áß½ÉÀ¸·ÎºÎÅÍ ÆÇÁ¤ ¹Ú½º±îÁöÀÇ °Å¸®(¾Õ¹æÇâ) */
+    /** [ì¶”ê°€] ìºë¦­í„° ì¤‘ì‹¬ìœ¼ë¡œë¶€í„° íŒì • ë°•ìŠ¤ê¹Œì§€ì˜ ê±°ë¦¬(ì•ë°©í–¥) */
     UPROPERTY(EditAnywhere, Category = "Attack|Collision")
     float AttackOffset = 70.0f;
 
-    // ¿¡µğÅÍ¿¡¼­ ÇÒ´çÇÒ °ø°İ ¸ùÅ¸ÁÖ
+    // ì—ë””í„°ì—ì„œ í• ë‹¹í•  ê³µê²© ëª½íƒ€ì£¼
     UPROPERTY(EditAnywhere, Category = "Attack")
     TObjectPtr<UAnimMontage> AttackMontage;
 
+
+    /** â­ ê³µê²© íŒì • ë°•ìŠ¤ ë””ë²„ê·¸ í‘œì‹œ ì—¬ë¶€ */
+    UPROPERTY(EditAnywhere, Category = "Attack|Collision|Debug")
+    bool bShowDebugBox = true;
+
+    /** â­ ë””ë²„ê·¸ ë°•ìŠ¤ ìƒ‰ìƒ */
+    UPROPERTY(EditAnywhere, Category = "Attack|Collision|Debug")
+    FLinearColor DebugBoxColor = FLinearColor::Blue;
+
 private:
-    // ³²Àº ¾Ö´Ï¸ŞÀÌ¼Ç ½Ã°£À» ÃßÀû
+    // ë‚¨ì€ ì• ë‹ˆë©”ì´ì…˜ ì‹œê°„ì„ ì¶”ì 
     float RemainingAnimationTime = 0.0f;
 };

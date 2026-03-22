@@ -1,4 +1,4 @@
-// Fill out your copyright notice in the Description page of Project Settings.
+ï»¿// Fill out your copyright notice in the Description page of Project Settings.
 
 
 #include "AI/Teacher/Node/CheckAttackRange.h"
@@ -10,7 +10,7 @@
 UCheckAttackRange::UCheckAttackRange()
 {
 	NodeName = TEXT("Check Attack Range");
-	Interval = 0.1f; // 0.1ÃÊ¸¶´Ù Ã¼Å© (¼º´É ÃÖÀûÈ­)
+	Interval = 0.1f; // 0.1ì´ˆë§ˆë‹¤ ì²´í¬ (ì„±ëŠ¥ ìµœì í™”)
 }
 
 void UCheckAttackRange::TickNode(UBehaviorTreeComponent& OwnerComp, uint8* NodeMemory, float DeltaSeconds)
@@ -23,7 +23,7 @@ void UCheckAttackRange::TickNode(UBehaviorTreeComponent& OwnerComp, uint8* NodeM
 
 	if (!AIPawn || !BB) return;
 
-	// ºí·¢º¸µå¿¡¼­ Å¸°Ù ¾×ÅÍ(ÇÃ·¹ÀÌ¾î) °¡Á®¿À±â
+	// ë¸”ë™ë³´ë“œì—ì„œ íƒ€ê²Ÿ ì•¡í„°(í”Œë ˆì´ì–´) ê°€ì ¸ì˜¤ê¸°
 	AActor* Target = Cast<AActor>(BB->GetValueAsObject(TEXT("TargetActor")));
 	if (!Target)
 	{
@@ -31,13 +31,17 @@ void UCheckAttackRange::TickNode(UBehaviorTreeComponent& OwnerComp, uint8* NodeM
 		return;
 	}
 
-	// °Å¸® °è»ê
+	// ê±°ë¦¬ ê³„ì‚°
 	float Distance = FVector::Dist(AIPawn->GetActorLocation(), Target->GetActorLocation());
 
-	// 2. °ø°İ »ç°Å¸®¸¦ ½Ã°¢ÀûÀ¸·Î È®ÀÎÇÏ±â À§ÇØ µğ¹ö±× ±¸Ã¼¸¦ ±×¸³´Ï´Ù. (¼±ÅÃ »çÇ×)
-	DrawDebugSphere(AIPawn->GetWorld(), AIPawn->GetActorLocation(), AttackRange, 12, FColor::Red, false, 0.1f);
+	// â­ ë””ë²„ê·¸ ë³€ìˆ˜ê°€ trueì¼ ë•Œë§Œ êµ¬ì²´ë¥¼ ê·¸ë¦½ë‹ˆë‹¤.
+	if (bShowDebugSphere)
+	{
+		// 2. ê³µê²© ì‚¬ê±°ë¦¬ë¥¼ ì‹œê°ì ìœ¼ë¡œ í™•ì¸í•˜ê¸° ìœ„í•´ ë””ë²„ê·¸ êµ¬ì²´ë¥¼ ê·¸ë¦½ë‹ˆë‹¤. (ì„ íƒ ì‚¬í•­)
+		DrawDebugSphere(AIPawn->GetWorld(), AIPawn->GetActorLocation(), AttackRange, 12, FColor::Red, false, 0.1f);
+	}
 
-	// »ç°Å¸® ¾È¿¡ µé¾î¿Ô´ÂÁö À¯¹«¸¦ ºí·¢º¸µå¿¡ ÀúÀå
+	// ì‚¬ê±°ë¦¬ ì•ˆì— ë“¤ì–´ì™”ëŠ”ì§€ ìœ ë¬´ë¥¼ ë¸”ë™ë³´ë“œì— ì €ì¥
 	bool bCanAttack = (Distance <= AttackRange);
 	BB->SetValueAsBool(CanAttackKey.SelectedKeyName, bCanAttack);
 }

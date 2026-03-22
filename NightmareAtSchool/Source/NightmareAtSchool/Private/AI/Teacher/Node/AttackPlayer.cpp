@@ -1,4 +1,4 @@
-// Fill out your copyright notice in the Description page of Project Settings.
+ï»¿// Fill out your copyright notice in the Description page of Project Settings.
 
 
 #include "AI/Teacher/Node/AttackPlayer.h"
@@ -6,13 +6,13 @@
 #include "AIController.h"
 #include "GameFramework/Character.h"
 
-#include "Kismet/KismetSystemLibrary.h" // BoxOverlapActors »ç¿ëÀ» À§ÇØ ÇÊ¿ä
+#include "Kismet/KismetSystemLibrary.h" // BoxOverlapActors ì‚¬ìš©ì„ ìœ„í•´ í•„ìš”
 #include "Kismet/GameplayStatics.h"
 
 UAttackPlayer::UAttackPlayer()
 {
     NodeName = TEXT("Attack Player");
-    bNotifyTick = true; // TickTask È°¼ºÈ­
+    bNotifyTick = true; // TickTask í™œì„±í™”
 }
 
 EBTNodeResult::Type UAttackPlayer::ExecuteTask(UBehaviorTreeComponent& OwnerComp, uint8* NodeMemory)
@@ -22,12 +22,12 @@ EBTNodeResult::Type UAttackPlayer::ExecuteTask(UBehaviorTreeComponent& OwnerComp
 
     if (!AIPawn || !AttackMontage) return EBTNodeResult::Failed;
 
-    // 1. °ø°İ ¾Ö´Ï¸ŞÀÌ¼Ç Àç»ı
+    // 1. ê³µê²© ì• ë‹ˆë©”ì´ì…˜ ì¬ìƒ
     RemainingAnimationTime = AIPawn->PlayAnimMontage(AttackMontage);
 
     if (RemainingAnimationTime <= 0.0f) return EBTNodeResult::Succeeded;
 
-    // 2. »óÀÚ ¹üÀ§ Å½»ö ¹× µ¥¹ÌÁö ·ÎÁ÷ ½ÇÇà
+    // 2. ìƒì ë²”ìœ„ íƒìƒ‰ ë° ë°ë¯¸ì§€ ë¡œì§ ì‹¤í–‰
     //PerformBoxOverlapAttack(AIPawn, AIC);
 
     return EBTNodeResult::InProgress;
@@ -43,38 +43,42 @@ void UAttackPlayer::TickTask(UBehaviorTreeComponent& OwnerComp, uint8* NodeMemor
     }
 }
 
-// »óÀÚ ¹üÀ§ Å½»ö ÇÔ¼ö ±¸Çö
+// ìƒì ë²”ìœ„ íƒìƒ‰ í•¨ìˆ˜ êµ¬í˜„
 void UAttackPlayer::PerformBoxOverlapAttack(ACharacter* Attacker, AAIController* Controller)
 {
     if (!Attacker) return;
 
-    // [¼³Á¤] SD µµÆ® Ä³¸¯ÅÍ Æ¯¼º¿¡ ¸ÂÃá ¿ÀÇÁ¼Â°ú Å©±â
-    // Á¤¸éÀ¸·Î 70cm ÁöÁ¡, °¡·Î100x¼¼·Î100x³ôÀÌ100 ¹Ú½º (Àı¹İ°ªÀÎ 50 »ç¿ë)
+    // [ì„¤ì •] SD ë„íŠ¸ ìºë¦­í„° íŠ¹ì„±ì— ë§ì¶˜ ì˜¤í”„ì…‹ê³¼ í¬ê¸°
+    // ì •ë©´ìœ¼ë¡œ 70cm ì§€ì , ê°€ë¡œ100xì„¸ë¡œ100xë†’ì´100 ë°•ìŠ¤ (ì ˆë°˜ê°’ì¸ 50 ì‚¬ìš©)
     FVector Center = Attacker->GetActorLocation() + Attacker->GetActorForwardVector() * AttackOffset;
     FRotator Rotation = Attacker->GetActorRotation();
 
-    // Å½»öÇÒ °´Ã¼ Å¸ÀÔ ¼³Á¤ (Pawn)
+    // íƒìƒ‰í•  ê°ì²´ íƒ€ì… ì„¤ì • (Pawn)
     TArray<TEnumAsByte<EObjectTypeQuery>> ObjectTypes;
     ObjectTypes.Add(UEngineTypes::ConvertToObjectType(ECC_Pawn));
 
     TArray<AActor*> IgnoreActors;
-    IgnoreActors.Add(Attacker); // ÀÚ±â ÀÚ½Å Á¦¿Ü
+    IgnoreActors.Add(Attacker); // ìê¸° ìì‹  ì œì™¸
 
     TArray<AActor*> OutActors;
 
-    // ¹üÀ§ ³» ¾×ÅÍ °ËÃâ
+    // ë²”ìœ„ ë‚´ ì•¡í„° ê²€ì¶œ
     bool bHit = UKismetSystemLibrary::BoxOverlapActors(
         Attacker->GetWorld(),
         Center,
         BoxHalfSize,
         ObjectTypes,
-        nullptr, // ¸ğµç ¾×ÅÍ Å¬·¡½º Çã¿ë
+        nullptr, // ëª¨ë“  ì•¡í„° í´ë˜ìŠ¤ í—ˆìš©
         IgnoreActors,
         OutActors
     );
 
-    // µğ¹ö±×¿ë ¹Ú½º Ç¥½Ã (¿¡µğÅÍ¿¡¼­ È®ÀÎ¿ë, 1ÃÊ°£ À¯Áö)
-    UKismetSystemLibrary::DrawDebugBox(Attacker->GetWorld(), Center, BoxHalfSize, FLinearColor::Blue, Rotation, 1.0f, 2.0f);
+    // â­ ë””ë²„ê·¸ ë³€ìˆ˜ê°€ trueì¼ ë•Œë§Œ ë°•ìŠ¤ë¥¼ ê·¸ë¦½ë‹ˆë‹¤.
+    if (bShowDebugBox)
+    {
+        // ë””ë²„ê·¸ìš© ë°•ìŠ¤ í‘œì‹œ (ì—ë””í„°ì—ì„œ í™•ì¸ìš©, 1ì´ˆê°„ ìœ ì§€)
+        UKismetSystemLibrary::DrawDebugBox(Attacker->GetWorld(), Center, BoxHalfSize, DebugBoxColor, Rotation, 1.0f, 2.0f);
+    }
 
     if (bHit)
     {
@@ -82,7 +86,7 @@ void UAttackPlayer::PerformBoxOverlapAttack(ACharacter* Attacker, AAIController*
         {
             UGameplayStatics::ApplyDamage(
                 HitActor,
-                AttackDamage, // µ¥¹ÌÁö ¼öÄ¡
+                AttackDamage, // ë°ë¯¸ì§€ ìˆ˜ì¹˜
                 Controller,
                 Attacker,
                 UDamageType::StaticClass()

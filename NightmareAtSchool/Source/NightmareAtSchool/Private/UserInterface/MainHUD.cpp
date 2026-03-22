@@ -1,4 +1,4 @@
-// Fill out your copyright notice in the Description page of Project Settings.
+﻿// Fill out your copyright notice in the Description page of Project Settings.
 
 
 #include "UserInterface/MainHUD.h"
@@ -6,7 +6,7 @@
 #include "UserInterface/Sprint/SprintBar.h"
 #include "UserInterface/HP/PlayerHP.h"
 
-#include "InteractionInterface.h" // APlayerCharacter.h���� ���Ǵ� �������̽�
+#include "InteractionInterface.h" // APlayerCharacter.h에서 사용되던 인터페이스
 
 AMainHUD::AMainHUD()
 {
@@ -18,6 +18,12 @@ void AMainHUD::DisplayMenu()
 	{
 		bIsMenuVisible = true;
 		MainMenuWidget->SetVisibility(ESlateVisibility::Visible);
+
+		// ⭐ 델리게이트 호출 (true 전달)
+		if (OnMenuVisibilityChanged.IsBound())
+		{
+			OnMenuVisibilityChanged.Broadcast(bIsMenuVisible);
+		}
 	}
 }
 
@@ -27,6 +33,12 @@ void AMainHUD::HideMenu()
 	{
 		bIsMenuVisible = false;
 		MainMenuWidget->SetVisibility(ESlateVisibility::Collapsed);
+
+		// ⭐ 델리게이트 호출 (false 전달)
+		if (OnMenuVisibilityChanged.IsBound())
+		{
+			OnMenuVisibilityChanged.Broadcast(bIsMenuVisible);
+		}
 	}
 }
 

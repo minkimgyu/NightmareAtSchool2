@@ -184,6 +184,27 @@ protected:
 
 
 
+	/** 뛸 때 소음 크기 (보통 1.0 이상으로 설정하여 더 멀리 퍼지게 함) */
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Sound | AI")
+	float SprintNoiseLoudness = 1.0f;
+
+	/** 소음이 전달되는 범위 배수 */
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Sound | AI")
+	float NoiseMaxRange = 1000.0f;
+
+	/** 디버그 서클 표시 여부 */
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Sound | Debug")
+	bool bShowFootstepDebug = true;
+
+	/** 디버그 서클이 유지되는 시간 (초) */
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Sound | Debug")
+	float DebugCircleLifeTime = 1.0f;
+
+	/** 디버그 서클의 색상 */
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Sound | Debug")
+	FColor DebugCircleColor = FColor::Red;
+
+
 
 
 	/** 왼발 소리 에셋 */
