@@ -50,6 +50,16 @@ struct FQuestRow : public FTableRowBase
     UPROPERTY(EditAnywhere, BlueprintReadWrite)
     FText QuestExplainSummary; // 퀘스트 요약설명
 
+    //------------------------------------------------
+    UPROPERTY(EditAnywhere, BlueprintReadWrite)
+    FText ItemName; // 해당 퀘스트 실행 전 발동 조건 아이템
+
+    UPROPERTY(EditAnywhere, BlueprintReadWrite)
+    UTexture2D* ItemImage; // 해당 퀘스트 실행 전 발동 조건 아이템의 이미지
+
+    UPROPERTY(EditAnywhere, BlueprintReadWrite)
+    FText ThisQuestExplainToPlayer; // 해당 퀘스트 실행 전 설명
+
     UPROPERTY(EditAnywhere, BlueprintReadWrite)
     int32 RewardGold = 0;
     

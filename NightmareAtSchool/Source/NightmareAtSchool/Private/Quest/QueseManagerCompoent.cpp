@@ -3,6 +3,7 @@
 #include "Quest/QueseManagerCompoent.h"
 #include "Kismet/GameplayStatics.h"
 #include "Quest/QuestSaveGame.h"
+#include "Quest/GameEventPostOfficeSubsystem.h"
 
 // Sets default values for this component's properties
 UQuestManagerComponent::UQuestManagerComponent()
@@ -22,11 +23,16 @@ void UQuestManagerComponent::BeginPlay()
 	Super::BeginPlay();
 	//AutoSave();
 	InitializedAvailableQuest();
+
+	if (UGameInstance* GI = GetOwner()->GetGameInstance())
+	{
+		if (UGameEventPostOfficeSubsystem* EventSubsystem = GI->GetSubsystem<UGameEventPostOfficeSubsystem>())
+		{
+			//UE_LOG(LogTemp, Warning, TEXT("MTEMTEMTEMTEMTE"));
+			EventSubsystem->CallQuest.AddDynamic(this, &UQuestManagerComponent::NotifyProgress);
+		}
+	}
 	// ...
-	AcceptQuest("Quest_1");
-	AcceptQuest("Quest_2");
-	AcceptQuest("Quest_3");
-	AcceptQuest("Quest_4");
 }
 
 
@@ -65,12 +71,22 @@ void UQuestManagerComponent::AcceptQuest(FName QuestID)
 	//ex) CurrentCounts[0] -> 가지고 있는 열쇠 갯수, CureentCounts[1] -> 가야하는 곳
 	NewQuest.CurrentCounts.Init(0, Data->Objectives.Num());
 
+	//이미 완료했거나 진행중이라면 return
+	if (!AvailableQuestIDs.Find(QuestID))
+	{
+		return;
+	}
+
 	ActiveQuests.Add(QuestID, NewQuest); // 진행중인 퀘스트에 새로 추가한 퀘스트 넣어주고
 	AvailableQuestIDs.Remove(QuestID); //진행가능한 퀘스트에서 제거
+	isChangeActiveQuest = true;
 }
 
 void UQuestManagerComponent::NotifyProgress(EQuestType QuestType, FName TargetID, int32 Amount)
 {
+	bool HaveCompleteQuest = false;
+
+	UE_LOG(LogTemp, Warning, TEXT("Quest Signal Received! ID: %s"), *TargetID.ToString());
 	for (TPair<FName,FActiveQuest>& Quest : ActiveQuests) ///ex) 어떤 아이템을 먹게되면 플레이어가 현재 진행중인 퀘스트들을 전부 순회
 	{
 		FName QuestID = Quest.Key;
@@ -93,10 +109,20 @@ void UQuestManagerComponent::NotifyProgress(EQuestType QuestType, FName TargetID
 
 				if (Quest.Value.IsComplete(Data))
 				{
-					ActiveQuests.Remove(QuestID);
+					CompletedQuestIDs.Add(QuestID);
+					HaveCompleteQuest = true;
 					UE_LOG(LogTemp, Error, TEXT("퀘스트 완료: %s!"), *Data->QuestName.ToString());
 				}
 			}
+		}
+	}
+
+	//반복문에서 찾은 완료된 퀘스트를 진행중 퀘스트에서 제거
+	if (HaveCompleteQuest)
+	{
+		for (auto& WillDeleteQuestID : CompletedQuestIDs)
+		{
+			ActiveQuests.Remove(WillDeleteQuestID);
 		}
 	}
 }

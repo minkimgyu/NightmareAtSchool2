@@ -25,7 +25,7 @@ void AATriggerZoneBase::OnTriggerOverlap(
     UE_LOG(LogTemp, Warning, TEXT("FDJISAJFDIOSAJFOIEJWOIAJRLFEWKA"));
     if (IsCol) return; // 이미 한번이라도 반을 방문했다면 더 이상 작동 x
     if (!OtherActor) return; 
-    if (!TargetActor) return;
+    //if (!TargetActor) return;
     if (!OtherActor-> ActorHasTag("Player")) return;
 
     IsCol = true;

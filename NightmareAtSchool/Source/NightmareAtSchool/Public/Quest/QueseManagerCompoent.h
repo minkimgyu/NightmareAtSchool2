@@ -22,6 +22,7 @@ public:
 	UFUNCTION(BlueprintCallable)
 	void AcceptQuest(FName QuestID);
 
+	UFUNCTION(BlueprintCallable)
 	//퀘스트 진행도
 	void NotifyProgress(EQuestType Type, FName TargetID, int32 Amount);
 
