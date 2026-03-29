@@ -7,8 +7,9 @@
 #include "Components/SphereComponent.h" // 콜라이더 추가
 #include "Components/SpotLightComponent.h" // 라이트 컴포넌트 추가
 #include "ULightDetectable.h"
-#include "FlashlightComponent.generated.h"
+#include "Sound/SoundBase.h"
 
+#include "FlashlightComponent.generated.h"
 
 UCLASS( ClassGroup=(Custom), meta=(BlueprintSpawnableComponent) )
 class NIGHTMAREATSCHOOL_API UFlashlightComponent : public USceneComponent
@@ -39,6 +40,14 @@ protected:
 	virtual void BeginPlay() override;
 
 	void UpdateLightSettings(); // 라이트 수치 동기화 함수
+
+	// 손전등 켤 때 소리
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Flashlight | Sound")
+	USoundBase* FlashlightOnSound;
+
+	// 손전등 끌 때 소리
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Flashlight | Sound")
+	USoundBase* FlashlightOffSound;
 
 public:	
 	// Called every frame

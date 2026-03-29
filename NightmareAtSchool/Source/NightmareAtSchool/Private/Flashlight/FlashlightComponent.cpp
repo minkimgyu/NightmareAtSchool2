@@ -5,6 +5,7 @@
 #include "Components/ShapeComponent.h"
 #include "DrawDebugHelpers.h" // 이 인클루드가 반드시 필요합니다.
 #include "Kismet/KismetMathLibrary.h"
+#include "Kismet/GameplayStatics.h"
 
 // Sets default values for this component's properties
 UFlashlightComponent::UFlashlightComponent()
@@ -94,6 +95,16 @@ void UFlashlightComponent::ToggleFlashlight()
 void UFlashlightComponent::SetFlashlightState(bool bNewState)
 {
     bIsOn = bNewState;
+
+    // 사운드 재생 로직
+    USoundBase* SoundToPlay = bIsOn ? FlashlightOnSound : FlashlightOffSound;
+
+    if (SoundToPlay)
+    {
+        // 컴포넌트의 현재 위치에서 사운드 재생
+        UGameplayStatics::PlaySoundAtLocation(this, SoundToPlay, GetComponentLocation());
+    }
+
     ApplyPowerState();
 }
 

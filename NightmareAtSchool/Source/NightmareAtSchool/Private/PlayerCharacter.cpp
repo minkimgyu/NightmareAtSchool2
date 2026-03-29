@@ -242,7 +242,7 @@ void APlayerCharacter::BeginPlay()
 	if (FlashlightComponent)
 	{
 		FlashlightComponent->InitializeFlashlight(FlashlightMesh123, DetectionSphere123);
-		FlashlightComponent->SetFlashlightState(false); // 시작은 꺼짐
+		//FlashlightComponent->SetFlashlightState(false); // 시작은 꺼짐
 	}
 
 	HUD = Cast<AMainHUD>(GetWorld()->GetFirstPlayerController()->GetHUD());
