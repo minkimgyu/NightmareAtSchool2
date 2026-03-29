@@ -46,7 +46,7 @@ public:
 	TMap<FName, FActiveQuest> ActiveQuests; // 수락한 퀘스트의 목록
 
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Quest")
-	TSet<FName> CompletedQuestIDs; // 수락한 퀘스트의 목록
+	TSet<FName> CompletedQuestIDs; // 완료한 퀘스트의 목록
 
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Quest")
 	TSet<FName> AvailableQuestIDs; // 진행가능한 퀘스트의 목록
@@ -68,6 +68,11 @@ private:
 	//저장된 퀘스트를 불러오는 함수
 	UFUNCTION(BlueprintCallable, Category = "Load")
 	void LoadQuestData();
+
+	//저장된 퀘스트들을 모두 날리는 함수
+	UFUNCTION(BlueprintCallable, Category = "Clear")
+	void ClearQuestData();
+
 
 	//자동 저장 함수
 	void AutoSave();

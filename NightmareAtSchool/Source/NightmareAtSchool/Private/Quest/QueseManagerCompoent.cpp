@@ -159,6 +159,7 @@ void UQuestManagerComponent::SaveQuestData()
 	// 현재 매니저에 있는 퀘스트 진행 데이터를 복사
 	SaveInstance->SavedActiveQuests = ActiveQuests;
 	SaveInstance->SavedCompletedQuestIDs = CompletedQuestIDs;
+	SaveInstance->SavedAvailableQuestIDS = AvailableQuestIDs;
 
 	//파일로 저장
 	UGameplayStatics::SaveGameToSlot(SaveInstance, TEXT("QuestDataSlot"), 0);
@@ -177,6 +178,19 @@ void UQuestManagerComponent::LoadQuestData()
 
 	ActiveQuests = LoadInstance->SavedActiveQuests;
 	CompletedQuestIDs = LoadInstance->SavedCompletedQuestIDs;
+	AvailableQuestIDs = LoadInstance->SavedAvailableQuestIDS;
+}
+
+void UQuestManagerComponent::ClearQuestData()
+{
+	if (UGameplayStatics::DoesSaveGameExist(TEXT("QuestDataSlot"), 0))
+	{
+		UGameplayStatics::DeleteGameInSlot(TEXT("QuestDataSlot"), 0);
+	}
+
+	ActiveQuests.Empty();
+	CompletedQuestIDs.Empty();
+	AvailableQuestIDs.Empty();
 
 }
 

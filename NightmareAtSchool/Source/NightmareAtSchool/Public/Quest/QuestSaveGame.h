@@ -23,5 +23,8 @@ public:
 	//플레이어가 완료한 퀘스트 목록
 	UPROPERTY()
 	TSet<FName> SavedCompletedQuestIDs;
+
+	UPROPERTY()
+	TSet<FName> SavedAvailableQuestIDS;
 	
 };
