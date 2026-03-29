@@ -6,6 +6,9 @@
 #include "Components/ActorComponent.h"
 #include "InventoryComponent.generated.h"
 
+// 1. 아이템 ID를 전달하기 위한 델리게이트 선언 (FName 매개변수 포함)
+DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FOnItemAddedToInventory, FName, ItemID);
+
 DECLARE_MULTICAST_DELEGATE(FOnInventoryUpdated);
 
 class UItemBase;
@@ -76,6 +79,11 @@ class NIGHTMAREATSCHOOL_API UInventoryComponent : public UActorComponent
 	GENERATED_BODY()
 
 public:
+
+	// 2. 블루프린트에서 호출 및 할당 가능한 델리게이트 변수 추가
+	UPROPERTY(BlueprintAssignable, Category = "Inventory")
+	FOnItemAddedToInventory OnItemAdded;
+
 	// PROPERTIES & VARIABLES
 	// UInventoryComponent 클래스 public 섹션 내
 	//UPROPERTY(BlueprintAssignable, Category = "Inventory") // <-- UPROPERTY 추가

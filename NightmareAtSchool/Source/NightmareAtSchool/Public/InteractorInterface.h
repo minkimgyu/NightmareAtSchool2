@@ -32,6 +32,9 @@ public:
 
 	// 상속받는 클래스에서 'return this;'만 하면 되도록 순수 가상 함수로 만듭니다.
 	virtual AActor* GetInteractorActor() = 0;
+
+	// 인터페이스 수준에서도 BlueprintCallable이 있어야 인터페이스 메시지로 호출 가능합니다.
 	virtual UInventoryComponent* GetInventory() const = 0;
+
 	virtual void UpdateInteractionWidget(FInteractableData* InteractableData) = 0;
 };

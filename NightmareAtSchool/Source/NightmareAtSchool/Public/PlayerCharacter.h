@@ -268,7 +268,7 @@ protected:
 	USpotLightComponent* FlashlightMesh123; // 시각적 라이트 추가
 
 	// 컴포넌트 내부에 직접 콜라이더 생성
-	UPROPERTY(VisibleAnywhere, Category = "Flashlight")
+	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "Flashlight")
 	USphereComponent* DetectionSphere123;
 
 	// 컴포넌트 내부에 직접 콜라이더 생성

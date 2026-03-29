@@ -374,10 +374,14 @@ FItemAddResult UInventoryComponent::HandleAddItem(UItemBase* InputItem)
     if (GetOwner())
     {
         const int32 InitialRequestedAddAmount = InputItem->Quantity;
+        const FName AddedItemID = InputItem->ID; // 획득한 아이템의 ID 저장
 
         // handle non-stackable items
         if (!InputItem->NumericData.bIsStackable)
         {  
+            // 성공 시 델리게이트 호출
+            OnItemAdded.Broadcast(AddedItemID);
+
             return HandleNonStackableItems(InputItem);
         }
 
@@ -388,23 +392,29 @@ FItemAddResult UInventoryComponent::HandleAddItem(UItemBase* InputItem)
 
         UE_LOG(LogTemp, Warning, TEXT("Stackable Amount Added: %d %d"), StackableAmountAdded, InitialRequestedAddAmount);
 
-        if (StackableAmountAdded == InitialRequestedAddAmount)
+        if (StackableAmountAdded > 0)
         {
-            // return added all result 
-            return FItemAddResult::AddedAll(InitialRequestedAddAmount, FText::Format(
-                FText::FromString("Successfully added {0} {1} to the inventory."),
-                InitialRequestedAddAmount,
-                InputItem->TextData.Name));
-        }
+            // 일부라도 추가되었다면 ID 신호를 보냄
+            OnItemAdded.Broadcast(AddedItemID);
 
-        if (StackableAmountAdded < InitialRequestedAddAmount && StackableAmountAdded > 0)
-        {
-            // return added partial result
-                        // return added all result 
-            return FItemAddResult::AddedPartial(StackableAmountAdded, FText::Format(
-                FText::FromString("Partial amount of {0} added to the inventory. Number added = {1}"),
-                InputItem->TextData.Name,
-                StackableAmountAdded));
+            if (StackableAmountAdded == InitialRequestedAddAmount)
+            {
+                // return added all result 
+                return FItemAddResult::AddedAll(InitialRequestedAddAmount, FText::Format(
+                    FText::FromString("Successfully added {0} {1} to the inventory."),
+                    InitialRequestedAddAmount,
+                    InputItem->TextData.Name));
+            }
+
+            if (StackableAmountAdded < InitialRequestedAddAmount && StackableAmountAdded > 0)
+            {
+                // return added partial result
+                            // return added all result 
+                return FItemAddResult::AddedPartial(StackableAmountAdded, FText::Format(
+                    FText::FromString("Partial amount of {0} added to the inventory. Number added = {1}"),
+                    InputItem->TextData.Name,
+                    StackableAmountAdded));
+            }
         }
 
         if (StackableAmountAdded <= 0)
