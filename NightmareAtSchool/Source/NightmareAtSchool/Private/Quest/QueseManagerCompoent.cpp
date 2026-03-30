@@ -22,7 +22,10 @@ void UQuestManagerComponent::BeginPlay()
 {
 	Super::BeginPlay();
 	//AutoSave();
-	InitializedAvailableQuest();
+	if (!UGameplayStatics::DoesSaveGameExist(TEXT("QuestDataSlot"), 0))
+	{
+		InitializedAvailableQuest();
+	}
 
 	if (UGameInstance* GI = GetOwner()->GetGameInstance())
 	{
@@ -79,7 +82,10 @@ void UQuestManagerComponent::AcceptQuest(FName QuestID)
 
 	ActiveQuests.Add(QuestID, NewQuest); // 진행중인 퀘스트에 새로 추가한 퀘스트 넣어주고
 	AvailableQuestIDs.Remove(QuestID); //진행가능한 퀘스트에서 제거
-	isChangeActiveQuest = true;
+
+	//진행중, 진행가능 퀘스트부분에서 변동사항이 있음을 알림
+	ChangeUIByActiveQuest();
+
 }
 
 void UQuestManagerComponent::NotifyProgress(EQuestType QuestType, FName TargetID, int32 Amount)
@@ -111,6 +117,9 @@ void UQuestManagerComponent::NotifyProgress(EQuestType QuestType, FName TargetID
 				{
 					CompletedQuestIDs.Add(QuestID);
 					HaveCompleteQuest = true;
+					//완료한 퀘스트, 진행 중인 퀘스트부분에서 변동사항이 있음을 알림
+					isChangeActiveQuest = true;
+					isChangeCompletedQuest = true;
 					UE_LOG(LogTemp, Error, TEXT("퀘스트 완료: %s!"), *Data->QuestName.ToString());
 				}
 			}
@@ -203,6 +212,18 @@ void UQuestManagerComponent::AutoSave()
 		60.0f,
 		true
 	);
+}
+
+void UQuestManagerComponent::ChangeUIByActiveQuest()
+{
+	isChangeActiveQuest = true;
+	isChangeAvailableQuest = true;
+}
+
+void UQuestManagerComponent::ChangeUIByCompletedQuest()
+{
+	isChangeActiveQuest = true;
+	isChangeCompletedQuest = true;
 }
 
 

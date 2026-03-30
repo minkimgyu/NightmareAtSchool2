@@ -54,6 +54,12 @@ public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Quest") // bool값 수정하면서 처리할거니까
 	bool isChangeActiveQuest = true;
 
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Quest")
+	bool isChangeAvailableQuest = true;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Quest")
+	bool isChangeCompletedQuest = true;
+
 private:
 	FTimerHandle TimerHandle; // 자동 저장용 타이머
 
@@ -73,6 +79,9 @@ private:
 	UFUNCTION(BlueprintCallable, Category = "Clear")
 	void ClearQuestData();
 
+	void ChangeUIByActiveQuest();
+
+	void ChangeUIByCompletedQuest();
 
 	//자동 저장 함수
 	void AutoSave();

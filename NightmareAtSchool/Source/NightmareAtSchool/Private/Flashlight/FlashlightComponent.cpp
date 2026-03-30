@@ -20,10 +20,12 @@ void UFlashlightComponent::InitializeFlashlight(USpotLightComponent* InLight, US
     FlashlightMesh123 = InLight;
     DetectionSphere123 = InSphere;
 
+    // 우선 끄기
+    DetectionSphere123->SetGenerateOverlapEvents(false);
     // 초기 반경 설정 (원하는 기본값)
     DetectionSphere123->SetSphereRadius(DetectionDistance);
     // 충돌 프로필 설정 (필요에 따라 변경)
-    DetectionSphere123->SetCollisionProfileName(TEXT("Trigger"));
+    //DetectionSphere123->SetCollisionProfileName(TEXT("Trigger"));
 
     // 2. 이벤트 바인딩 (이제 직접 참조하므로 바로 연결 가능)
     if (DetectionSphere123)
