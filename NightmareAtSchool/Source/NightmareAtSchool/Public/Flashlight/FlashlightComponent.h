@@ -22,7 +22,7 @@ public:
 
 	// 손전등 전원 상태
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Flashlight Settings")
-	bool bIsOn = true;
+	bool bIsOn = false;
 
 	// 블루프린트에서 호출 가능한 전원 제어 함수
 	UFUNCTION(BlueprintCallable, Category = "Flashlight")
