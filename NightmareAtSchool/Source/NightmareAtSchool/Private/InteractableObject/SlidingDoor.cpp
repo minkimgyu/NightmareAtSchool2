@@ -10,8 +10,11 @@
 
 #include "Components/StaticMeshComponent.h"
 #include "Components/SceneComponent.h" // USceneComponent 사용을 위해 필요
+#include "Components/AudioComponent.h"
 
 #include "Kismet/GameplayStatics.h" // PlaySoundAtLocation 사용을 위해 필요
+
+#include "TimerManager.h"
 
 
 // Sets default values
@@ -35,6 +38,13 @@ ASlidingDoor::ASlidingDoor()
 
     // Marker는 문이 열릴 때 DoorMesh가 도달해야 할 최종 위치를 지정합니다.
     // Blueprint에서 이 Marker의 위치를 조정하여 문이 열리는 거리를 설정합니다.
+
+    //오디오 컴포넌트 생성
+    AudioComp = CreateDefaultSubobject<UAudioComponent>(TEXT("MonsterAudioComp"));
+
+    AudioComp->SetupAttachment(RootComponent);
+
+    AudioComp->bAutoActivate = false;
 }
 
 void ASlidingDoor::BeginFocus()
@@ -88,19 +98,24 @@ void ASlidingDoor::HandleInteraction(IInteractorInterface* Interactor)
         // 닫기 상태로 전환
         bIsOpen = false;
         InteractableData.Action = FText::FromString("Open");
+
+        CloseDoorTimerCancel();
     }
     else
     {
         // 열기 상태로 전환
         bIsOpen = true;
         InteractableData.Action = FText::FromString("Close");
+
+        CloseDoorTimerSetting();
     }
 
     if (DoorOpenSound)
     {
         // 소리가 캐릭터 위치가 아닌 '문'의 위치에서 나게 하여 입체감을 줍니다.
-        FVector SoundLocation = GetActorLocation();
-        UGameplayStatics::PlaySoundAtLocation(this, DoorOpenSound, SoundLocation);
+        //FVector SoundLocation = GetActorLocation();
+        //UGameplayStatics::PlaySoundAtLocation(this, DoorOpenSound, SoundLocation);
+        AudioComp->Play();
     }
 
     Interactor->UpdateInteractionWidget(&InteractableData);
@@ -114,13 +129,14 @@ void ASlidingDoor::SlideDoor(float DeltaTime)
 
     if (bIsOpen)
     {
-        // 열린 상태: OpenPositionMarker의 위치를 목표로 합니다.
-        // GetRelativeLocation()을 사용하여 RootComponent에 대한 상대 위치를 가져옵니다.
         TargetLocationLeft = OpenPositionMarkerLeft->GetRelativeLocation();
         TargetLocationRight = OpenPositionMarkerRight->GetRelativeLocation();
     }
     else
     {
+        //자동닫기 해제
+        bisAutoClose = false;
+
         // 닫힌 상태: BeginPlay에서 저장된 초기 위치를 목표로 합니다.
         TargetLocationLeft = ClosedLocationLeft;
         TargetLocationRight = ClosedLocationRight;
@@ -148,4 +164,33 @@ void ASlidingDoor::SlideDoor(float DeltaTime)
 
     // 4. 문 메시의 위치를 업데이트합니다.
     RightDoorMesh->SetRelativeLocation(NewLocationRight);
+}
+
+void ASlidingDoor::CloseDoorTimer()
+{
+    bIsOpen = false;
+    AudioComp->Play();
+}
+
+void ASlidingDoor::CloseDoorTimerSetting()
+{
+    float DelayTime = 6.0f; // 2초
+    bool bIsLooping = false; // 반복 안 함
+
+    // 타이머 세팅
+    GetWorldTimerManager().SetTimer(
+        CloseDoorTimerHandle,
+        this,
+        &ASlidingDoor::CloseDoorTimer, // 실행할 함수 주소
+        DelayTime,
+        bIsLooping
+    );
+}
+
+void ASlidingDoor::CloseDoorTimerCancel()
+{
+    if (GetWorldTimerManager().IsTimerActive(CloseDoorTimerHandle))
+    {
+        GetWorldTimerManager().ClearTimer(CloseDoorTimerHandle);
+    }
 }

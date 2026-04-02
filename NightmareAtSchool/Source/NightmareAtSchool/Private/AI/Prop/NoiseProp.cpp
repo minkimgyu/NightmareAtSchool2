@@ -3,6 +3,7 @@
 
 #include "AI/Prop/NoiseProp.h"
 #include "Components/SphereComponent.h"
+#include "Components/AudioComponent.h"
 #include "Perception/AIPerceptionSystem.h"
 #include "Kismet/GameplayStatics.h"
 
@@ -25,6 +26,10 @@ ANoiseProp::ANoiseProp()
 
     // 메쉬의 경우 캐릭터와 부딪히지 않게 하려면 NoCollision이나 Overlap만 되게 설정하세요.
     MeshComponent->SetCollisionProfileName(TEXT("NoCollision"));
+
+    AudioComp = CreateDefaultSubobject<UAudioComponent>(TEXT("PropAudioComp"));
+    AudioComp->SetupAttachment(RootComponent);
+    AudioComp->bAutoActivate = false;
 }
 
 // Called when the game starts or when spawned
@@ -94,5 +99,8 @@ void ANoiseProp::OnOverlapBegin(UPrimitiveComponent* OverlappedComp, AActor* Oth
                 false                   // 채우기 여부
             );
         }
+
+        AudioComp->Play();
+
     }
 }

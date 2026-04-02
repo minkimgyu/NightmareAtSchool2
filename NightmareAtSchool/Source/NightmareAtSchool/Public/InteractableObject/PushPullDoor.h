@@ -47,11 +47,12 @@ protected:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Sound | Interaction")
 	class USoundBase* DoorOpenSound;
 
-	/** 3. 문 열리는 소리 */
+	/** 4. 문 닫히는 소리 */
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Sound | Interaction")
 	class USoundBase* DoorCloseSound;
 
-
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Sound")
+	class UAudioComponent* AudioComponent;
 
 
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Door | Components")

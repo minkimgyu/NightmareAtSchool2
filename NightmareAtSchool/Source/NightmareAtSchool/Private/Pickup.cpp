@@ -3,6 +3,7 @@
 
 #include "Pickup.h"
 #include "Components/InventoryComponent.h"
+#include "Kismet/GameplayStatics.h"
 #include "InteractorInterface.h"
 
 // Sets default values
@@ -153,6 +154,17 @@ void APickup::TakePickup(IInteractorInterface* Interactor)
                     case EItemAddResult::IAR_AllItemAdded:
                         // 모든 아이템이 성공적으로 추가됨
                         // 픽업 액터를 월드에서 제거합니다.
+
+                        // 임시 소리저장코드 -> 이벤트 바인드후 플레이어에게 들리게 조절로 수정 예정
+                        UGameplayStatics::PlaySoundAtLocation(
+                            this,               // 월드 컨텍스트
+                            PickUpSound,     // 재생할 USoundBase 에셋
+                            GetActorLocation(), // 재생될 위치
+                            1.0f,               // 볼륨 배수
+                            1.0f,               // 피치 배수
+                            0.0f                // 시작 시간
+                        );
+
                         Destroy();
                         break;
                 }

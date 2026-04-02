@@ -22,6 +22,7 @@ public:
 	// Called every frame
 	virtual void Tick(float DeltaTime) override;
 
+
 protected:
 	// ----------------------------------------------------------------------
 	// 슬라이딩 컴포넌트 및 변수
@@ -38,6 +39,9 @@ protected:
 
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Door | Components")
 	UStaticMeshComponent* RightDoorMesh;
+
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Audio")
+	class UAudioComponent* AudioComp;
 
 
 	/** 3. 문 열리는 소리 */
@@ -76,4 +80,15 @@ private:
 
 	/** 문 메시를 목표 위치로 부드럽게 이동시키는 함수 */
 	void SlideDoor(float DeltaTime);
+
+	void CloseDoorTimer();
+	void CloseDoorTimerSetting();
+	void CloseDoorTimerCancel();
+
+private:
+	//타이머 핸들
+	FTimerHandle CloseDoorTimerHandle;
+
 };
+
+

@@ -33,9 +33,13 @@ void UGhost11234SoundService::TickNode(UBehaviorTreeComponent& OwnerComp, uint8*
 
 	USoundCue* TargetSound = nullptr;
 
-	if (bIsChasing)
+	if (bIsIlluminated)
 	{
 		// 추격 중일 때 (가장 우선순위 높음)
+		TargetSound = StunSound;
+	}
+	else if (bIsChasing)
+	{
 		TargetSound = ChaseSound;
 	}
 	else

@@ -54,6 +54,7 @@ protected:
 	// ----------------------------------------------------------------------
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Door | State")
 	bool bIsOpen; // 문이 열려있는지 닫혀있는지 상태
+	bool bisAutoClose; // 문이 자동으로 닫혀야하는지 정하는 상태
 
 	//// 문 열기/닫기 로직 (Blueprint에서 애니메이션을 처리)
 	//UFUNCTION(BlueprintImplementableEvent, Category = "Door")

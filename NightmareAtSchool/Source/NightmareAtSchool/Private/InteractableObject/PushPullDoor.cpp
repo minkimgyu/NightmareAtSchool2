@@ -13,6 +13,7 @@
 #include "InteractableObject/DoorBase.h"
 
 #include "Components/BoxComponent.h"
+#include "Components/AudioComponent.h"
 
 #include "PlayerCharacter.h" // Interact 함수에서 사용
 
@@ -44,6 +45,10 @@ APushPullDoor::APushPullDoor()
 
     LeftNavBlocker->SetRelativeLocation(FVector(0.0f, -220.0f, 0.0f));
     RightNavBlocker->SetRelativeLocation(FVector(0.0f, 220.0f, 0.0f));
+
+    AudioComponent = CreateDefaultSubobject<UAudioComponent>(TEXT("MonsterAudioComp"));
+    AudioComponent->SetupAttachment(RootComponent);
+    AudioComponent->bAutoActivate = false;
 }
 
 void APushPullDoor::BeginFocus()
@@ -144,8 +149,14 @@ void APushPullDoor::HandleInteraction(IInteractorInterface* Interactor)
         if (DoorCloseSound)
         {
             // 소리가 캐릭터 위치가 아닌 '문'의 위치에서 나게 하여 입체감을 줍니다.
-            FVector SoundLocation = GetActorLocation();
-            UGameplayStatics::PlaySoundAtLocation(this, DoorCloseSound, SoundLocation);
+            //FVector SoundLocation = GetActorLocation();
+            //UGameplayStatics::PlaySoundAtLocation(this, DoorCloseSound, SoundLocation);
+            if (AudioComponent)
+            {
+                AudioComponent->Stop();
+                AudioComponent->SetSound(DoorCloseSound);
+                AudioComponent->Play();
+            }
         }
 
         // 닫는 로직 (C++ 회전 시작)
@@ -157,8 +168,14 @@ void APushPullDoor::HandleInteraction(IInteractorInterface* Interactor)
         if (DoorOpenSound)
         {
             // 소리가 캐릭터 위치가 아닌 '문'의 위치에서 나게 하여 입체감을 줍니다.
-            FVector SoundLocation = GetActorLocation();
-            UGameplayStatics::PlaySoundAtLocation(this, DoorOpenSound, SoundLocation);
+            //FVector SoundLocation = GetActorLocation();
+            //UGameplayStatics::PlaySoundAtLocation(this, DoorOpenSound, SoundLocation);
+            if (AudioComponent)
+            {
+                AudioComponent->Stop();
+                AudioComponent->SetSound(DoorOpenSound);
+                AudioComponent->Play();
+            }
         }
 
         // 여는 로직 (C++ 회전 시작)

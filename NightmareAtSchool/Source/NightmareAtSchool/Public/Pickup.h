@@ -55,6 +55,9 @@ protected:
 	UPROPERTY(VisibleInstanceOnly, Category = "Pickup | Interaction")
 	FInteractableData InstanceInteractableData;
 
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Audio")
+	class USoundBase* PickUpSound;
+
 
     // FUNCTIONS
     virtual void BeginPlay() override;
