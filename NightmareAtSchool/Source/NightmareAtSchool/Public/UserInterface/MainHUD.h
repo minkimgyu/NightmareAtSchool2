@@ -6,6 +6,7 @@
 #include "GameFramework/HUD.h"
 #include "InteractionInterface.h"
 #include "UserInterface/Interaction/InteractionWidget.h"
+#include "UserInterface/Joystick/JoystickWidget.h"
 
 #include "MainHUD.generated.h"
 
@@ -20,6 +21,7 @@ class UMainMenu;
 class UInteractionWidget;
 class USprintBar;
 class UPlayerHP;
+class UJoystick;
 
 struct FInteractableData;
 
@@ -51,6 +53,9 @@ public:
 	UPROPERTY(EditDefaultsOnly, Category = "Widgets")
 	TSubclassOf<UPlayerHP> HPWidgetClass;
 
+	UPROPERTY(EditDefaultsOnly, Category = "Widgets")
+	TSubclassOf<UJoystickWidget> JoystickWidgetClass;
+
 	bool bIsMenuVisible;
 
 	AMainHUD();
@@ -69,6 +74,8 @@ public:
 	void HideInteractionWidget() const;
 	void UpdateInteractionWidget(const  FInteractableData* InteractableData) const;
 
+
+
 protected:
 
 	UPROPERTY()
@@ -84,6 +91,9 @@ protected:
 
 	UPROPERTY()
 	UPlayerHP* HPWidget;
+
+	UPROPERTY()
+	UJoystickWidget* JoystickWidget;
 
 	virtual void BeginPlay() override;
 };

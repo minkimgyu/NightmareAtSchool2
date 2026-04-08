@@ -116,6 +116,20 @@ void AMainHUD::BeginPlay()
 {
 	Super::BeginPlay();
 
+	APlayerController* PC = GetOwningPlayerController();
+	if (PC)
+	{
+		// 1. 마우스 커서를 강제로 보이게 설정
+		PC->bShowMouseCursor = true;
+
+		// 2. 게임 조작과 UI 조작을 동시에 허용하는 모드로 변경
+		FInputModeGameAndUI InputMode;
+		InputMode.SetLockMouseToViewportBehavior(EMouseLockMode::DoNotLock);
+		InputMode.SetHideCursorDuringCapture(false); // 마우스를 눌러도 커서가 사라지지 않게 함
+
+		PC->SetInputMode(InputMode);
+	}
+
 	if (MainMenuClass)
 	{
 		MainMenuWidget = CreateWidget<UMainMenu>(GetWorld(), MainMenuClass);
@@ -135,6 +149,22 @@ void AMainHUD::BeginPlay()
 		SprintBar = CreateWidget<USprintBar>(GetWorld(), USprintBarClass);
 		SprintBar->AddToViewport(-1); // zorder
 		SprintBar->SetVisibility(ESlateVisibility::Collapsed);
+	}
+
+	if (JoystickWidgetClass)
+	{
+		JoystickWidget = CreateWidget<UJoystickWidget>(GetWorld(), JoystickWidgetClass);
+
+		if (JoystickWidget)
+			JoystickWidget->AddToViewport(6); // 우선순위 다른 메인UI와 같게 설정
+
+		APlayerCharacter* Player = Cast<APlayerCharacter>(GetOwningPawn());
+
+		if (Player)
+		{
+			// 3. 캐릭터의 포인터 변수에 방금 만든 위젯 주소를 넣어줌!
+			Player->JoystickWidgetPtr = JoystickWidget;
+		}
 	}
 
 	if (HPWidgetClass)

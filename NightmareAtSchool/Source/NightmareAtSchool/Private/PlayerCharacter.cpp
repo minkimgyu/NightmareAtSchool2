@@ -23,6 +23,8 @@
 #include "Components/InventoryComponent.h"
 #include "Components/InteractionComponent.h" // 인클루드 추가
 
+#include "UserInterface/Joystick/JoystickWidget.h" // 모바일용 조이스틱 추가
+
 #include "DrawDebugHelpers.h"
 
 // Sets default values
@@ -233,6 +235,19 @@ void APlayerCharacter::ToggleCrouch()
 	SetState(NewPostureState);
 }
 
+void APlayerCharacter::MoveUseJoystick()
+{
+	if (!Controller || !JoystickWidgetPtr) return;
+
+	FVector2D JoyInput = JoystickWidgetPtr->GetMovementInput();
+
+	if (!JoyInput.IsNearlyZero())
+	{
+		AddMovementInput(GetActorForwardVector(), JoyInput.Y);
+		AddMovementInput(GetActorRightVector(), JoyInput.X);
+	}
+}
+
 // Called when the game starts or when spawned
 void APlayerCharacter::BeginPlay()
 {
@@ -436,10 +451,19 @@ void APlayerCharacter::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
 
+	MoveUseJoystick(); // 모바일용 이동
+
+	//모바일 테스트용 마우스커서 활성화
+	//--------------------------------------------------------------------------
+	if (APlayerController* PC = Cast<APlayerController>(GetController()))
+	{
+		PC->bShowMouseCursor = true;
+	}
 	// 1. 이동 및 접지 상태 확인
 	float Speed = GetVelocity().Size();
 	bool bIsMoving = Speed > 10.0f;
 	bool bIsOnGround = !GetCharacterMovement()->IsFalling();
+	//---------------------------------------------------------------------------
 
 	if (bIsMoving && bIsOnGround)
 	{

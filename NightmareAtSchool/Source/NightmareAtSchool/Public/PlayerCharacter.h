@@ -29,6 +29,7 @@ class AMainHUD;
 class UInventoryComponent;
 class UItemBase;
 class UCameraComponent;
+class UJoystickWidget;
 class USpotLightComponent;
 struct FTimerHandle;
 
@@ -93,7 +94,7 @@ public:
 	void HandleDeath();
 
 	void ToggleMenu();
-	
+
 
 	// Called every frame
 	virtual void Tick(float DeltaTime) override;
@@ -130,6 +131,11 @@ public:
 	/** 최대 스프린트 지속 시간을 반환합니다. UI 업데이트에 사용됩니다. */
 	FORCEINLINE float GetMaxSprintDuration() const { return MaxSprintDuration; }
 
+
+	//조이스틱 
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "UI")
+	UJoystickWidget* JoystickWidgetPtr;
+
 private:
 	//=====================================================================
 	// �Լ�
@@ -152,6 +158,9 @@ private:
 	void StartSprintCooldown();
 	/** 스프린트 사용 가능 여부를 확인합니다. */
 	bool CanSprint() const;
+
+	//모바일용
+	void MoveUseJoystick();
 
 
 protected:
