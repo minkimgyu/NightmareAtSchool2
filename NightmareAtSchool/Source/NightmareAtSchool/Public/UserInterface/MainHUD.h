@@ -23,6 +23,7 @@ class UPlayerHP;
 class UJoystickWidget;
 class UPlayerInteractionWidget;
 class UPlayerMainMenuWidget;
+class UBackGroundTouchWidget;
 
 struct FInteractableData;
 
@@ -62,6 +63,9 @@ public:
 
 	UPROPERTY(EditDefaultsOnly, Category = "Widgets")
 	TSubclassOf<UPlayerMainMenuWidget> PlayerMainMenuClass;
+
+	UPROPERTY(EditDefaultsOnly, Category = "Widgets")
+	TSubclassOf<UBackGroundTouchWidget> BackGroundTouchWidgetClass;
 
 	bool bIsMenuVisible;
 
@@ -107,6 +111,9 @@ protected:
 
 	UPROPERTY()
 	UPlayerMainMenuWidget* PlayerMainMenu;
+
+	UPROPERTY()
+	UBackGroundTouchWidget* BackGroundTouchWidget;
 
 	virtual void BeginPlay() override;
 };

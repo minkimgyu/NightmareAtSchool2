@@ -62,3 +62,46 @@ void UJoystickWidget::ResetJoystick()
 	bIsTouching = false; // 터치해제
 }
 
+FReply UJoystickWidget::NativeOnTouchStarted(const FGeometry& InGeometry, const FPointerEvent& InMouseEvent)
+{
+	// 조이스틱을 처음 눌렀을 때의 좌표를 중심으로 설정
+	FVector2D StartLocation = InMouseEvent.GetScreenSpacePosition();
+
+	InitJoystick(StartLocation);
+
+	//조이스틱 조종하는 손가락 저장하기(아마 왼손)
+	JoystickPointerIndex = InMouseEvent.GetPointerIndex();
+
+	//터치이동 허용(드래그 허용)
+	return FReply::Handled().CaptureMouse(TakeWidget());
+}
+
+FReply UJoystickWidget::NativeOnTouchMoved(const FGeometry& InGeometry, const FPointerEvent& InMouseEvent)
+{
+	// 조이스틱 조종 중인 손가락일 때만
+	if (bIsTouching && InMouseEvent.GetPointerIndex() == JoystickPointerIndex)
+	{
+		// 현재 드래그중인 위치 가져오기
+		FVector2D CurrentLocation = InMouseEvent.GetScreenSpacePosition();
+
+		//조이스틱 업데이트
+		UpdateJoystick(CurrentLocation);
+
+		return FReply::Handled();
+	}
+	return FReply::Unhandled();
+}
+
+FReply UJoystickWidget::NativeOnTouchEnded(const FGeometry& InGeometry, const FPointerEvent& InMouseEvent)
+{
+	if (InMouseEvent.GetPointerIndex() == JoystickPointerIndex)
+	{
+		ResetJoystick();
+		JoystickPointerIndex = -1;
+
+		// 터치이동 해제
+		return FReply::Handled().ReleaseMouseCapture();
+	}
+	return FReply::Unhandled();
+}
+

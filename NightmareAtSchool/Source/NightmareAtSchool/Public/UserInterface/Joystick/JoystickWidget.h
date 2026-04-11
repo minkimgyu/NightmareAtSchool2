@@ -28,6 +28,11 @@ public:
 	FVector2D GetMovementInput() const { return MovementInput; };
 
 protected:
+
+	virtual FReply NativeOnTouchStarted(const FGeometry& InGeometry, const FPointerEvent& InMouseEvent) override;
+	virtual FReply NativeOnTouchMoved(const FGeometry& InGeometry, const FPointerEvent& InMouseEvent) override;
+	virtual FReply NativeOnTouchEnded(const FGeometry& InGeometry, const FPointerEvent& InMouseEvent) override;
+
 	UPROPERTY(meta = (Bindwidget), BlueprintReadOnly)
 	class UImage* IM_JoystickBackground;
 
@@ -41,4 +46,6 @@ protected:
 	UPROPERTY(EditAnywhere, Category = "Joystick Settings")
 	float MaxRadius = 70.0f;
 
+private:
+	int32 JoystickPointerIndex = -1;
 };

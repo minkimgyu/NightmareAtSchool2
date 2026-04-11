@@ -9,6 +9,7 @@
 #include "UserInterface/Joystick/JoystickWidget.h"
 #include "UserInterface/MainPlayerUI/PlayerInteractionWidget.h"
 #include "UserInterface/MainPlayerUI/PlayerMainMenuWidget.h"
+#include "UserInterface/Joystick/BackGroundTouchWidget.h"
 
 #include "InteractionInterface.h" // APlayerCharacter.h에서 사용되던 인터페이스
 
@@ -132,6 +133,14 @@ void AMainHUD::BeginPlay()
 		InputMode.SetHideCursorDuringCapture(false); // 마우스를 눌러도 커서가 사라지지 않게 함
 
 		PC->SetInputMode(InputMode);
+	}
+
+	if (BackGroundTouchWidgetClass)
+	{
+		BackGroundTouchWidget = CreateWidget<UBackGroundTouchWidget>(GetWorld(), BackGroundTouchWidgetClass);
+
+		if (BackGroundTouchWidget)
+			BackGroundTouchWidget->AddToViewport(-1); // 우선순위 다른 메인UI와 같게 설정
 	}
 
 	if (MainMenuClass)
