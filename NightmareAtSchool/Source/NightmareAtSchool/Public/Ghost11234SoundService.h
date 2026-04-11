@@ -6,6 +6,8 @@
 #include "BehaviorTree/BTService.h"
 #include "Ghost11234SoundService.generated.h"
 
+class USoundCue;
+
 /**
  * 
  */

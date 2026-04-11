@@ -135,14 +135,6 @@ void AMainHUD::BeginPlay()
 		PC->SetInputMode(InputMode);
 	}
 
-	if (BackGroundTouchWidgetClass)
-	{
-		BackGroundTouchWidget = CreateWidget<UBackGroundTouchWidget>(GetWorld(), BackGroundTouchWidgetClass);
-
-		if (BackGroundTouchWidget)
-			BackGroundTouchWidget->AddToViewport(-1); // 우선순위 다른 메인UI와 같게 설정
-	}
-
 	if (MainMenuClass)
 	{
 		MainMenuWidget = CreateWidget<UMainMenu>(GetWorld(), MainMenuClass);
@@ -155,6 +147,14 @@ void AMainHUD::BeginPlay()
 		InteractionWidget = CreateWidget<UInteractionWidget>(GetWorld(), InteractionWidgetClass);
 		InteractionWidget->AddToViewport(-1); // zorder
 		InteractionWidget->SetVisibility(ESlateVisibility::Collapsed);
+	}
+
+	if (BackGroundTouchWidgetClass)
+	{
+		BackGroundTouchWidget = CreateWidget<UBackGroundTouchWidget>(GetWorld(), BackGroundTouchWidgetClass);
+
+		if (BackGroundTouchWidget)
+			BackGroundTouchWidget->AddToViewport(-1); // 우선순위 다른 메인UI와 같게 설정
 	}
 
 	if (USprintBarClass)

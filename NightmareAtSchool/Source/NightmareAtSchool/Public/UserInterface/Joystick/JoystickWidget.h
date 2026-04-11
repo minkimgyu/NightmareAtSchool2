@@ -27,6 +27,10 @@ public:
 	UFUNCTION(BlueprintPure)
 	FVector2D GetMovementInput() const { return MovementInput; };
 
+public:
+	UPROPERTY()
+	bool bIsTouching = false;
+
 protected:
 
 	virtual FReply NativeOnTouchStarted(const FGeometry& InGeometry, const FPointerEvent& InMouseEvent) override;
@@ -41,7 +45,6 @@ protected:
 
 	FVector2D JoystickCenter;
 	FVector2D MovementInput;
-	bool bIsTouching = false;
 
 	UPROPERTY(EditAnywhere, Category = "Joystick Settings")
 	float MaxRadius = 70.0f;

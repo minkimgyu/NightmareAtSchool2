@@ -6,6 +6,8 @@
 #include "BehaviorTree/BTService.h"
 #include "LizardManSoundService.generated.h"
 
+class USoundCue;
+
 /**
  *
  */
