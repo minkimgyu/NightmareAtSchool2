@@ -20,6 +20,11 @@
 
 #include "PlayerCharacter.generated.h"
 
+
+// 델리게이트 선언 (파라미터가 없는 형태)
+DECLARE_DYNAMIC_MULTICAST_DELEGATE(FOnFirstHitFromMaxHealthSignature);
+
+
 // 헤더 상단에 컴포넌트 추가
 
 class UQuestManagerComponent;
@@ -61,6 +66,7 @@ struct FTimerHandle;
 UENUM(BlueprintType)
 enum class EPlayerActionState : uint8
 {
+	Idle  UMETA(DisplayName = "Idle"),
 	Sprint UMETA(DisplayName = "Sprint"),
 	Walk UMETA(DisplayName = "Walk")
 };
@@ -85,6 +91,10 @@ public:
 	// Sets default values for this character's properties
 	APlayerCharacter();
 
+	// 블루프린트에서 바인딩 가능하도록 Assignable 설정
+	UPROPERTY(BlueprintAssignable, Category = "Events")
+	FOnFirstHitFromMaxHealthSignature OnFirstHitFromMaxHealth;
+
 	// Engine의 TakeDamage 함수를 오버라이드합니다.
 	virtual float TakeDamage(float DamageAmount, struct FDamageEvent const& DamageEvent, class AController* EventInstigator, AActor* DamageCauser) override;
 
@@ -97,6 +107,7 @@ public:
 	UFUNCTION(BlueprintCallable)
 	void ToggleMenu();
 
+	FORCEINLINE EPlayerActionState GetPlayerActionState() const { return PlayerActionState; }
 
 	UFUNCTION(BlueprintCallable)
 	void StartSprint();

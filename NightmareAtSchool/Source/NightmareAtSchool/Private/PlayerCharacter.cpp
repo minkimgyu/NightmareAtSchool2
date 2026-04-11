@@ -97,6 +97,19 @@ float APlayerCharacter::TakeDamage(float DamageAmount, FDamageEvent const& Damag
 
 	if (ActualDamage > 0.0f)
 	{
+		// ⭐ 추가: 데미지를 입기 전 체력이 MaxHealth인지 확인
+		// 부동 소수점 비교이므로 FMath::IsNearlyEqual을 사용하거나 >=를 활용합니다.
+		//if (FMath::IsNearlyEqual(Health, MaxHealth))
+		//{
+
+
+		if (OnFirstHitFromMaxHealth.IsBound())
+		{
+			OnFirstHitFromMaxHealth.Broadcast();
+		}
+		UE_LOG(LogTemp, Log, TEXT("Player hit at Max Health! Delegate Broadcasted."));
+		//}
+
 		// 체력 감소
 		Health -= ActualDamage;
 
@@ -350,7 +363,9 @@ void APlayerCharacter::UpdateSprintDuration(float DeltaTime)
 bool APlayerCharacter::CanSprint() const
 {
 	// 쿨다운 타이머가 활성화되지 않았고, 스프린트 시간이 0보다 커야 스프린트 가능
-	return !GetWorldTimerManager().IsTimerActive(TimerHandle_SprintCooldown) && (CurrentSprintDuration > 0.0f);
+	return !GetWorldTimerManager().IsTimerActive(TimerHandle_SprintCooldown) 
+		&& (CurrentSprintDuration > 0.0f)
+		&& (PlayerActionState == EPlayerActionState::Walk);
 }
 
 void APlayerCharacter::StartSprint()
@@ -465,6 +480,24 @@ void APlayerCharacter::Tick(float DeltaTime)
 	bool bIsOnGround = !GetCharacterMovement()->IsFalling();
 	//---------------------------------------------------------------------------
 
+	// 2. 이동 상태에 따른 자동 상태 전환 (달리는 중이 아닐 때만)
+	if (PlayerActionState != EPlayerActionState::Sprint)
+	{
+		if (bIsMoving)
+		{
+			SetState(EPlayerActionState::Walk);
+		}
+		else
+		{
+			SetState(EPlayerActionState::Idle);
+		}
+	}
+	else if (!bIsMoving)
+	{
+		// 달리다가 멈췄을 경우 즉시 Walk 또는 Idle로 전환
+		StopSprint();
+	}
+
 	if (bIsMoving && bIsOnGround)
 	{
 		// 2. 현재 상태(Walk/Sprint)에 따른 목표 딜레이 결정
@@ -527,6 +560,9 @@ void APlayerCharacter::SetState(EPlayerActionState ActionState)
 	if (PlayerPostureState == EPlayerPostureState::Crouch &&
 		ActionState == EPlayerActionState::Sprint) return;
 
+	// Sprint 상태로 전이 시 한 번 더 체크 (방어 코드)
+	//if (PlayerActionState == EPlayerActionState::Sprint && !CanSprint()) return;
+
 	// ⭐ 스프린트 상태로의 전환을 시도할 때, 스프린트 가능 여부 한 번 더 체크 (StartSprint에서 이미 했지만 방어 코드)
 	if (ActionState == EPlayerActionState::Sprint && CurrentSprintDuration <= 0.0f)
 	{
@@ -542,6 +578,10 @@ void APlayerCharacter::SetState(EPlayerActionState ActionState)
 	{
 		switch (PlayerActionState)
 		{
+			case EPlayerActionState::Idle:
+			// Idle 시에는 딱히 속도를 건드리지 않아도 되지만, 기본적으로 NormalSpeed를 유지하거나 0으로 세팅할 수 있음
+				GetCharacterMovement()->MaxWalkSpeed = NormalSpeed;
+				break;
 			case EPlayerActionState::Sprint:
 				GetCharacterMovement()->MaxWalkSpeed = SprintSpeed;
 				break;
