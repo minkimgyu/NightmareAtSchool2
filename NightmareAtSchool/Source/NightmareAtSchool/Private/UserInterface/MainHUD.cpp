@@ -6,6 +6,10 @@
 #include "UserInterface/Sprint/SprintBar.h"
 #include "UserInterface/HP/PlayerHP.h"
 
+#include "UserInterface/Joystick/JoystickWidget.h"
+#include "UserInterface/MainPlayerUI/PlayerInteractionWidget.h"
+#include "UserInterface/MainPlayerUI/PlayerMainMenuWidget.h"
+
 #include "InteractionInterface.h" // APlayerCharacter.h에서 사용되던 인터페이스
 
 AMainHUD::AMainHUD()
@@ -147,7 +151,7 @@ void AMainHUD::BeginPlay()
 	if (USprintBarClass)
 	{
 		SprintBar = CreateWidget<USprintBar>(GetWorld(), USprintBarClass);
-		SprintBar->AddToViewport(-1); // zorder
+		SprintBar->AddToViewport(-2); // zorder
 		SprintBar->SetVisibility(ESlateVisibility::Collapsed);
 	}
 
@@ -156,7 +160,7 @@ void AMainHUD::BeginPlay()
 		JoystickWidget = CreateWidget<UJoystickWidget>(GetWorld(), JoystickWidgetClass);
 
 		if (JoystickWidget)
-			JoystickWidget->AddToViewport(6); // 우선순위 다른 메인UI와 같게 설정
+			JoystickWidget->AddToViewport(-1); // 우선순위 다른 메인UI와 같게 설정
 
 		APlayerCharacter* Player = Cast<APlayerCharacter>(GetOwningPawn());
 
@@ -167,10 +171,26 @@ void AMainHUD::BeginPlay()
 		}
 	}
 
+	if (PlayerInteractionClass)
+	{
+		PlayerInteraction = CreateWidget<UPlayerInteractionWidget>(GetWorld(), PlayerInteractionClass);
+
+		if (PlayerInteraction)
+			PlayerInteraction->AddToViewport(-1); // 우선순위 다른 메인UI와 같게 설정
+	}
+
+	if (PlayerMainMenuClass)
+	{
+		PlayerMainMenu = CreateWidget<UPlayerMainMenuWidget>(GetWorld(), PlayerMainMenuClass);
+
+		if (PlayerMainMenu)
+			PlayerMainMenu->AddToViewport(-1); // 우선순위 다른 메인UI와 같게 설정
+	}
+
 	if (HPWidgetClass)
 	{
 		HPWidget = CreateWidget<UPlayerHP>(GetWorld(), HPWidgetClass);
-		HPWidget->AddToViewport(-1); // zorder
+		HPWidget->AddToViewport(-2); // zorder
 		HPWidget->SetVisibility(ESlateVisibility::Visible);
 	}
 }

@@ -43,6 +43,8 @@ public:
 	/** 외부(Player나 AI)에서 호출할 수 있는 상호작용 액션 */
 	void BeginInteract();
 	void EndInteract();
+
+	UFUNCTION(BlueprintCallable)
 	void Interact();
 
 	bool IsInteracting() const;

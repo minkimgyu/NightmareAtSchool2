@@ -30,6 +30,7 @@ class UInventoryComponent;
 class UItemBase;
 class UCameraComponent;
 class UJoystickWidget;
+class UPlayerInteractionWidget;
 class USpotLightComponent;
 struct FTimerHandle;
 
@@ -93,7 +94,23 @@ public:
 	// 사망 처리 함수
 	void HandleDeath();
 
+	UFUNCTION(BlueprintCallable)
 	void ToggleMenu();
+
+
+	UFUNCTION(BlueprintCallable)
+	void StartSprint();
+
+	UFUNCTION(BlueprintCallable)
+	void StopSprint();
+
+	void ClearSprintCooldownTimer();
+
+	UFUNCTION(BlueprintCallable)
+	void ToggleCrouch();
+
+	UFUNCTION(BlueprintCallable)
+	void ToggleFlashlight();
 
 
 	// Called every frame
@@ -142,14 +159,6 @@ private:
 	//=====================================================================
 	void Move(const FInputActionValue& value);
 	void Look(const FInputActionValue& value);
-
-	void StartSprint();
-	void StopSprint();
-
-	void ClearSprintCooldownTimer();
-
-	void ToggleCrouch();
-	void ToggleFlashlight();
 
 	// 새로운 private 함수
 	/** 스프린트 타이머 업데이트 (틱마다 호출) */

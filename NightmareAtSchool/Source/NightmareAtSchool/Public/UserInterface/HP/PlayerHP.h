@@ -8,6 +8,7 @@
 #include "PlayerHP.generated.h"
 
 DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FOnHPChangedSignature, float, NewHP);
+DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FOnHeated, float, NewHP);
 
 class UImage;
 class UTextBlock;
