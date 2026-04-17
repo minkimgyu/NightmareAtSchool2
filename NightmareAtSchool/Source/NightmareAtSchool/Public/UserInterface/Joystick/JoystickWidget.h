@@ -9,12 +9,20 @@
 /**
  * 
  */
+
+ // 1. 델리게이트 선언 (매개변수로 현재 터치 여부 전달)
+DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FOnJoystickTouchChanged, bool, bIsTouching);
+
 UCLASS()
 class NIGHTMAREATSCHOOL_API UJoystickWidget : public UUserWidget
 {
 	GENERATED_BODY()
 	
 public:
+	// 2. 블루프린트에서 할당 가능한 델리게이트 변수
+	UPROPERTY(BlueprintAssignable, Category = "Joystick | Events")
+	FOnJoystickTouchChanged OnJoystickTouchChanged;
+
 	UFUNCTION(BlueprintCallable)
 	void InitJoystick(FVector2D NativeCenter);
 

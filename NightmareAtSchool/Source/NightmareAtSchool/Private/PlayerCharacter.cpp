@@ -49,7 +49,7 @@ APlayerCharacter::APlayerCharacter()
 	CrouchingHalfHeight = 48.f;
 	CrouchInterpSpeed = 8.f; // 부드러운 속도 설정
 
-	SetState(EPlayerActionState::Walk);
+	SetState(EPlayerActionState::Idle);
 	SetState(EPlayerPostureState::Stand);
 
 	QuestManagerCom = CreateDefaultSubobject<UQuestManagerComponent>(TEXT("QuestManagerCom123"));
@@ -222,7 +222,7 @@ void APlayerCharacter::DropItem(UItemBase* ItemToDrop, int32 QuantityToDrop)
 
 void APlayerCharacter::Move(const FInputActionValue& value)
 {
-	if (!Controller) return; // ��Ʈ�ѷ��� ���� ��� �������� ����
+	if (!Controller) return; // 컨트롤러가 없으면 이동하지 않음
 
 	const FVector2D MoveInput = value.Get<FVector2D>();
 
@@ -261,10 +261,51 @@ void APlayerCharacter::MoveUseJoystick()
 	}
 }
 
+void APlayerCharacter::HandleJoystickTouchChanged(bool bIsTouching)
+{
+	if (bIsTouching)
+	{
+		// 1. 터치 시작 (Walk 시도)
+		UE_LOG(LogTemp, Log, TEXT("== Joystick Touch Started =="));
+
+		// 터치 중이면 Walk 상태로 (이미 Sprint 중이라면 SetState 내부 로직에 의해 무시됨)
+		SetState(EPlayerActionState::Walk);
+
+		// 현재 최종 상태 확인
+		FString StateStr = (PlayerActionState == EPlayerActionState::Sprint) ? TEXT("Sprint") : TEXT("Walk");
+		UE_LOG(LogTemp, Warning, TEXT("Joystick ON: Current State is %s"), *StateStr);
+	}
+	else
+	{
+		// 2. 조이스틱에서 손을 떼면 모든 이동 상태를 초기화
+		// 
+		// 2. 터치 종료 (상태 초기화)
+		UE_LOG(LogTemp, Log, TEXT("== Joystick Touch Released =="));
+
+
+		if (PlayerActionState == EPlayerActionState::Sprint)
+		{
+			UE_LOG(LogTemp, Error, TEXT("Joystick OFF: Stopping Sprint..."));
+			// 달리는 중이었다면 스프린트 바를 숨기고 쿨다운 등을 처리하는 StopSprint 호출
+			StopSprint();
+		}
+
+		// 터치를 떼면 즉시 Idle 상태로
+		SetState(EPlayerActionState::Idle);
+		UE_LOG(LogTemp, Warning, TEXT("Joystick OFF: Final State is Idle"));
+	}
+}
+
 // Called when the game starts or when spawned
 void APlayerCharacter::BeginPlay()
 {
 	Super::BeginPlay();
+
+	// 조이스틱 델리게이트 바인딩
+	if (JoystickWidgetPtr)
+	{
+		JoystickWidgetPtr->OnJoystickTouchChanged.AddDynamic(this, &APlayerCharacter::HandleJoystickTouchChanged);
+	}
 
 	// 로직 컴포넌트에게 조작해야 할 부품(라이트, 구역)을 넘겨줌
 	if (FlashlightComponent)
@@ -380,6 +421,9 @@ void APlayerCharacter::StartSprint()
 
 void APlayerCharacter::StopSprint()
 {
+	// 만약 정지 상태라면 이전에 자동으로 Walk로 전환되는 로직이 있으므로, 굳이 상태를 변경할 필요가 없습니다.
+	if (PlayerActionState == EPlayerActionState::Idle) return;
+
 	SetState(EPlayerActionState::Walk);
 }
 
@@ -480,23 +524,23 @@ void APlayerCharacter::Tick(float DeltaTime)
 	bool bIsOnGround = !GetCharacterMovement()->IsFalling();
 	//---------------------------------------------------------------------------
 
-	// 2. 이동 상태에 따른 자동 상태 전환 (달리는 중이 아닐 때만)
-	if (PlayerActionState != EPlayerActionState::Sprint)
-	{
-		if (bIsMoving)
-		{
-			SetState(EPlayerActionState::Walk);
-		}
-		else
-		{
-			SetState(EPlayerActionState::Idle);
-		}
-	}
-	else if (!bIsMoving)
-	{
-		// 달리다가 멈췄을 경우 즉시 Walk 또는 Idle로 전환
-		StopSprint();
-	}
+	//// 2. 이동 상태에 따른 자동 상태 전환 (달리는 중이 아닐 때만)
+	//if (PlayerActionState != EPlayerActionState::Sprint)
+	//{
+	//	if (bIsMoving)
+	//	{
+	//		SetState(EPlayerActionState::Walk);
+	//	}
+	//	else
+	//	{
+	//		SetState(EPlayerActionState::Idle);
+	//	}
+	//}
+	//else if (!bIsMoving)
+	//{
+	//	// 달리다가 멈췄을 경우 즉시 Walk 또는 Idle로 전환
+	//	StopSprint();
+	//}
 
 	if (bIsMoving && bIsOnGround)
 	{
@@ -560,6 +604,10 @@ void APlayerCharacter::SetState(EPlayerActionState ActionState)
 	if (PlayerPostureState == EPlayerPostureState::Crouch &&
 		ActionState == EPlayerActionState::Sprint) return;
 
+	// 만약 정지 상태라면 달리기 변환 못함
+	if (PlayerActionState == EPlayerActionState::Idle &&
+		ActionState == EPlayerActionState::Sprint) return;
+
 	// Sprint 상태로 전이 시 한 번 더 체크 (방어 코드)
 	//if (PlayerActionState == EPlayerActionState::Sprint && !CanSprint()) return;
 
@@ -569,6 +617,17 @@ void APlayerCharacter::SetState(EPlayerActionState ActionState)
 		// 스프린트 불가능 상태에서는 Walk로 설정 유지
 		return;
 	}
+
+
+
+	// Enum의 실제 이름을 문자열로 가져옵니다.
+	FString StateAsString = StaticEnum<EPlayerActionState>()->GetNameStringByValue((int64)PlayerActionState);
+
+	UE_LOG(LogTemp, Warning, TEXT("Current ActionState: %s"), *StateAsString);
+
+	FString StateAsString1 = StaticEnum<EPlayerActionState>()->GetNameStringByValue((int64)ActionState);
+
+	UE_LOG(LogTemp, Warning, TEXT("Change ActionState to: %s"), *StateAsString1);
 
 
 	PlayerActionState = ActionState;
