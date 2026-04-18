@@ -28,5 +28,9 @@
 			"Name": "RMFixTool",
 			"Enabled": false
 		}
+	],
+	"TargetPlatforms": [
+		"Android",
+		"Windows"
 	]
 }

@@ -19,7 +19,7 @@ void ATestLightDetectableActor::SetIlluminated(bool bState)
         // 테스트용 로그 출력
         if (bIsIlluminated)
         {
-            UE_LOG(LogTemp, Warning, TEXT("%s가 손전등 빛에 노출되었습니다!"), *GetName());
+            //UE_LOG(LogTemp, Warning, TEXT("%s"), *GetName());
         }
     }
 }

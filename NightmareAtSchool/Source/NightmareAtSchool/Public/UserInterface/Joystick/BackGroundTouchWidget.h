@@ -39,7 +39,7 @@ protected:
 
 	//감도 조절용
 	UPROPERTY(EditAnywhere, Category = "Input")
-	float RotationSensitivity = 0.5f;
+	float RotationSensitivity = 0.3f;
 	
 private:
 	int32 RotationPointerIndex = -1; // 시야 회전을 담당할 손가락 번호

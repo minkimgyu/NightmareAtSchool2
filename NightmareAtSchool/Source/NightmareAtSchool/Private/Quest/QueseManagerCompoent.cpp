@@ -120,7 +120,7 @@ void UQuestManagerComponent::NotifyProgress(EQuestType QuestType, FName TargetID
 					//완료한 퀘스트, 진행 중인 퀘스트부분에서 변동사항이 있음을 알림
 					isChangeActiveQuest = true;
 					isChangeCompletedQuest = true;
-					UE_LOG(LogTemp, Error, TEXT("퀘스트 완료: %s!"), *Data->QuestName.ToString());
+					//UE_LOG(LogTemp, Error, TEXT(": %s!"), *Data->QuestName.ToString());
 				}
 			}
 		}

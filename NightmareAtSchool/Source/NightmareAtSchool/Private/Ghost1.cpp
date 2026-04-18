@@ -62,7 +62,7 @@ void AGhost1::OnAttackOverlap(UPrimitiveComponent* OverlappedComponent, AActor* 
         // 충돌했으면 중복충돌 방지로 넣어놓기
         HitActors.Add(OtherActor);
 
-        UE_LOG(LogTemp, Warning, TEXT("%s 타격 성공!"), *OtherActor->GetName());
+        //UE_LOG(LogTemp, Warning, TEXT("%s"), *OtherActor->GetName());
     }
 }
 
