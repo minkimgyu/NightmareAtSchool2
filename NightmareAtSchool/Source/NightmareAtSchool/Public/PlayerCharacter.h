@@ -185,6 +185,10 @@ private:
 
 protected:
 
+	// 조이스틱 터치 상태 변경 시 호출될 콜백 함수 (델리게이트 시그니처와 일치해야 함)
+	UFUNCTION()
+	void HandleJoystickTouchChanged(bool bIsTouching);
+
 	// 캐릭터의 현재 체력
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Stats")
 	float Health = 100.0f;

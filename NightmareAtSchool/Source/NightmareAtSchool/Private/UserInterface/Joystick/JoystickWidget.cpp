@@ -10,6 +10,12 @@ void UJoystickWidget::InitJoystick(FVector2D NativeCenter)
 	//UE_LOG(LogTemp, Warning, TEXT("JoystickCenter: X=%f, Y=%f"), JoystickCenter.X, JoystickCenter.Y);
 	bIsTouching = true; // 터치했음
 
+	// 3. 터치 시작 시 브로드캐스트
+	if (OnJoystickTouchChanged.IsBound())
+	{
+		OnJoystickTouchChanged.Broadcast(true);
+	}
+
 	if (IM_JoystickMain)
 		IM_JoystickMain->SetOpacity(0.7f); // 처음에는 약간 투명하게 시작
 }
@@ -60,6 +66,12 @@ void UJoystickWidget::ResetJoystick()
 		IM_JoystickMain->SetRenderTranslation(FVector2D::ZeroVector); // 원래 자리로 되돌려 놓기
 	}
 	bIsTouching = false; // 터치해제
+
+	// 4. 터치 종료 시 브로드캐스트
+	if (OnJoystickTouchChanged.IsBound())
+	{
+		OnJoystickTouchChanged.Broadcast(false);
+	}
 }
 
 FReply UJoystickWidget::NativeOnTouchStarted(const FGeometry& InGeometry, const FPointerEvent& InMouseEvent)
